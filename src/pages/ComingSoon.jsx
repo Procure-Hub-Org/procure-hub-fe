@@ -1,6 +1,6 @@
 import React from "react";
-import "./ComingSoon.css";
-import logo from "../../assets/procure-hub.png";
+import "../styles/ComingSoon.css";
+import logo from "../assets/procure-hub.png";
 
 function ComingSoon() {
   return (
