@@ -1,14 +1,15 @@
 import React from "react";
 import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home";
+import PreviewComponent from "./components/PreviewComponent";
 
 function App() {
   return (
-    <Layout>
+    /* <Layout>
       <Home />
-    </Layout>
+    </Layout>*/
 
-    //<PreviewComponent></PreviewComponent>
+    <PreviewComponent></PreviewComponent>
     //<ComingSoon></ComingSoon>
   );
 }

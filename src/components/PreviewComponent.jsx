@@ -1,34 +1,32 @@
-import React, { useState } from 'react';
-import PrimaryButton from './Button/PrimaryButton';
-import SecondaryButton from './Button/SecondaryButton';
-import BasicButton from './Button/BasicButton';
-import OutlinedButton from './Button/OutlinedButton';
-import CustomTextField from './Input/TextField';
-import CustomSelect from './Input/DropdownSelect';
-import CustomSearchInput from './Input/SearchInput';
-import CustomCheckbox from './Input/Checkbox'; // Adjust the import path as necessary
-import CustomRadioGroup from './Input/RadioSelect'; // Adjust the import path as necessary
-import Navbar from './Navbar/Navbar';
-
+import React, { useState } from "react";
+import PrimaryButton from "./Button/PrimaryButton";
+import SecondaryButton from "./Button/SecondaryButton";
+import BasicButton from "./Button/BasicButton";
+import OutlinedButton from "./Button/OutlinedButton";
+import CustomTextField from "./Input/TextField";
+import CustomSelect from "./Input/DropdownSelect";
+import CustomSearchInput from "./Input/SearchInput";
+import CustomCheckbox from "./Input/Checkbox"; // Adjust the import path as necessary
+import CustomRadioGroup from "./Input/RadioSelect"; // Adjust the import path as necessary
+import Navbar from "./Navbar/Navbar";
+import SideBar from "./SideBar/SideBar";
 
 //added customized components for preview testing
 const PreviewComponent = () => {
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedValue, setSelectedValue] = useState("");
 
-  const [searchTerm, setSearchTerm] = useState('');
- 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [checkboxChecked, setCheckboxChecked] = useState(false);
-  const [radioValue, setRadioValue] = useState('option1');
+  const [radioValue, setRadioValue] = useState("option1");
 
   const handleSelectChange = (event) => {
     setSelectedValue(event.target.value);
   };
 
-
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
-
 
   const handleCheckboxChange = (event) => {
     setCheckboxChecked(event.target.checked);
@@ -39,15 +37,28 @@ const PreviewComponent = () => {
   };
 
   const options = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' },
+    { value: "option1", label: "Option 1" },
+    { value: "option2", label: "Option 2" },
+    { value: "option3", label: "Option 3" },
   ];
 
+  const [openSidebar, setOpenSidebar] = useState(false);
+  // Function to handle opening and closing of the sidebar
+  const toggleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
+
   return (
-    <div style={{position: "absolute", top: "0", left: "0", width: "100vw"}}>
+    <div style={{ position: "absolute", top: "0", left: "0", width: "100vw" }}>
       <h2>Navbar</h2>
-        <Navbar />
+      <Navbar />
+
+      <h2>SideBar button click it</h2>
+      <div>
+        <PrimaryButton onClick={toggleSidebar}>Toggle Sidebar</PrimaryButton>
+        {/* Pass the open state and the function to close it */}
+        <SideBar open={openSidebar} onClose={toggleSidebar} />
+      </div>
 
       <h2>Button Previews</h2>
       <PrimaryButton>Click Me</PrimaryButton>
@@ -57,7 +68,10 @@ const PreviewComponent = () => {
 
       {/* Custom Input Text Field */}
       <h3>Custom TextField</h3>
-      <CustomTextField label="Enter text" placeholder="Type something here..." />
+      <CustomTextField
+        label="Enter text"
+        placeholder="Type something here..."
+      />
 
       {/* Custom Select Field */}
       <h3>Custom Select</h3>
@@ -68,7 +82,6 @@ const PreviewComponent = () => {
         helperText="Please select an option"
       />
 
-
       {/* Custom Search Input */}
       <h3>Custom Search Input</h3>
       <CustomSearchInput
@@ -76,7 +89,6 @@ const PreviewComponent = () => {
         onChange={handleSearchChange}
         placeholder="Search..."
       />
-
 
       {/* Custom Checkbox */}
       <h3>Custom Checkbox</h3>
@@ -93,9 +105,9 @@ const PreviewComponent = () => {
         value={radioValue}
         onChange={handleRadioChange}
         options={[
-          { value: 'option1', label: 'Option 1' },
-          { value: 'option2', label: 'Option 2' },
-          { value: 'option3', label: 'Option 3' },
+          { value: "option1", label: "Option 1" },
+          { value: "option2", label: "Option 2" },
+          { value: "option3", label: "Option 3" },
         ]}
       />
     </div>
