@@ -1,17 +1,15 @@
 import React from "react";
 import Navbar from "../Navbar/Navbar";
-import { Container } from "@mui/material";
 
 const Layout = ({ children }) => {
   return (
-    <div style={{ backgroundColor: "#14110F", minHeight: "100vh", color: "#E3B34B" }}>
+    <div style={{ backgroundColor: "#14110F", minHeight: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}>
       <Navbar />
-      <Container maxWidth="lg" sx={{ paddingTop: "20px", color: "#E3B34B" }}>
+      <div style={{ flex: "1", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {children}
-      </Container>
+      </div>
     </div>
   );
 };
 
 export default Layout;
-

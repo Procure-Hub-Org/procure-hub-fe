@@ -3,8 +3,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    width: 100%;
+    /*height: 100vh;*/
+    height: calc(100vh - 64px); /* Adjust height by subtracting Navbar's height */
+    width: 100vw;
     background-color: #14110F;
     background-size: cover;
     background-position: center;

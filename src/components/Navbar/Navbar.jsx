@@ -9,12 +9,12 @@ const Navbar = () => {
           ProcureHub
         </Typography>
         <Box sx={{ display: "flex", justifyContent: "end", width: "100%" }}>
-          <BasicButton sx={{ color: "#E3B34B", fontFamily: "Montserrat, sans-serif" }} onClick={() => alert("Register button clicked")}>
-            Register
-          </BasicButton>
-          <BasicButton sx={{ color: "#E3B34B", fontFamily: "Montserrat, sans-serif" }} onClick={() => alert("Login button clicked")}>
-            Login
-          </BasicButton>
+            <BasicButton onClick={() => alert("Register button clicked")}>
+                Register
+            </BasicButton>
+            <BasicButton onClick={() => alert("Login button clicked")}>
+                Login
+            </BasicButton>
         </Box>
       </Toolbar>
     </AppBar>
