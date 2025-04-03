@@ -1,10 +1,15 @@
 import React from "react";
-import ComingSoon from "./pages/ComingSoon";
-import PreviewComponent from "./components/PreviewComponent.jsx";
+import Layout from "./components/Layout/Layout";
+import Home from "./pages/Home";
+
 function App() {
   return (
+    <Layout>
+      <Home />
+    </Layout>
+
     //<PreviewComponent></PreviewComponent>
-    <ComingSoon></ComingSoon>
+    //<ComingSoon></ComingSoon>
   );
 }
 

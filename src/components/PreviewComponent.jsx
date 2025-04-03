@@ -8,6 +8,7 @@ import CustomSelect from './Input/DropdownSelect';
 import CustomSearchInput from './Input/SearchInput';
 import CustomCheckbox from './Input/Checkbox'; // Adjust the import path as necessary
 import CustomRadioGroup from './Input/RadioSelect'; // Adjust the import path as necessary
+import Navbar from './Navbar/Navbar';
 
 
 //added customized components for preview testing
@@ -44,7 +45,10 @@ const PreviewComponent = () => {
   ];
 
   return (
-    <div>
+    <div style={{position: "absolute", top: "0", left: "0", width: "100vw"}}>
+      <h2>Navbar</h2>
+        <Navbar />
+
       <h2>Button Previews</h2>
       <PrimaryButton>Click Me</PrimaryButton>
       <SecondaryButton>Click</SecondaryButton>
