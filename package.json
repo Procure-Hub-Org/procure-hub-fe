@@ -16,6 +16,7 @@
     "@mui/material": "^7.0.1",
     "@mui/system": "^7.0.1",
     "@mui/x-date-pickers": "^7.28.2",
+    "axios": "^1.8.4",
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "react": "^19.0.0",
