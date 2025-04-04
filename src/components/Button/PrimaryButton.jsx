@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/system';
 
-const PrimaryButton = ({ children, onClick }) => {
+const PrimaryButton = ({ children, type, ...props }) => {
   const theme = useTheme();
 
   return (
@@ -21,7 +21,8 @@ const PrimaryButton = ({ children, onClick }) => {
           backgroundColor: theme.palette.primary.light,
         },
       }}
-      onClick={onClick}
+      type={type} // nije radilo submit
+      {...props}  // sad moze sve
     >
       {children}
     </Button>
