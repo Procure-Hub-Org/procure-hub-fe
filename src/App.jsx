@@ -1,8 +1,17 @@
 import React from "react";
-import ComingSoon from "./pages/ComingSoon";
+import Layout from "./components/Layout/Layout";
+import Home from "./pages/Home";
+import PreviewComponent from "./components/PreviewComponent";
 
 function App() {
-  return <ComingSoon />;
+  return (
+    /* <Layout>
+      <Home />
+    </Layout>*/
+
+    <PreviewComponent></PreviewComponent>
+    //<ComingSoon></ComingSoon>
+  );
 }
 
 export default App;
