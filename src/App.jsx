@@ -1,7 +1,14 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home";
 import PreviewComponent from "./components/PreviewComponent";
+import Login from "./pages/Login";
+import ComingSoon from "./pages/ComingSoon";
+
+
+
+
 
 function App() {
   return (
@@ -9,8 +16,16 @@ function App() {
       <Home />
     </Layout>*/
 
-    <PreviewComponent></PreviewComponent>
+    //<PreviewComponent></PreviewComponent>
     //<ComingSoon></ComingSoon>
+      <Router>
+          <Routes>
+              <Route path="/" element={<ComingSoon />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/previewComponent" element={<PreviewComponent />} />
+              <Route path="/home" element={<Home />} />
+          </Routes>
+      </Router>
   );
 }
 
