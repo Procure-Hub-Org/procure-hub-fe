@@ -9,8 +9,8 @@ function App() {
       <Home />
     </Layout>*/
 
-    <PreviewComponent></PreviewComponent>
-    // <RegisterPage></RegisterPage>
+    // <PreviewComponent></PreviewComponent>
+    <RegisterPage></RegisterPage>
     //<ComingSoon></ComingSoon>
   );
 }
