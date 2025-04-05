@@ -1,31 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BasicButton from "../components/Button/BasicButton";
 import Navbar from "../components/Navbar/Navbar";
 import "../styles/admin.css";
+import PrimaryButton from "../components/Button/PrimaryButton.jsx";
+import axios from "axios";
+import CreateUserPage   from "./CreateUserPage.jsx";
 
 const AdminDashboard = () => {
-  const [users] = useState([
-    { id: 1, firstName: "Zehra", lastName: "Buza", email: "zehra@example.com", role: "admin" },
-    { id: 2, firstName: "Dženeta", lastName: "Milić", email: "dzeneta@example.com", role: "seller" },
-    { id: 3, firstName: "Ivona", lastName: "Jozić", email: "ivona@example.com", role: "buyer" },
-  ]);
+  const [users, setUsers] = useState([]);
+  const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
+  const token = localStorage.getItem("jwt_token");  // Pretpostavljamo da je JWT token pohranjen u localStorage
+
+    // Učitavanje korisnika sa backend-a
+  useEffect(() => {
+    if (!token) {
+        // mock podaci for now - obrisati kada dodje do final verzije
+        setUsers([
+            { id: 1, firstName: "Mock", lastName: "User", email: "mock@user.com", role: "user" },
+            { id: 2, firstName: "Test", lastName: "Admin", email: "admin@test.com", role: "admin" },
+        ]);
+
+      // Ako nema tokena, preusmeri na login
+      // window.location.href = "/login";
+      return;
+    }
+
+    axios
+        .get("http://localhost:5000/api/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUsers(response.data.users);
+        })
+        .catch((error) => {
+          console.error("Error fetching users:", error);
+        });
+  }, [token]);
 
   const handleUpdate = (id) => console.log(`Update user with ID: ${id}`);
-  const handleDelete = (id) => console.log(`Delete user with ID: ${id}`);
-  const handleSuspend = (id) => console.log(`Suspend user with ID: ${id}`);
-  const handleApprove = (id) => console.log(`Approve user with ID: ${id}`);
+  const handleDelete = (id) => {
+    console.log(`Delete user with ID: ${id}`);
+    axios
+        .delete(`http://localhost:5000/api/users/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUsers(users.filter(user => user.id !== id)); // Ukloni korisnika iz stanja
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error deleting user:", error);
+        });
+  };
+
+  const handleSuspend = (id) => {
+    console.log(`Suspend user with ID: ${id}`);
+    axios.patch(`http://localhost:5000/api/users/${id}/suspend`, null,{
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error("Error suspending user:", error);
+    })
+  };
+  const handleApprove = (id) => {
+    console.log(`Approve user with ID: ${id}`);
+    axios
+        .patch(`http://localhost:5000/api/users/${id}/approve`, null, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error("Error approving user:", error);
+        });
+  };
+
+    const toggleCreateUserPage = () => {
+        setIsCreateUserPageVisible(!isCreateUserPageVisible);
+    };
 
   return (
     <div className="dashboard-container">
       <Navbar />
       <div className="button-container">
-        <BasicButton onClick={() => console.log("Create user clicked")}>
+        <PrimaryButton onClick={toggleCreateUserPage}>
           Create User
-        </BasicButton>
+        </PrimaryButton>
       </div>
-
       <div className="panel">
-        <table className="table">
+          <table className="table">
           <thead>
             <tr>
               <th className="th">ID</th>
@@ -54,6 +121,7 @@ const AdminDashboard = () => {
             ))}
           </tbody>
         </table>
+          {isCreateUserPageVisible && <CreateUserPage />}
       </div>
     </div>
   );

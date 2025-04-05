@@ -10,8 +10,8 @@ function App() {
       <Home />
     </Layout>*/
 
-    <PreviewComponent></PreviewComponent>
-     //<Admin></Admin>
+    //<PreviewComponent></PreviewComponent>
+     <Admin></Admin>
     //<ComingSoon></ComingSoon>
     
   );
