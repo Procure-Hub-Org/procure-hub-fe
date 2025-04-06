@@ -9,19 +9,11 @@ import CreateUserPage   from "./CreateUserPage.jsx";
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
-  const token = localStorage.getItem("jwt_token");  // Pretpostavljamo da je JWT token pohranjen u localStorage
-
+  const token = localStorage.getItem("token");  // Pretpostavljamo da je JWT token pohranjen u localStorage
     // Učitavanje korisnika sa backend-a
   useEffect(() => {
     if (!token) {
-        // mock podaci for now - obrisati kada dodje do final verzije
-        setUsers([
-            { id: 1, firstName: "Mock", lastName: "User", email: "mock@user.com", role: "user" },
-            { id: 2, firstName: "Test", lastName: "Admin", email: "admin@test.com", role: "admin" },
-        ]);
-
-      // Ako nema tokena, preusmeri na login
-      // window.location.href = "/login";
+      window.location.href = "/login";
       return;
     }
 
