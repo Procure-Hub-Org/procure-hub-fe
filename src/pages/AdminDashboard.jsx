@@ -26,7 +26,7 @@ const AdminDashboard = () => {
     }
 
     axios
-        .get("http://localhost:5000/api/users", {
+        .get(`${import.meta.env.VITE_API_URL}/api/users`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -41,7 +41,7 @@ const AdminDashboard = () => {
   const handleDelete = (id) => {
     console.log(`Delete user with ID: ${id}`);
     axios
-        .delete(`http://localhost:5000/api/users/${id}`, {
+        .delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
 
   const handleSuspend = (id) => {
     console.log(`Suspend user with ID: ${id}`);
-    axios.patch(`http://localhost:5000/api/users/${id}/suspend`, null,{
+    axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/suspend`, null,{
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((response) => {
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
   const handleApprove = (id) => {
     console.log(`Approve user with ID: ${id}`);
     axios
-        .patch(`http://localhost:5000/api/users/${id}/approve`, null, {
+        .patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/approve`, null, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
