@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BasicButton from "../components/Button/BasicButton";
 import Navbar from "../components/Navbar/Navbar";
-import "../styles/admin.css";
+import "../styles/Admin.css";
 import PrimaryButton from "../components/Button/PrimaryButton.jsx";
 import axios from "axios";
 import CreateUserPage   from "./CreateUserPage.jsx";
