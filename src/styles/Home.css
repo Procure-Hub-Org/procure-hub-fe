@@ -1,0 +1,32 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /*height: 100vh;*/
+    height: calc(100vh - 64px); /* Adjust height by subtracting Navbar's height */
+    width: 100vw;
+    background-color: #14110F;
+    background-size: cover;
+    background-position: center;
+    color: #E3B34B;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    margin: 0; 
+    padding: 0;
+    
+}
+
+.logo {
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 10px 0;
+}
+
+p {
+    font-size: 1.2rem;
+}
