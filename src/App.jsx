@@ -1,23 +1,22 @@
-import React from "react";
-import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import RegisterPage from './pages/RegisterPage';
+import UserProfile from './pages/UserProfile';
+
+
 import PreviewComponent from "./components/PreviewComponent";
-import RegisterPage from "./pages/RegisterPage";
-import Login from "./pages/Login";
-import UserProfile from "./pages/UserProfile";
+
 
 function App() {
   return (
-    <>
-      {/* <Layout> */}
-      {/* <Home /> */}
-      {/* </Layout> */}
-      {/* <Login></Login> */}
-      {/* <PreviewComponent></PreviewComponent> */}
-      {/* <RegisterPage></RegisterPage> */}
-      {/* //<ComingSoon></ComingSoon> */}
-      <UserProfile></UserProfile>
-    </>
+    <Routes>
+      <Route path="/" element={<Home/>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/profile" element={<UserProfile />} />
+    </Routes>
   );
 }
 
