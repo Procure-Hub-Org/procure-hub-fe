@@ -16,7 +16,7 @@ const CustomSelect = ({ label, value, onChange, options, helperText, ...props })
       <Select
         value={value}
         onChange={onChange}
-        displayEmpty
+        // displayEmpty smeta ovo
         label={label}
         inputProps={{
           style: {
@@ -29,7 +29,7 @@ const CustomSelect = ({ label, value, onChange, options, helperText, ...props })
       >
         {/* Empty option for the placeholder text */}
         <MenuItem value="" disabled>
-          Select an option
+          {/* Select an option     smeta ovo */} 
         </MenuItem>
 
         {/* Mapping over options */}

@@ -9,9 +9,11 @@ function App() {
         <Home />
       </Layout>*/
 
-      <PreviewComponent></PreviewComponent>
-      // <RegisterPage></RegisterPage>
-      //<ComingSoon></ComingSoon>
+
+    <PreviewComponent></PreviewComponent>
+    // <RegisterPage></RegisterPage>
+    //<ComingSoon></ComingSoon>
+
   );
 }
 
