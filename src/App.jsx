@@ -1,13 +1,21 @@
 import React from "react";
-import Login from "./pages/Login";
-
-
-
-
-
+import Layout from "./components/Layout/Layout";
+import Home from "./pages/Home";
+import PreviewComponent from "./components/PreviewComponent";
+import RegisterPage from "./pages/RegisterPage";
 function App() {
   return (
-    <Login></Login>
+      /* <Layout>
+        <Home />
+      </Layout>*/
+
+
+    <PreviewComponent></PreviewComponent>
+    // <RegisterPage></RegisterPage>
+    //<ComingSoon></ComingSoon>
+    
+
+
   );
 }
 
