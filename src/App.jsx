@@ -2,18 +2,18 @@ import React from "react";
 import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home";
 import PreviewComponent from "./components/PreviewComponent";
-import Admin from  "./pages/AdminDashboard";
-
+import RegisterPage from "./pages/RegisterPage";
+import AdminDashboard from "./pages/AdminDashboard";
 function App() {
   return (
-    /* <Layout>
-      <Home />
-    </Layout>*/
+      /* <Layout>
+        <Home />
+      </Layout>*/
 
-    //<PreviewComponent></PreviewComponent>
-     <Admin></Admin>
-    //<ComingSoon></ComingSoon>
-    
+      <PreviewComponent></PreviewComponent>
+      //<AdminDashboard></AdminDashboard>
+      // <RegisterPage></RegisterPage>
+      //<ComingSoon></ComingSoon>
   );
 }
 
