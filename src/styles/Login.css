@@ -1,0 +1,77 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #0f0a19;
+    color: #E3B34B;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    position: relative;
+}
+
+.login-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    width: 500px;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.0); /* Adds slight transparency for readability */
+    border-radius: 10px;
+    position: relative;
+    z-index: 2; /* Ensures the inputs stay on top */
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: url("../assets/procure-hub-icon.png") no-repeat center;
+    background-size: 500px;
+    opacity: 0.2; /* Controls visibility */
+    width: 500px;
+    height: 500px;
+    z-index: 1; /* Puts the logo behind everything */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    width: 200px;
+    border: 2px solid #E3B34B;
+    border-radius: 5px;
+    background: transparent;
+    color: #E3B34B;
+    font-family: "Montserrat", sans-serif;
+}
+
+input::placeholder {
+    color: #E3B34B;
+}
+
+button {
+    padding: 10px;
+    background-color: #E3B34B;
+    color: #14110F;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: #b9903c;
+}
