@@ -13,8 +13,14 @@ import {
 import axios from "axios";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; 
 import { useNavigate } from "react-router-dom"; 
+import { isAuthenticated } from "../utils/auth";
 
 function UserProfile() {
+  const isLoggedIn = isAuthenticated();
+  if (!isLoggedIn) {
+    window.location.href = "/login";
+    return;
+  }
   const [userData, setUserData] = useState({
     first_name: "",
     last_name: "",

@@ -4,8 +4,21 @@ import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
 import { Container, Card, CardContent, Typography, Box, FormHelperText } from "@mui/material";
 import axios from 'axios';
+import Layout from "../components/Layout/Layout";
+import { isAuthenticated, isAdmin } from "../utils/auth";
 
 const CreateUserPage = () => {
+  const isLoggedIn = isAuthenticated();
+  const isAdminUser = isAdmin();
+  if (!isAdminUser) {
+    if (!isLoggedIn) {
+      window.location.href = "/login";
+    } else {
+      window.location.href = "/"; 
+    }
+    return;
+  }
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -22,8 +35,9 @@ const CreateUserPage = () => {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
+    console.log(formData.role)
     const { name, value, type, checked } = e.target;
-    console.log(e.target.name, e.target.checked);
+    console.log(e.target.name, e.target.checked, e.target.value);
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
@@ -77,15 +91,17 @@ const CreateUserPage = () => {
       { test: value => formData.role !== 'admin' && value && value.length <= 50, message: "Company name cannot exceed 50 characters" },
       { test: value => formData.role !== 'admin' && value && /^[A-Za-z0-9\s,.-]+$/.test(value), message: "Company name can only contain letters, numbers, spaces, and certain special characters" },
     ],
-    company_address: [
-      { test: value => formData.role !== 'admin' && !value, message: "Company address is required" },
-      { test: value => formData.role !== 'admin' && value && value.length <= 100, message: "Company address cannot exceed 100 characters" },
-      { test: value => formData.role !== 'admin' && value && /^[A-Za-z0-9\s,.-]+$/.test(value), message: "Company address can only contain letters, numbers, spaces, and certain special characters" },
+    company_name: [
+      { test: value => formData.role === 'admin' || !!value, message: "Company name is required" },
+      { test: value => formData.role === 'admin' || value.length >= 2, message: "Company name must be at least 2 characters long" },
+      { test: value => formData.role === 'admin' || value.length <= 50, message: "Company name cannot exceed 50 characters" },
+      { test: value => formData.role === 'admin' || /^[A-Za-z0-9\s,.-]+$/.test(value), message: "Company name can only contain letters, numbers, spaces, and certain special characters" },
     ],
-    phone_number: [
-      { test: value => !!value, message: "Phone number is required" },
-      { test: value => /^\+(\d{1,3})\s?(\d{1,15})(\s?\d{1,15})*$/.test(value), message: "Please enter a valid phone number" },
-    ]
+    company_address: [
+      { test: value => formData.role === 'admin' || !!value, message: "Company address is required" },
+      { test: value => formData.role === 'admin' || value.length <= 100, message: "Company address cannot exceed 100 characters" },
+      { test: value => formData.role === 'admin' || /^[A-Za-z0-9\s,.-]+$/.test(value), message: "Company address can only contain letters, numbers, spaces, and certain special characters" },
+    ],
   };
 
   const validateField = (name, value) => {
@@ -134,16 +150,16 @@ const CreateUserPage = () => {
       email: formData.email,
       password: formData.password,
       role: formData.role,
-      company_name: formData.company_name,
+      ...(formData.role !== "admin" && { company_name: formData.company_name }),
       phone_number: formData.phone_number,
       address: formData.address,
-      company_address: formData.company_address,
+      ...(formData.role !== "admin" && { company_address: formData.company_address }),
     };
 
     console.log("Sending user data:", userData);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/users`, userData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/register`, userData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -175,130 +191,132 @@ const CreateUserPage = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-      <Container maxWidth="sm">
-        <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
-          <CardContent>
-            <Typography variant="h5" gutterBottom align="center">Create User</Typography>
-            <form onSubmit={handleSubmit}>
-              <CustomTextField
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.first_name}
-                helperText={errors.first_name}
-              />
-              <CustomTextField
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.last_name}
-                helperText={errors.last_name}
-              />
-              <CustomTextField
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-              <CustomTextField
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-              <CustomTextField
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-              <CustomSelect
-                label="Role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                options={[
-                  { value: "buyer", label: "Buyer" },
-                  { value: "seller", label: "Seller" },
-                  { value: "admin", label: "Admin" },
-                ]}
-                required
-                error={!!errors.role}
-                helperText={errors.role}
-              />
-              <CustomTextField
-                label="Phone Number"
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.phone_number}
-                helperText={errors.phone_number}
-              />
-              <CustomTextField
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.address}
-                helperText={errors.address}
-              />
-              {formData.role !== 'admin' && (
-                <>
-                  <CustomTextField
-                    label="Company Name"
-                    name="company_name"
-                    value={formData.company_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.company_name}
-                    helperText={errors.company_name}
-                  />
-                  <CustomTextField
-                    label="Company Address"
-                    name="company_address"
-                    value={formData.company_address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.company_address}
-                    helperText={errors.company_address}
-                  />
-                </>
-              )}
-              <PrimaryButton type="submit" fullWidth>Create User</PrimaryButton>
-            </form>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
+    <Layout>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        <Container maxWidth="sm">
+          <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom align="center">Create User</Typography>
+              <form onSubmit={handleSubmit}>
+                <CustomTextField
+                  label="First Name"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.first_name}
+                  helperText={errors.first_name}
+                />
+                <CustomTextField
+                  label="Last Name"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.last_name}
+                  helperText={errors.last_name}
+                />
+                <CustomTextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+                <CustomTextField
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.password}
+                  helperText={errors.password}
+                />
+                <CustomTextField
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
+                />
+                <CustomSelect
+                  label="Role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  options={[
+                    { value: "buyer", label: "Buyer" },
+                    { value: "seller", label: "Seller" },
+                    { value: "admin", label: "Admin" },
+                  ]}
+                  required
+                  error={!!errors.role}
+                  helperText={errors.role}
+                />
+                <CustomTextField
+                  label="Phone Number"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.phone_number}
+                  helperText={errors.phone_number}
+                />
+                <CustomTextField
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.address}
+                  helperText={errors.address}
+                />
+                {formData.role !== 'admin' && (
+                  <>
+                    <CustomTextField
+                      label="Company Name"
+                      name="company_name"
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      required
+                      error={!!errors.company_name}
+                      helperText={errors.company_name}
+                    />
+                    <CustomTextField
+                      label="Company Address"
+                      name="company_address"
+                      value={formData.company_address}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      required
+                      error={!!errors.company_address}
+                      helperText={errors.company_address}
+                    />
+                  </>
+                )}
+                <PrimaryButton type="submit" fullWidth>Create User</PrimaryButton>
+              </form>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
+    </Layout>
   );
 };
 
