@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
-import { Container, Card, CardContent, Typography, Box, FormHelperText } from "@mui/material";
+import { AppBar,Container, Card, CardContent, Typography, Box, FormHelperText,IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; 
+import HomeIcon from "@mui/icons-material/Home";
+import { useNavigate } from "react-router-dom"; 
 import axios from 'axios';
 
 const RegisterPage = () => {
@@ -152,6 +155,7 @@ const RegisterPage = () => {
       if (response.status === 201) {
         alert("Registration Successful!");
         console.log('Server Response:', response.data);
+        
   
       } else {
         alert('Registration failed: ' + response.data.message);
@@ -174,9 +178,25 @@ const RegisterPage = () => {
       }
     }
   };
+
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+  const handleHomeClick = () => {
+  navigate("/"); 
+  };
   
   return (
+    <AppBar position="static" sx={{ background: "#14110F" }}>
+       <IconButton edge="start" color="inherit" onClick={handleBackClick} sx={{ paddingRight: 1 }}>
+          <ArrowBackIcon />
+        </IconButton>
+        <IconButton edge="start" color="inherit" onClick={handleHomeClick} sx={{ mr: 2 }}>
+                            <HomeIcon />
+                    </IconButton>
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+        
       <Container maxWidth="sm">
         <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
           <CardContent>
@@ -292,6 +312,7 @@ const RegisterPage = () => {
         </Card>
       </Container>
     </Box>
+    </AppBar>
   );
 };
 

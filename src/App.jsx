@@ -1,21 +1,25 @@
-import React from "react";
-import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home";
-import PreviewComponent from "./components/PreviewComponent";
-import RegisterPage from "./pages/RegisterPage";
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import RegisterPage from './pages/RegisterPage';
+import UserProfile from './pages/UserProfile';
+import PreviewComponent from "./components/PreviewComponent"
+import AdminDashboard from "./pages/AdminDashboard"
+import CreateUserPage from "./pages/CreateUserPage"
+
+
 function App() {
   return (
-      /* <Layout>
-        <Home />
-      </Layout>*/
-
-
-    <PreviewComponent></PreviewComponent>
-    // <RegisterPage></RegisterPage>
-    //<ComingSoon></ComingSoon>
-    
-
-
+    <Routes>
+      <Route path="/" element={<Home/>} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/profile" element={<UserProfile />} />
+      <Route path="/preview" element={<PreviewComponent />} />
+      <Route path="/admin" element={<AdminDashboard/>} />
+      <Route path="/create-user" element={<CreateUserPage />} /> 
+    </Routes>
   );
 }
 
