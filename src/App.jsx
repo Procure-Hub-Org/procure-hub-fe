@@ -13,6 +13,8 @@ function App() {
     <PreviewComponent></PreviewComponent>
     // <RegisterPage></RegisterPage>
     //<ComingSoon></ComingSoon>
+    
+
 
   );
 }
