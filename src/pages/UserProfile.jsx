@@ -35,7 +35,7 @@ function UserProfile() {
     setIsLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:3000/api/user/profile", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +79,7 @@ function UserProfile() {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        "http://localhost:3000/api/user/profile/update",
+        `${import.meta.env.VITE_API_URL}/api/user/profile/update`,
         {
           method: "PUT",
           body: formData,
@@ -420,7 +420,7 @@ function UserProfile() {
                       maxWidth: { xs: 350, md: 250 },
                     }}
                     alt="Profile picture."
-                    src={`http://localhost:3000/${userData.profile_picture}`}
+                    src={`${import.meta.env.VITE_API_URL}/${userData.profile_picture}`}
                   />
                 </div>
                 <div>
@@ -439,7 +439,7 @@ function UserProfile() {
                       maxWidth: { xs: 350, md: 250 },
                     }}
                     alt="Company logo."
-                    src={`http://localhost:3000/${userData.company_logo}`}
+                    src={`${import.meta.env.VITE_API_URL}/${userData.company_logo}`}
                   />
                 </div>
                 <PrimaryButton type="submit" fullWidth>
