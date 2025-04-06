@@ -25,6 +25,7 @@ const Login = () => {
         const data = await response.json();
         if (response.ok) {
             localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.user.role)
             //console.log(data.token)
             navigate("/profile"); 
         } else {
