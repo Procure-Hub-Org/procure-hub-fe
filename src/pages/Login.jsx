@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import "../styles/Login.css";  // Correct path
-//probao koristit BasicButton, pravilo mi previse problema, probat cu opet kasnije
-import BasicButton from "../components/Button/BasicButton";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -20,6 +18,7 @@ const Login = () => {
         const data = await response.json();
         if (response.ok) {
             localStorage.setItem("token", data.token);
+            //console.log(data.token)
             window.location.href = "/dashboard"; // Redirect after login
         } else {
             setError(data.message);
@@ -54,6 +53,8 @@ return (
     </div>
 );
 };
+
+
 
 
 export default Login;
