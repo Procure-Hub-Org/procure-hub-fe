@@ -152,15 +152,29 @@ const RegisterPage = () => {
       if (response.status === 201) {
         alert("Registration Successful!");
         console.log('Server Response:', response.data);
-
+  
       } else {
         alert('Registration failed: ' + response.data.message);
       }
     } catch (error) {
       console.error('Error during registration:', error);
-      alert('An error occurred during registration');
+  
+      if (error.response && error.response.data.error) {
+        // Ako je greška "Email already registered"
+        if (error.response.data.error === 'Email already registered') {
+          setErrors(prevErrors => ({
+            ...prevErrors,
+            email: 'Email is already registered. Please use a different email.',
+          }));
+        } else {
+          alert('An error occurred during registration: ' + error.response.data.error);
+        }
+      } else {
+        alert('An error occurred during registration');
+      }
     }
   };
+  
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
       <Container maxWidth="sm">

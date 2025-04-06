@@ -16,7 +16,7 @@ const CustomSelect = ({ label, value, onChange, options, helperText, ...props })
       <Select
         value={value}
         onChange={onChange}
-        displayEmpty
+        // displayEmpty smeta ovo
         label={label}
         inputProps={{
           style: {
