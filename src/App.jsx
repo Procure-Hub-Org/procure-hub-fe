@@ -3,7 +3,6 @@ import Layout from "./components/Layout/Layout";
 import Home from "./pages/Home";
 import PreviewComponent from "./components/PreviewComponent";
 import RegisterPage from "./pages/RegisterPage";
-import AdminDashboard from "./pages/AdminDashboard";
 function App() {
   return (
       /* <Layout>
@@ -11,7 +10,6 @@ function App() {
       </Layout>*/
 
       <PreviewComponent></PreviewComponent>
-      //<AdminDashboard></AdminDashboard>
       // <RegisterPage></RegisterPage>
       //<ComingSoon></ComingSoon>
   );
