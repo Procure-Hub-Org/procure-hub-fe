@@ -5,13 +5,15 @@ import PreviewComponent from "./components/PreviewComponent";
 import RegisterPage from "./pages/RegisterPage";
 function App() {
   return (
-    /* <Layout>
-      <Home />
-    </Layout>*/
+      /* <Layout>
+        <Home />
+      </Layout>*/
+
 
     <PreviewComponent></PreviewComponent>
     // <RegisterPage></RegisterPage>
     //<ComingSoon></ComingSoon>
+
   );
 }
 
