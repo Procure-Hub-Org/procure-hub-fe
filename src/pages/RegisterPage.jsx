@@ -7,8 +7,15 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HomeIcon from "@mui/icons-material/Home";
 import { useNavigate } from "react-router-dom"; 
 import axios from 'axios';
+import Layout from "../components/Layout/Layout";
+import { isAuthenticated } from "../utils/auth";
 
 const RegisterPage = () => {
+  const isLoggedIn = isAuthenticated();
+  if (isLoggedIn) {
+    window.location.href = "/";
+    return;
+  }
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -188,131 +195,127 @@ const RegisterPage = () => {
   };
   
   return (
-    <AppBar position="static" sx={{ background: "#14110F" }}>
-       <IconButton edge="start" color="inherit" onClick={handleBackClick} sx={{ paddingRight: 1 }}>
-          <ArrowBackIcon />
-        </IconButton>
-        <IconButton edge="start" color="inherit" onClick={handleHomeClick} sx={{ mr: 2 }}>
-                            <HomeIcon />
-                    </IconButton>
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
-        
-      <Container maxWidth="sm">
-        <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
-          <CardContent>
-            <Typography variant="h5" gutterBottom align="center">Register</Typography>
-            <form onSubmit={handleSubmit}>
-              <CustomTextField
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.first_name}
-                helperText={errors.first_name}
-              />
-              <CustomTextField
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.last_name}
-                helperText={errors.last_name}
-              />
-              <CustomTextField
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-              <CustomTextField
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-              <CustomTextField
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.confirmPassword}
-                helperText={errors.confirmPassword}
-              />
-              <CustomSelect
-                label="Role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                options={[{ value: "buyer", label: "Buyer" }, { value: "seller", label: "Seller" }]}
-                required
-                error={!!errors.role}
-                helperText={errors.role}
-              />
-              <CustomTextField
-                label="Company Name"
-                name="company_name"
-                value={formData.company_name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.company_name}
-                helperText={errors.company_name}
-              />
-              <CustomTextField
-                label="Phone Number"
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.phone_number}
-                helperText={errors.phone_number}
-              />
-              <CustomTextField
-                label="Address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.address}
-                helperText={errors.address}
-              />
-              <CustomTextField
-                label="Company Address"
-                name="company_address"
-                value={formData.company_address}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-                error={!!errors.company_address}
-                helperText={errors.company_address}
-              /> 
-              <PrimaryButton type="submit" fullWidth>Register</PrimaryButton>
-            </form>
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
-    </AppBar>
+    <Layout>
+      <AppBar position="static" sx={{ background: "#14110F" }}>
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+          
+        <Container maxWidth="sm">
+          <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
+            <CardContent>
+              <Typography variant="h5" gutterBottom align="center">Register</Typography>
+              <form onSubmit={handleSubmit}>
+                <CustomTextField
+                  label="First Name"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.first_name}
+                  helperText={errors.first_name}
+                />
+                <CustomTextField
+                  label="Last Name"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.last_name}
+                  helperText={errors.last_name}
+                />
+                <CustomTextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.email}
+                  helperText={errors.email}
+                />
+                <CustomTextField
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.password}
+                  helperText={errors.password}
+                />
+                <CustomTextField
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
+                />
+                <CustomSelect
+                  label="Role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  options={[{ value: "buyer", label: "Buyer" }, { value: "seller", label: "Seller" }]}
+                  required
+                  error={!!errors.role}
+                  helperText={errors.role}
+                />
+                <CustomTextField
+                  label="Company Name"
+                  name="company_name"
+                  value={formData.company_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.company_name}
+                  helperText={errors.company_name}
+                />
+                <CustomTextField
+                  label="Phone Number"
+                  name="phone_number"
+                  value={formData.phone_number}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.phone_number}
+                  helperText={errors.phone_number}
+                />
+                <CustomTextField
+                  label="Address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.address}
+                  helperText={errors.address}
+                />
+                <CustomTextField
+                  label="Company Address"
+                  name="company_address"
+                  value={formData.company_address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.company_address}
+                  helperText={errors.company_address}
+                /> 
+                <PrimaryButton type="submit" fullWidth>Register</PrimaryButton>
+              </form>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
+      </AppBar>
+    </Layout>
   );
 };
 

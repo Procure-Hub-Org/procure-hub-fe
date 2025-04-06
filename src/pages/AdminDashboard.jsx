@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import BasicButton from "../components/Button/BasicButton";
-import Navbar from "../components/Navbar/Navbar";
 import "../styles/Admin.css";
 import PrimaryButton from "../components/Button/PrimaryButton.jsx";
 import axios from "axios";
 import CreateUserPage   from "./CreateUserPage.jsx";
+import Layout from "../components/Layout/Layout.jsx";
+import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -12,8 +13,12 @@ const AdminDashboard = () => {
   const token = localStorage.getItem("token");  // Pretpostavljamo da je JWT token pohranjen u localStorage
     // Učitavanje korisnika sa backend-a
   useEffect(() => {
-    if (!token) {
-      window.location.href = "/login";
+    if (!isAdmin()) {
+      if (!isAuthenticated()) {
+        window.location.href = "/login";
+      } else {
+        window.location.href = "/";
+      }
       return;
     }
 
@@ -76,46 +81,47 @@ const AdminDashboard = () => {
     };
 
   return (
-    <div className="dashboard-container">
-      <Navbar />
-      <div className="button-container">
-        <PrimaryButton onClick={toggleCreateUserPage}>
-          Create User
-        </PrimaryButton>
-      </div>
-      <div className="panel">
-          <table className="table">
-          <thead>
-            <tr>
-              <th className="th">ID</th>
-              <th className="th">First Name</th>
-              <th className="th">Last Name</th>
-              <th className="th">Email</th>
-              <th className="th">Role</th>
-              <th className="th">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="tr">
-                <td className="td">{user.id}</td>
-                <td className="td">{user.firstName}</td>
-                <td className="td">{user.lastName}</td>
-                <td className="td">{user.email}</td>
-                <td className="td">{user.role}</td>
-                <td className="td">
-                  <BasicButton onClick={() => handleUpdate(user.id)}>Update</BasicButton>
-                  <BasicButton onClick={() => handleDelete(user.id)}>Delete</BasicButton>
-                  <BasicButton onClick={() => handleSuspend(user.id)}>Suspend</BasicButton>
-                  <BasicButton onClick={() => handleApprove(user.id)}>Approve</BasicButton>
-                </td>
+    <Layout>
+      <div className="dashboard-container">
+        <div className="button-container">
+          <PrimaryButton onClick={toggleCreateUserPage}>
+            Create User
+          </PrimaryButton>
+        </div>
+        <div className="panel">
+            <table className="table">
+            <thead>
+              <tr>
+                <th className="th">ID</th>
+                <th className="th">First Name</th>
+                <th className="th">Last Name</th>
+                <th className="th">Email</th>
+                <th className="th">Role</th>
+                <th className="th">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-          {isCreateUserPageVisible && <CreateUserPage />}
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="tr">
+                  <td className="td">{user.id}</td>
+                  <td className="td">{user.firstName}</td>
+                  <td className="td">{user.lastName}</td>
+                  <td className="td">{user.email}</td>
+                  <td className="td">{user.role}</td>
+                  <td className="td">
+                    <BasicButton onClick={() => handleUpdate(user.id)}>Update</BasicButton>
+                    <BasicButton onClick={() => handleDelete(user.id)}>Delete</BasicButton>
+                    <BasicButton onClick={() => handleSuspend(user.id)}>Suspend</BasicButton>
+                    <BasicButton onClick={() => handleApprove(user.id)}>Approve</BasicButton>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+            {isCreateUserPageVisible && <CreateUserPage />}
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

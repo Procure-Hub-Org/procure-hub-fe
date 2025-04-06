@@ -4,9 +4,16 @@ import {Box, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack"; 
 import HomeIcon from "@mui/icons-material/Home";
+import Layout from "../components/Layout/Layout";
+import { isAuthenticated } from "../utils/auth"; 
 
 
 const Login = () => {
+    const isLoggedIn = isAuthenticated();
+    if (isLoggedIn) {
+        window.location.href = "/";
+        return;
+    }
     const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
@@ -27,7 +34,11 @@ const Login = () => {
             localStorage.setItem("token", data.token);
             localStorage.setItem("role", data.user.role)
             //console.log(data.token)
-            navigate("/profile"); 
+            if (data.user.role === "admin") {
+                navigate("/admin"); 
+            } else {
+                navigate("/profile"); 
+            }
         } else {
             setError(data.message);
         }
@@ -43,36 +54,30 @@ const Login = () => {
 
 
 return (
-    <div className="login-container">
-         <Box sx={{ display: "flex", justifyContent: "flex-start", width: "100%" ,paddingInline:"50px"}}>
-          <IconButton edge="start" color="inherit" onClick={handleBackClick} sx={{ mr: 2 }}>
-            <ArrowBackIcon />
-          </IconButton>
-          <IconButton edge="start" color="inherit" onClick={handleHomeClick} sx={{ mr: 2 }}>
-                    <HomeIcon />
-            </IconButton>
-        </Box>
-        <div className="login-box">
-            {error && <p className="error">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Login</button>
-            </form>
+    <Layout>
+        <div className="login-container">
+            <div className="login-box">
+                {error && <p className="error">{error}</p>}
+                <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button type="submit">Login</button>
+                </form>
+            </div>
         </div>
-    </div>
+    </Layout>
 );
 };
 
