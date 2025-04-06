@@ -4,9 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import RegisterPage from './pages/RegisterPage';
 import UserProfile from './pages/UserProfile';
-
-
-import PreviewComponent from "./components/PreviewComponent";
+import PreviewComponent from "./components/PreviewComponent"
 
 
 function App() {
