@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
+import { AppBar, IconButton} from "@mui/material";
 import {
   Container,
   Card,
@@ -10,6 +11,8 @@ import {
   FormHelperText,
 } from "@mui/material";
 import axios from "axios";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; 
+import { useNavigate } from "react-router-dom"; 
 
 function UserProfile() {
   const [userData, setUserData] = useState({
@@ -265,12 +268,21 @@ function UserProfile() {
     });
   };
 
+  const navigate = useNavigate();
+    const handleBackClick = () => {
+      navigate(-1);
+    }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission logic here
   };
 
   return (
+    <AppBar position="static" sx={{ background: "#14110F" }}>
+       <IconButton edge="start" color="inherit" onClick={handleBackClick} sx={{ paddingRight: 1 }}>
+          <ArrowBackIcon />
+        </IconButton>
     <Box
       sx={{
         display: "flex",
@@ -439,6 +451,7 @@ function UserProfile() {
         </Card>
       </Container>
     </Box>
+    </AppBar>
   );
 }
 

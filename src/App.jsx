@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import UserProfile from './pages/UserProfile';
 import PreviewComponent from "./components/PreviewComponent"
 import AdminDashboard from "./pages/AdminDashboard"
+import CreateUserPage from "./pages/CreateUserPage"
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/preview" element={<PreviewComponent />} />
       <Route path="/admin" element={<AdminDashboard/>} />
+      <Route path="/create-user" element={<CreateUserPage />} /> 
     </Routes>
   );
 }
