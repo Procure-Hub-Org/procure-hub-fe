@@ -59,6 +59,7 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
             </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
       </Toolbar>
