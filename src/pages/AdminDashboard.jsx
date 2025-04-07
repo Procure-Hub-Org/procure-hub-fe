@@ -7,6 +7,7 @@ import CreateUserPage   from "./CreateUserPage.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
 
+
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
@@ -27,7 +28,8 @@ const AdminDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          setUsers(response.data.users);
+          const userId = Number(localStorage.getItem("id"));
+          setUsers(response.data.users.filter(user => user.id !== userId));
         })
         .catch((error) => {
           console.error("Error fetching users:", error);
@@ -56,6 +58,7 @@ const AdminDashboard = () => {
       const userData = await response.json();
       console.log("User updated successfully:", userData);
 
+      updateUser(id, "role", userData.user.role);
     }
     catch (error) {
       console.error("Error updating user role:", error);
@@ -77,6 +80,14 @@ const AdminDashboard = () => {
         });
   };
 
+  const updateUser = (id, attribute, value) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === id ? { ...user, [attribute]: value } : user
+      )
+    );
+  };
+
   const handleSuspend = (id) => {
     console.log(`Suspend user with ID: ${id}`);
     axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/suspend`, null,{
@@ -84,6 +95,7 @@ const AdminDashboard = () => {
     })
     .then((response) => {
       console.log(response.data);
+      updateUser(id, "status", response.data.data.status);
     })
     .catch((error) => {
       console.error("Error suspending user:", error);
@@ -97,6 +109,7 @@ const AdminDashboard = () => {
         })
         .then((response) => {
           console.log(response.data);
+          updateUser(id, "status", response.data.data.status);
         })
         .catch((error) => {
           console.error("Error approving user:", error);
@@ -124,6 +137,7 @@ const AdminDashboard = () => {
                 <th className="th">Last Name</th>
                 <th className="th">Email</th>
                 <th className="th">Role</th>
+                <th className="th">Status</th>
                 <th className="th">Actions</th>
               </tr>
             </thead>
@@ -135,6 +149,7 @@ const AdminDashboard = () => {
                   <td className="td">{user.last_name}</td>
                   <td className="td">{user.email}</td>
                   <td className="td">{user.role}</td>
+                  <td className="td">{user.status}</td>
                   <td className="td">
                     <BasicButton onClick={() => handleUpdate(user.id)}>Update</BasicButton>
                     <BasicButton onClick={() => handleDelete(user.id)}>Delete</BasicButton>
