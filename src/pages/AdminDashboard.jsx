@@ -104,8 +104,8 @@ const AdminDashboard = () => {
               {users.map((user) => (
                 <tr key={user.id} className="tr">
                   <td className="td">{user.id}</td>
-                  <td className="td">{user.firstName}</td>
-                  <td className="td">{user.lastName}</td>
+                  <td className="td">{user.first_name}</td>
+                  <td className="td">{user.last_name}</td>
                   <td className="td">{user.email}</td>
                   <td className="td">{user.role}</td>
                   <td className="td">
