@@ -30,7 +30,7 @@ export default BasicButton;*/
 import React from 'react';
 import { Button } from '@mui/material';
 
-const BasicButton = ({ children, onClick }) => {
+const BasicButton = ({ children, onClick, ...props }) => {
   return (
     <Button
       variant="text"
@@ -47,6 +47,7 @@ const BasicButton = ({ children, onClick }) => {
         padding: '8px 16px',
       }}
       onClick={onClick}
+      {...props}
     >
       {children}
     </Button>
