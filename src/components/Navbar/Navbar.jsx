@@ -11,6 +11,7 @@ const Navbar = () => {
   function onClickLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("id");
     navigate("/");
   }
 
@@ -52,6 +53,7 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/admin")}>
               Dashboard
             </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
         {loggedIn && !adminUser && (
