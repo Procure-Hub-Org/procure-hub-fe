@@ -52,6 +52,7 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/admin")}>
               Dashboard
             </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
         {loggedIn && !adminUser && (
@@ -59,6 +60,7 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
             </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
       </Toolbar>

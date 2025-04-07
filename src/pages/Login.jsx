@@ -33,27 +33,28 @@ const Login = () => {
                 body: JSON.stringify({ email, password }),
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("role", data.user.role);
-
-                if (data.user.role === "admin") {
-                    navigate("/admin"); 
-                } else {
-                    navigate("/profile"); 
-                }
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.user.role)
+            localStorage.setItem("id", data.user.id)
+            //console.log(data.token)
+            if (data.user.role === "admin") {
+                navigate("/admin"); 
             } else {
-                if (response.status === 401) {
-                    setError("Invalid email or password.");
-                } else if (response.status === 403) {
-                    setError("Your account is suspended.");
-                } else {
-                    setError("An error occurred. Please try again.");
-                }
+                navigate("/profile"); 
             }
-        } catch (err) {
+        } else {
+            if (response.status === 401) {
+                setError("Invalid email or password.");
+            } else if (response.status === 403) {
+                setError("Your account is suspended.");
+            } else {
+                setError("An error occurred. Please try again.");
+            }
+        } 
+    }
+        catch (err) {
             setError("An error occurred. Please try again.");
             console.error(err);
         }
