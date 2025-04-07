@@ -6,10 +6,12 @@ import axios from "axios";
 import CreateUserPage from "./CreateUserPage.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
+  //const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
   const token = localStorage.getItem("token"); // Pretpostavljamo da je JWT token pohranjen u localStorage
   // Učitavanje korisnika sa backend-a
   useEffect(() => {
@@ -77,9 +79,10 @@ const AdminDashboard = () => {
       });
   };
 
+  /* ???????
   const toggleCreateUserPage = () => {
     setIsCreateUserPageVisible(!isCreateUserPageVisible);
-  };
+  };*/
 
   return (
     <Layout>
@@ -127,7 +130,6 @@ const AdminDashboard = () => {
               ))}
             </tbody>
           </table>
-          {isCreateUserPageVisible && <CreateUserPage />}
         </div>
       </div>
     </Layout>
