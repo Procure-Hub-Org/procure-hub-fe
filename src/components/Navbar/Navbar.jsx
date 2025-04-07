@@ -5,31 +5,46 @@ import { isAuthenticated, isAdmin } from "../../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const loggedIn = isAuthenticated(); 
+  const loggedIn = isAuthenticated();
   const adminUser = isAdmin();
   return (
-    <AppBar position="static" sx={{ background: "#14110F", width: "100%", boxSizing: "border-box" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-        <Typography onClick={() => navigate("/")} variant="h4" sx={{ 
-                    color: "#E3B34B", 
-                    fontFamily: "Montserrat, sans-serif",
-                    cursor: "pointer",
-                    "&:hover": {
-                      opacity: 0.8,
-                    } }}>
+    <AppBar
+      position="static"
+      sx={{ background: "#14110F", width: "100%", boxSizing: "border-box" }}
+    >
+      <Toolbar
+        sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
+      >
+        <Typography
+          onClick={() => navigate("/")}
+          variant="h4"
+          sx={{
+            color: "#E3B34B",
+            fontFamily: "Montserrat, sans-serif",
+            cursor: "pointer",
+            "&:hover": {
+              opacity: 0.8,
+            },
+          }}
+        >
           ProcureHub
         </Typography>
         {!loggedIn && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-            <BasicButton onClick={() => navigate("/register")}>Register</BasicButton>
+            <BasicButton onClick={() => navigate("/register")}>
+              Register
+            </BasicButton>
             <BasicButton onClick={() => navigate("/login")}>Login</BasicButton>
           </Box>
         )}
         {loggedIn && adminUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-            <BasicButton onClick={() => navigate("/profile")}>Profile</BasicButton>
-            <BasicButton onClick={() => navigate("/admin")}>Dashboard</BasicButton>
-            <BasicButton onClick={() => navigate("/create-user")}>Create User</BasicButton>
+            <BasicButton onClick={() => navigate("/profile")}>
+              Profile
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/admin")}>
+              Dashboard
+            </BasicButton>
             {/* <BasicButton onClick={() => {
               localStorage.removeItem("token");
               localStorage.removeItem("role")
@@ -39,7 +54,9 @@ const Navbar = () => {
         )}
         {loggedIn && !adminUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-            <BasicButton onClick={() => navigate("/profile")}>Profile</BasicButton>
+            <BasicButton onClick={() => navigate("/profile")}>
+              Profile
+            </BasicButton>
           </Box>
         )}
       </Toolbar>
@@ -48,4 +65,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
