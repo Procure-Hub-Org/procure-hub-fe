@@ -12,6 +12,7 @@ import Navbar from "./Navbar/Navbar";
 import SideBar from "./SideBar/SideBar";
 import NotificationToast from "./Notifications/NotificationToast";
 import CustomPagination from "./Pagination/CustomPagination";
+import ConfirmModal from "./Modal/ConfirmModal";
 
 //added customized components for preview testing
 const PreviewComponent = () => {
@@ -48,6 +49,21 @@ const PreviewComponent = () => {
   // Function to handle opening and closing of the sidebar
   const toggleSidebar = () => {
     setOpenSidebar(!openSidebar);
+  };
+
+  const [modalOpen, setModalOpen] = useState(false); // Open/close modal
+
+  //Modal function of confirmation
+  const handleConfirm = () => {
+    console.log("User confirmed the action!");
+  };
+
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
   };
 
   return (
@@ -116,7 +132,15 @@ const PreviewComponent = () => {
         page={1}
         onChange={(e, p) => console.log("Page:", p)}
       />
-      ;
+      ;{/* Button for opening modal windonw */}
+      <PrimaryButton onClick={openModal}>Open Modal</PrimaryButton>
+      {/* Modal */}
+      <ConfirmModal
+        open={modalOpen}
+        onClose={closeModal} // Funkcija koja zatvara modal
+        message="Do you want to proceed with this action?"
+        onConfirm={handleConfirm} // Funkcija koja se poziva kada korisnik klikne Yes
+      />
     </div>
   );
 };
