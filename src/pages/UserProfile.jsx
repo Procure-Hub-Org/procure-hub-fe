@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
-import { AppBar, IconButton} from "@mui/material";
-import {
-  Container,
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  FormHelperText,
-} from "@mui/material";
-import axios from "axios";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack"; 
-import { useNavigate } from "react-router-dom"; 
+import { Card, CardContent, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
+import axios from "axios";
+import BasicButton from "../components/Button/BasicButton";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Layout from "../components/Layout/Layout";
+import "../styles/UserProfile.css";
 
 function UserProfile() {
   const isLoggedIn = isAuthenticated();
@@ -21,6 +16,11 @@ function UserProfile() {
     window.location.href = "/login";
     return;
   }
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
   const [userData, setUserData] = useState({
     first_name: "",
     last_name: "",
@@ -32,32 +32,36 @@ function UserProfile() {
     address: "",
     company_address: "",
     bio: "",
-    profile_picture: null,
-    company_picture: null,
+    profile_picture: "",
+    company_picture: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const fetchUserData = async () => {
+    console.log("fetcha");
     setIsLoading(true);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const resData = await response.json();
       setUserData(resData.user);
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     } finally {
       setIsLoading(false);
+      console.log("NE fetcha");
     }
   };
 
-  // 2️⃣ Then use it inside useEffect
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -73,15 +77,10 @@ function UserProfile() {
   };
 
   const handleFileChange = async (e) => {
+    console.log(e.target.files);
     const { name, files } = e.target;
-    console.log(name);
-    console.log(files);
-    // setUserData({
-    //   ...userData,
-    //   [name]: files[0],
-    // });
     const formData = new FormData();
-    formData.append(name, files[0]); // the file from input
+    formData.append(name, files[0]);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
@@ -89,17 +88,12 @@ function UserProfile() {
         {
           method: "PUT",
           body: formData,
-          // Do NOT set Content-Type to multipart/form-data manually! Browser will do it
           headers: {
-            Authorization: `Bearer ${token}`, // 🔐 raw token goes here
-            // ⚠️ Don't set Content-Type manually, let the browser handle it with FormData
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
       if (response.ok) {
-        const result = await response.json();
-        console.log("Upload success:", result);
         fetchUserData();
       } else {
         console.error("Upload failed:", response.statusText);
@@ -250,12 +244,10 @@ function UserProfile() {
 
   const validateField = (name, value) => {
     const rules = validationRules[name];
-
     if (!Array.isArray(rules)) {
       console.error(`Validation rules not found for field: ${name}`);
       return "";
     }
-
     for (let rule of rules) {
       if (!rule.test(value)) {
         return rule.message;
@@ -267,44 +259,142 @@ function UserProfile() {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const error = validateField(name, value);
-
     setErrors({
       ...errors,
       [name]: error,
     });
   };
 
-  const navigate = useNavigate();
-    const handleBackClick = () => {
-      navigate(-1);
-    }
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
+    console.log(userData);
+    const userDataToSend = {
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      phone_number: userData.phone_number,
+      address: userData.address,
+      company_name: userData.company_name,
+      bio: userData.bio,
+      company_address: userData.company_address,
+    };
+    console.log(userDataToSend);
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/user/profile/update`,
+        userDataToSend,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("Profile updated successfully!");
+        console.log("Update Response:", response.data);
+      } else {
+        alert("Profile update failed: " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during profile update:", error);
+      if (error.response && error.response.data.error) {
+        alert("Update failed: " + error.response.data.error);
+      } else {
+        alert("An unexpected error occurred while updating profile.");
+      }
+    }
   };
 
   return (
-    <AppBar position="static" sx={{ background: "#14110F" }}>
-       <IconButton edge="start" color="inherit" onClick={handleBackClick} sx={{ paddingRight: 1 }}>
-          <ArrowBackIcon />
-        </IconButton>
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-      }}
-    >
-      <Container maxWidth="sm">
-        <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
-          <CardContent>
-            <Typography variant="h5" gutterBottom align="center">
-              User Profile
-            </Typography>
-            {true && (
-              <form onSubmit={handleSubmit}>
+    <Layout>
+      <Card
+        sx={{
+          width: "50%",
+          padding: 3,
+          boxShadow: 3,
+          borderRadius: 2,
+          display: "flex",
+          flexWrap: "wrap",
+        }}
+      >
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "1rem",
+              }}
+            >
+              <div className="flex-item">
+                <div className="flex-column-center">
+                  <p>Profile Picture</p>
+                  {!isLoading && (
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 233,
+                        width: 350,
+                        maxHeight: { xs: 233, md: 167 },
+                        maxWidth: { xs: 350, md: 250 },
+                      }}
+                      alt="Profile picture."
+                      src={`${import.meta.env.VITE_API_URL}/${
+                        userData.profile_picture
+                      }`}
+                    />
+                  )}
+                  <BasicButton
+                    component="label"
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload new
+                    <input
+                      name="profile_picture"
+                      type="file"
+                      className="visually-hidden-input"
+                      onChange={handleFileChange}
+                    />
+                  </BasicButton>
+                </div>
+              </div>
+
+              <div className="flex-item">
+                <div className="flex-column-center">
+                  <p>Company Logo</p>
+                  {!isLoading && (
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 233,
+                        width: 350,
+                        maxHeight: { xs: 233, md: 167 },
+                        maxWidth: { xs: 350, md: 250 },
+                      }}
+                      alt="Company logo."
+                      src={`${import.meta.env.VITE_API_URL}/${
+                        userData.company_logo
+                      }`}
+                    />
+                  )}
+                  <BasicButton
+                    startIcon={<CloudUploadIcon />}
+                    component="label"
+                  >
+                    Upload new
+                    <input
+                      name="company_logo"
+                      type="file"
+                      className="visually-hidden-input"
+                      onChange={handleFileChange}
+                    />
+                  </BasicButton>
+                </div>
+              </div>
+
+              <div className="flex-item">
                 <CustomTextField
                   label="First Name"
                   name="first_name"
@@ -315,6 +405,9 @@ function UserProfile() {
                   error={!!errors.first_name}
                   helperText={errors.first_name}
                 />
+              </div>
+
+              <div className="flex-item">
                 <CustomTextField
                   label="Last Name"
                   name="last_name"
@@ -325,6 +418,8 @@ function UserProfile() {
                   error={!!errors.last_name}
                   helperText={errors.last_name}
                 />
+              </div>
+              <div className="flex-item">
                 <CustomTextField
                   label="Email"
                   name="email"
@@ -332,42 +427,24 @@ function UserProfile() {
                   value={userData.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  required
-                  error={!!errors.email}
-                  helperText={errors.email}
+                  disabled={true}
                 />
-                {/* <CustomTextField
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={userData.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  error={!!errors.password}
-                  helperText={errors.password}
-                /> */}
+              </div>
+              <div className="flex-item">
                 <CustomTextField
                   label="Role"
                   name="role"
-                  value={userData.role}
+                  value={
+                    // role first letter uppercase, unclean to do it here...
+                    userData.role.charAt(0).toUpperCase() +
+                    userData.role.slice(1)
+                  }
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  // required
-                  // error={!!errors.role}
-                  // helperText={errors.role}
                   disabled={true}
                 />
-                <CustomTextField
-                  label="Company Name"
-                  name="company_name"
-                  value={userData.company_name}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                  error={!!errors.company_name}
-                  helperText={errors.company_name}
-                />
+              </div>
+              <div className="flex-item">
                 <CustomTextField
                   label="Phone Number"
                   name="phone_number"
@@ -378,6 +455,8 @@ function UserProfile() {
                   error={!!errors.phone_number}
                   helperText={errors.phone_number}
                 />
+              </div>
+              <div className="flex-item">
                 <CustomTextField
                   label="Address"
                   name="address"
@@ -388,6 +467,20 @@ function UserProfile() {
                   error={!!errors.address}
                   helperText={errors.address}
                 />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Company Name"
+                  name="company_name"
+                  value={userData.company_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.company_name}
+                  helperText={errors.company_name}
+                />
+              </div>
+              <div className="flex-item">
                 <CustomTextField
                   label="Company Address"
                   name="company_address"
@@ -398,66 +491,24 @@ function UserProfile() {
                   error={!!errors.company_address}
                   helperText={errors.company_address}
                 />
-                <CustomTextField
-                  label="Bio"
-                  name="bio"
-                  value={userData.bio !== null ? userData.bio : ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={!!errors.bio}
-                  helperText={errors.bio}
-                  multiline
-                  rows={4}
-                />
+              </div>
+            </div>
 
-                <div>
-                  <label>Profile Picture</label>
-                  <input
-                    type="file"
-                    name="profile_picture"
-                    onChange={handleFileChange}
-                  />
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 233,
-                      width: 350,
-                      maxHeight: { xs: 233, md: 167 },
-                      maxWidth: { xs: 350, md: 250 },
-                    }}
-                    alt="Profile picture."
-                    src={`${import.meta.env.VITE_API_URL}/${userData.profile_picture}`}
-                  />
-                </div>
-                <div>
-                  <label>Company Logo</label>
-                  <input
-                    type="file"
-                    name="company_logo"
-                    onChange={handleFileChange}
-                  />
-                  <Box
-                    component="img"
-                    sx={{
-                      height: 233,
-                      width: 350,
-                      maxHeight: { xs: 233, md: 167 },
-                      maxWidth: { xs: 350, md: 250 },
-                    }}
-                    alt="Company logo."
-                    src={`${import.meta.env.VITE_API_URL}/${userData.company_logo}`}
-                  />
-                </div>
-                <PrimaryButton type="submit" fullWidth>
-                  Save Profile Info
-                </PrimaryButton>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-      </Container>
-    </Box>
-    </AppBar>
+            <CustomTextField
+              label="Bio"
+              name="bio"
+              value={userData.bio !== null ? userData.bio : ""}
+              onChange={handleChange}
+              multiline
+              rows={4}
+            />
+            <PrimaryButton type="submit" fullWidth>
+              Save Profile Info
+            </PrimaryButton>
+          </form>
+        </CardContent>
+      </Card>
+    </Layout>
   );
 }
 
