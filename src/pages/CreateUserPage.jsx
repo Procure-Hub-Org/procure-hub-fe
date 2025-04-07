@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
-import { Container, Card, CardContent, Typography, Box, FormHelperText } from "@mui/material";
+import { Container, Card, CardContent, Typography, Box, FormHelperText, AppBar } from "@mui/material";
 import axios from 'axios';
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated, isAdmin } from "../utils/auth";
@@ -18,6 +18,7 @@ const CreateUserPage = () => {
     }
     return;
   }
+  const token = localStorage.getItem("token");
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -159,9 +160,11 @@ const CreateUserPage = () => {
     console.log("Sending user data:", userData);
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/register`, userData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/admin/create-user`,
+      userData, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
       });
 
@@ -192,6 +195,8 @@ const CreateUserPage = () => {
 
   return (
     <Layout>
+      <AppBar position="static" sx={{ background: "#14110F" }}>
+
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
         <Container maxWidth="sm">
           <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
@@ -316,6 +321,7 @@ const CreateUserPage = () => {
           </Card>
         </Container>
       </Box>
+      </AppBar>
     </Layout>
   );
 };
