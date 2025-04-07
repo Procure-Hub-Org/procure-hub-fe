@@ -20,7 +20,7 @@ const Login = () => {
         e.preventDefault();
 
         if (!email || !password) {
-            setError("Unesite email i lozinku.");
+            setError("Enter email and password.");
             return;
         }
 
@@ -46,15 +46,15 @@ const Login = () => {
                 }
             } else {
                 if (response.status === 401) {
-                    setError("Pogrešan email ili lozinka.");
+                    setError("Invalid email or password.");
                 } else if (response.status === 403) {
-                    setError("Vaš nalog je suspendovan.");
+                    setError("Your account is suspended.");
                 } else {
-                    setError("Greška prilikom prijave.");
+                    setError("An error occurred. Please try again.");
                 }
             }
         } catch (err) {
-            setError("Greška na serveru. Pokušajte ponovo kasnije.");
+            setError("An error occurred. Please try again.");
             console.error(err);
         }
     };
