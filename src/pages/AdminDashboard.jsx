@@ -3,15 +3,17 @@ import BasicButton from "../components/Button/BasicButton";
 import "../styles/Admin.css";
 import PrimaryButton from "../components/Button/PrimaryButton.jsx";
 import axios from "axios";
-import CreateUserPage   from "./CreateUserPage.jsx";
+import CreateUserPage from "./CreateUserPage.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
-  const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
-  const token = localStorage.getItem("token");  // Pretpostavljamo da je JWT token pohranjen u localStorage
-    // Učitavanje korisnika sa backend-a
+  //const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
+  const token = localStorage.getItem("token"); // Pretpostavljamo da je JWT token pohranjen u localStorage
+  // Učitavanje korisnika sa backend-a
   useEffect(() => {
     if (!isAdmin()) {
       if (!isAuthenticated()) {
@@ -23,15 +25,15 @@ const AdminDashboard = () => {
     }
 
     axios
-        .get(`${import.meta.env.VITE_API_URL}/api/users`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setUsers(response.data.users);
-        })
-        .catch((error) => {
-          console.error("Error fetching users:", error);
-        });
+      .get(`${import.meta.env.VITE_API_URL}/api/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setUsers(response.data.users);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
   }, [token]);
 
   const handleUpdate = async (id) => {
@@ -65,58 +67,60 @@ const AdminDashboard = () => {
   const handleDelete = (id) => {
     console.log(`Delete user with ID: ${id}`);
     axios
-        .delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setUsers(users.filter(user => user.id !== id)); // Ukloni korisnika iz stanja
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error deleting user:", error);
-        });
+      .delete(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setUsers(users.filter((user) => user.id !== id)); // Ukloni korisnika iz stanja
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+      });
   };
 
   const handleSuspend = (id) => {
     console.log(`Suspend user with ID: ${id}`);
-    axios.patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/suspend`, null,{
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error("Error suspending user:", error);
-    })
+    axios
+      .patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/suspend`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error suspending user:", error);
+      });
   };
   const handleApprove = (id) => {
     console.log(`Approve user with ID: ${id}`);
     axios
-        .patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/approve`, null, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error approving user:", error);
-        });
+      .patch(`${import.meta.env.VITE_API_URL}/api/users/${id}/approve`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error approving user:", error);
+      });
   };
 
-    const toggleCreateUserPage = () => {
-        setIsCreateUserPageVisible(!isCreateUserPageVisible);
-    };
+  /* ???????
+  const toggleCreateUserPage = () => {
+    setIsCreateUserPageVisible(!isCreateUserPageVisible);
+  };*/
 
   return (
     <Layout>
       <div className="dashboard-container">
         <div className="button-container">
-          <PrimaryButton onClick={toggleCreateUserPage}>
+          <PrimaryButton onClick={() => navigate("/create-user")}>
             Create User
           </PrimaryButton>
         </div>
         <div className="panel">
-            <table className="table">
+          <table className="table">
             <thead>
               <tr>
                 <th className="th">ID</th>
@@ -136,16 +140,23 @@ const AdminDashboard = () => {
                   <td className="td">{user.email}</td>
                   <td className="td">{user.role}</td>
                   <td className="td">
-                    <BasicButton onClick={() => handleUpdate(user.id)}>Update</BasicButton>
-                    <BasicButton onClick={() => handleDelete(user.id)}>Delete</BasicButton>
-                    <BasicButton onClick={() => handleSuspend(user.id)}>Suspend</BasicButton>
-                    <BasicButton onClick={() => handleApprove(user.id)}>Approve</BasicButton>
+                    <BasicButton onClick={() => handleUpdate(user.id)}>
+                      Update
+                    </BasicButton>
+                    <BasicButton onClick={() => handleDelete(user.id)}>
+                      Delete
+                    </BasicButton>
+                    <BasicButton onClick={() => handleSuspend(user.id)}>
+                      Suspend
+                    </BasicButton>
+                    <BasicButton onClick={() => handleApprove(user.id)}>
+                      Approve
+                    </BasicButton>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-            {isCreateUserPageVisible && <CreateUserPage />}
         </div>
       </div>
     </Layout>

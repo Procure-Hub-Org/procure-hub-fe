@@ -52,10 +52,6 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/admin")}>
               Dashboard
             </BasicButton>
-            <BasicButton onClick={() => navigate("/create-user")}>
-              Create User
-            </BasicButton>
-            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
         {loggedIn && !adminUser && (
