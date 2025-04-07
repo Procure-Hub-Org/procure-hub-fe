@@ -36,7 +36,34 @@ const AdminDashboard = () => {
       });
   }, [token]);
 
-  const handleUpdate = (id) => console.log(`Update user with ID: ${id}`);
+  const handleUpdate = async (id) => {
+    console.log(`Update user with ID: ${id}`);
+    try{
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          role: 'toggle',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update user role");
+      }
+
+      const userData = await response.json();
+      console.log("User updated successfully:", userData);
+
+    }
+    catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  };
+  
   const handleDelete = (id) => {
     console.log(`Delete user with ID: ${id}`);
     axios
@@ -108,8 +135,8 @@ const AdminDashboard = () => {
               {users.map((user) => (
                 <tr key={user.id} className="tr">
                   <td className="td">{user.id}</td>
-                  <td className="td">{user.firstName}</td>
-                  <td className="td">{user.lastName}</td>
+                  <td className="td">{user.first_name}</td>
+                  <td className="td">{user.last_name}</td>
                   <td className="td">{user.email}</td>
                   <td className="td">{user.role}</td>
                   <td className="td">

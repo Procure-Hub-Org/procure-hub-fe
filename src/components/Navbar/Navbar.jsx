@@ -7,6 +7,13 @@ const Navbar = () => {
   const navigate = useNavigate();
   const loggedIn = isAuthenticated();
   const adminUser = isAdmin();
+
+  function onClickLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate("/");
+  }
+
   return (
     <AppBar
       position="static"
@@ -45,11 +52,6 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/admin")}>
               Dashboard
             </BasicButton>
-            {/* <BasicButton onClick={() => {
-              localStorage.removeItem("token");
-              localStorage.removeItem("role")
-              navigate("/login")
-            }}>Logout</BasicButton> */}
           </Box>
         )}
         {loggedIn && !adminUser && (
