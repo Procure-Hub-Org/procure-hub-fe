@@ -37,7 +37,7 @@ const AdminDashboard = () => {
   const handleUpdate = async (id) => {
     console.log(`Update user with ID: ${id}`);
     try{
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/update/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
