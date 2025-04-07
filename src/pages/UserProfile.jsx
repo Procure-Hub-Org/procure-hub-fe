@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
-import { AppBar, IconButton } from "@mui/material";
-import { Container, Card, CardContent, Typography, Box } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Card, CardContent, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { isAuthenticated } from "../utils/auth";
 import axios from "axios";
+import BasicButton from "../components/Button/BasicButton";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import Layout from "../components/Layout/Layout";
+import "../styles/UserProfile.css";
 
 function UserProfile() {
   const isLoggedIn = isAuthenticated();
@@ -36,6 +38,7 @@ function UserProfile() {
 
   const [isLoading, setIsLoading] = useState(true);
   const fetchUserData = async () => {
+    console.log("fetcha");
     setIsLoading(true);
     const token = localStorage.getItem("token");
     try {
@@ -55,6 +58,7 @@ function UserProfile() {
       console.error("Failed to fetch user data:", error);
     } finally {
       setIsLoading(false);
+      console.log("NE fetcha");
     }
   };
 
@@ -73,6 +77,7 @@ function UserProfile() {
   };
 
   const handleFileChange = async (e) => {
+    console.log(e.target.files);
     const { name, files } = e.target;
     const formData = new FormData();
     formData.append(name, files[0]);
@@ -286,7 +291,6 @@ function UserProfile() {
           },
         }
       );
-
       if (response.status === 200) {
         alert("Profile updated successfully!");
         console.log("Update Response:", response.data);
@@ -295,7 +299,6 @@ function UserProfile() {
       }
     } catch (error) {
       console.error("Error during profile update:", error);
-
       if (error.response && error.response.data.error) {
         alert("Update failed: " + error.response.data.error);
       } else {
@@ -305,175 +308,207 @@ function UserProfile() {
   };
 
   return (
-    <AppBar position="static" sx={{ background: "#14110F" }}>
-      <IconButton
-        edge="start"
-        color="inherit"
-        onClick={handleBackClick}
-        sx={{ paddingRight: 1 }}
-      >
-        <ArrowBackIcon />
-      </IconButton>
-      <Box
+    <Layout>
+      <Card
         sx={{
+          width: "50%",
+          padding: 3,
+          boxShadow: 3,
+          borderRadius: 2,
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
+          flexWrap: "wrap",
         }}
       >
-        <Container maxWidth="sm">
-          <Card
-            sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}
-          >
-            <CardContent>
-              <Typography variant="h5" gutterBottom align="center">
-                User Profile
-              </Typography>
-              {true && (
-                <form onSubmit={handleSubmit}>
-                  <CustomTextField
-                    label="First Name"
-                    name="first_name"
-                    value={userData.first_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.first_name}
-                    helperText={errors.first_name}
-                  />
-                  <CustomTextField
-                    label="Last Name"
-                    name="last_name"
-                    value={userData.last_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.last_name}
-                    helperText={errors.last_name}
-                  />
-                  <CustomTextField
-                    label="Email"
-                    name="email"
-                    type="email"
-                    value={userData.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={true}
-                  />
-                  <CustomTextField
-                    label="Role"
-                    name="role"
-                    value={userData.role}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    disabled={true}
-                  />
-                  <CustomTextField
-                    label="Company Name"
-                    name="company_name"
-                    value={userData.company_name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.company_name}
-                    helperText={errors.company_name}
-                  />
-                  <CustomTextField
-                    label="Phone Number"
-                    name="phone_number"
-                    value={userData.phone_number}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.phone_number}
-                    helperText={errors.phone_number}
-                  />
-                  <CustomTextField
-                    label="Address"
-                    name="address"
-                    value={userData.address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.address}
-                    helperText={errors.address}
-                  />
-                  <CustomTextField
-                    label="Company Address"
-                    name="company_address"
-                    value={userData.company_address}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    required
-                    error={!!errors.company_address}
-                    helperText={errors.company_address}
-                  />
-                  <CustomTextField
-                    label="Bio"
-                    name="bio"
-                    value={userData.bio !== null ? userData.bio : ""}
-                    onChange={handleChange}
-                    multiline
-                    rows={4}
-                  />
-
-                  <div>
-                    <label>Profile Picture</label>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "1rem",
+              }}
+            >
+              <div className="flex-item">
+                <div className="flex-column-center">
+                  <p>Profile Picture</p>
+                  {!isLoading && (
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 233,
+                        width: 350,
+                        maxHeight: { xs: 233, md: 167 },
+                        maxWidth: { xs: 350, md: 250 },
+                      }}
+                      alt="Profile picture."
+                      src={`${import.meta.env.VITE_API_URL}/${
+                        userData.profile_picture
+                      }`}
+                    />
+                  )}
+                  <BasicButton
+                    component="label"
+                    startIcon={<CloudUploadIcon />}
+                  >
+                    Upload new
                     <input
-                      type="file"
                       name="profile_picture"
-                      onChange={handleFileChange}
-                    />
-                    {!isLoading && (
-                      <Box
-                        component="img"
-                        sx={{
-                          height: 233,
-                          width: 350,
-                          maxHeight: { xs: 233, md: 167 },
-                          maxWidth: { xs: 350, md: 250 },
-                        }}
-                        alt="Profile picture."
-                        src={`${import.meta.env.VITE_API_URL}/${
-                          userData.profile_picture
-                        }`}
-                      />
-                    )}
-                  </div>
-                  <div>
-                    <label>Company Logo</label>
-                    <input
                       type="file"
-                      name="company_logo"
+                      className="visually-hidden-input"
                       onChange={handleFileChange}
                     />
-                    {!isLoading && (
-                      <Box
-                        component="img"
-                        sx={{
-                          height: 233,
-                          width: 350,
-                          maxHeight: { xs: 233, md: 167 },
-                          maxWidth: { xs: 350, md: 250 },
-                        }}
-                        alt="Company logo."
-                        src={`${import.meta.env.VITE_API_URL}/${
-                          userData.company_logo
-                        }`}
-                      />
-                    )}
-                  </div>
-                  <PrimaryButton type="submit" fullWidth>
-                    Save Profile Info
-                  </PrimaryButton>
-                </form>
-              )}
-            </CardContent>
-          </Card>
-        </Container>
-      </Box>
-    </AppBar>
+                  </BasicButton>
+                </div>
+              </div>
+
+              <div className="flex-item">
+                <div className="flex-column-center">
+                  <p>Company Logo</p>
+                  {!isLoading && (
+                    <Box
+                      component="img"
+                      sx={{
+                        height: 233,
+                        width: 350,
+                        maxHeight: { xs: 233, md: 167 },
+                        maxWidth: { xs: 350, md: 250 },
+                      }}
+                      alt="Company logo."
+                      src={`${import.meta.env.VITE_API_URL}/${
+                        userData.company_logo
+                      }`}
+                    />
+                  )}
+                  <BasicButton
+                    startIcon={<CloudUploadIcon />}
+                    component="label"
+                  >
+                    Upload new
+                    <input
+                      name="company_logo"
+                      type="file"
+                      className="visually-hidden-input"
+                      onChange={handleFileChange}
+                    />
+                  </BasicButton>
+                </div>
+              </div>
+
+              <div className="flex-item">
+                <CustomTextField
+                  label="First Name"
+                  name="first_name"
+                  value={userData.first_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.first_name}
+                  helperText={errors.first_name}
+                />
+              </div>
+
+              <div className="flex-item">
+                <CustomTextField
+                  label="Last Name"
+                  name="last_name"
+                  value={userData.last_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.last_name}
+                  helperText={errors.last_name}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={userData.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={true}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Role"
+                  name="role"
+                  value={
+                    // role first letter uppercase, unclean to do it here...
+                    userData.role.charAt(0).toUpperCase() +
+                    userData.role.slice(1)
+                  }
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  disabled={true}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Phone Number"
+                  name="phone_number"
+                  value={userData.phone_number}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.phone_number}
+                  helperText={errors.phone_number}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Address"
+                  name="address"
+                  value={userData.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.address}
+                  helperText={errors.address}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Company Name"
+                  name="company_name"
+                  value={userData.company_name}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.company_name}
+                  helperText={errors.company_name}
+                />
+              </div>
+              <div className="flex-item">
+                <CustomTextField
+                  label="Company Address"
+                  name="company_address"
+                  value={userData.company_address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                  error={!!errors.company_address}
+                  helperText={errors.company_address}
+                />
+              </div>
+            </div>
+
+            <CustomTextField
+              label="Bio"
+              name="bio"
+              value={userData.bio !== null ? userData.bio : ""}
+              onChange={handleChange}
+              multiline
+              rows={4}
+            />
+            <PrimaryButton type="submit" fullWidth>
+              Save Profile Info
+            </PrimaryButton>
+          </form>
+        </CardContent>
+      </Card>
+    </Layout>
   );
 }
 
