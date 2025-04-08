@@ -17,9 +17,12 @@
 }
 
 .logo {
-  width: 200px;
-  margin-bottom: 20px;
+  width: 100%;       /* Make the logo take up the full width of the container */
+  height: auto;      /* Maintain aspect ratio */
+  margin: 0 auto 20px; /* Center it horizontally and give bottom margin */
+  display: block;    /* Ensure it's treated as a block element for centering */
 }
+
 
 h1 {
   font-size: 3rem;

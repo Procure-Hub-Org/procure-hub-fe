@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/Home.css";
-import logo from "../assets/procure-hub.png";
+import logo from "/procure-hub-logo/svg/logo-no-background.svg";
 import Navbar from "../components/Navbar/Navbar";
 
 function Home() {
@@ -8,8 +8,7 @@ function Home() {
     <>
       <Navbar />
       <div className="home">
-        <h1>Welcome to ProcureHub</h1>
-        <img src={logo} alt="ProcureHub Logo" className="logo" />
+        <img src={logo} alt="ProcureHub Logo" className="logo" viewBox="0 0 200 200"/>
       </div>
     </>
   );

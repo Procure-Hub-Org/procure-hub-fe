@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated } from "../utils/auth";
 import PrimaryButton from "../components/Button/PrimaryButton";
+import CustomInput from "../components/Input/CustomInput";  
 
 const Login = () => {
   const isLoggedIn = isAuthenticated();

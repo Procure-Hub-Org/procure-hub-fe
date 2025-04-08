@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useTheme } from "@mui/system";
 
-const BasicButton = ({ children, onClick }) => {
+const BasicButton = ({ children, onClick, color, ...props }) => {
   const theme = useTheme();
 
   return (
@@ -13,12 +13,13 @@ const BasicButton = ({ children, onClick }) => {
         fontWeight: theme.typography.button.fontWeight,
         fontSize: theme.typography.button.fontSize,
         textTransform: "none",
-        color: theme.palette.primary.contrastText,
+        color: color || theme.palette.primary.contrastText, // Use passed color or default to theme's contrastText
         "&:hover": {
           backgroundColor: theme.palette.primary.light,
         },
       }}
       onClick={onClick}
+      {...props}
     >
       {children}
     </Button>
