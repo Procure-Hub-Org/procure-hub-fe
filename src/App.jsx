@@ -1,21 +1,20 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import RegisterPage from './pages/RegisterPage';
-import UserProfile from './pages/UserProfile';
-import PreviewComponent from "./components/PreviewComponent"
-import AdminDashboard from "./pages/AdminDashboard"
-import CreateUserPage from "./pages/CreateUserPage"
-import AuthenticatedRoute from './components/Middleware/AuthenticatedRoute';
-import UnauthenticatedRoute from './components/Middleware/UnauthenticatedRoute';
-import AdminRoute from './components/Middleware/AdminRoute';
-
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import RegisterPage from "./pages/RegisterPage";
+import UserProfile from "./pages/UserProfile";
+import PreviewComponent from "./components/PreviewComponent";
+import AdminDashboard from "./pages/AdminDashboard";
+import CreateUserPage from "./pages/CreateUserPage";
+import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
+import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
+import AdminRoute from "./components/Middleware/AdminRoute";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home/>} />
+      <Route path="/" element={<Home />} />
       <Route
         path="/login"
         element={

@@ -16,10 +16,7 @@ const Navbar = () => {
   }
 
   return (
-    <AppBar
-      position="static"
-      sx={{ background: "#14110F", width: "100%", boxSizing: "border-box" }}
-    >
+    <AppBar position="static" sx={{ width: "100%", boxSizing: "border-box" }}>
       <Toolbar
         sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
       >
@@ -27,8 +24,6 @@ const Navbar = () => {
           onClick={() => navigate("/")}
           variant="h4"
           sx={{
-            color: "#E3B34B",
-            fontFamily: "Montserrat, sans-serif",
             cursor: "pointer",
             "&:hover": {
               opacity: 0.8,
