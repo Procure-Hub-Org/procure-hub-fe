@@ -1,3 +1,6 @@
+//this file contains every component avaliable to preview
+//it will be updated with "HOW TO" and comments on usage of each component
+
 import React, { useState } from "react";
 import PrimaryButton from "./Button/PrimaryButton";
 import SecondaryButton from "./Button/SecondaryButton";

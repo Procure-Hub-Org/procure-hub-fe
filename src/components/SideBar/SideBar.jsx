@@ -13,8 +13,8 @@ const Sidebar = ({ open, onClose }) => {
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           width: "240px", // Ensuring the paper takes the same width
-          backgroundColor: "#14110F", // Dark background like the homepage
-          color: "#E3B34B", // Text color to match UI theme
+          //backgroundColor: "#14110F", // Dark background like the homepage
+          //color: "#E3B34B", // Text color to match UI theme
           paddingTop: 2,
           display: "flex",
           flexDirection: "column", // Make sure the content is in a column layout
@@ -23,6 +23,8 @@ const Sidebar = ({ open, onClose }) => {
         },
       }}
     >
+      {/*ADD WHATEVER YOU NEED HERE FOR FILTERS, INSTEAD OF CODE UNDER THIS*/}
+
       <Box sx={{ flexGrow: 1 }}>
         <List>
           {/* Replace ListItem with BasicButton for consistent styling */}

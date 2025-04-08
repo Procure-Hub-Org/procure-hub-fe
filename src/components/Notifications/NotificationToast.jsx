@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Snackbar, Box, Typography } from "@mui/material";
+import { useTheme } from "@mui/system";
 
 const NotificationToast = ({ message, autoHideDuration }) => {
+  const theme = useTheme();
+
   const [open, setOpen] = useState(false); // State to control visibility of the toast
 
   // Show toast when the component is mounted
@@ -24,10 +27,10 @@ const NotificationToast = ({ message, autoHideDuration }) => {
     >
       <Box
         sx={{
-          backgroundColor: "#E3B34B", // Adjusting color to fit UI theme
+          backgroundColor: theme.palette.info.main, // Adjusting color to fit UI theme
           padding: "8px 16px",
           borderRadius: "8px",
-          color: "#14110F", // Text color (matches background color of home)
+          color: theme.palette.primary.main, // Text color (matches background color of home)
           fontFamily: '"Montserrat", sans-serif',
           display: "flex",
           alignItems: "center",

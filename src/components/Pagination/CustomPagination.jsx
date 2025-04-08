@@ -18,17 +18,17 @@ const CustomPagination = ({ count, page, onChange }) => {
         onChange={onChange}
         sx={{
           "& .MuiPaginationItem-root": {
-            color: "#E3B34B", // Zlatna boja za tekst
+            //color: "#E3B34B", // Zlatna boja za tekst
             borderRadius: "4px", // Zaobljeni kutovi
             fontFamily: '"Montserrat", sans-serif', // Korištenje istog fonta
             fontWeight: "bold", // Deblji font za bolje isticanje
           },
           "& .MuiPaginationItem-root.Mui-selected": {
-            backgroundColor: "#E3B34B", // Zlatna boja kada je selektovano
+            //backgroundColor: "#E3B34B", // Zlatna boja kada je selektovano
             color: "#14110F", // Tamni tekst kada je selektovano
           },
           "& .MuiPaginationItem-ellipsis": {
-            color: "#E3B34B", // Zlatna boja za elipsu (tri tačke)
+            //color: "#E3B34B", // Zlatna boja za elipsu (tri tačke)
           },
           "& .MuiPagination-ul": {
             padding: 0,
