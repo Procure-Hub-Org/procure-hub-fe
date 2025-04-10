@@ -7,9 +7,11 @@ import CreateUserPage from "./CreateUserPage.jsx";
 import Layout from "../components/Layout/Layout.jsx";
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/system";
 
 
 const AdminDashboard = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   //const [isCreateUserPageVisible, setIsCreateUserPageVisible] = useState(false); // Za kreiranje novog korisnika
@@ -156,18 +158,21 @@ const AdminDashboard = () => {
                   <td className="td">{user.role}</td>
                   <td className="td">{user.status}</td>
                   <td className="td">
-                    <BasicButton onClick={() => handleUpdate(user.id)}>
-                      Update
-                    </BasicButton>
-                    <BasicButton onClick={() => handleDelete(user.id)}>
-                      Delete
-                    </BasicButton>
-                    <BasicButton onClick={() => handleSuspend(user.id)}>
-                      Suspend
-                    </BasicButton>
-                    <BasicButton onClick={() => handleApprove(user.id)}>
-                      Approve
-                    </BasicButton>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                      <PrimaryButton onClick={() => handleUpdate(user.id)}>
+                        Update
+                      </PrimaryButton>
+                      <PrimaryButton onClick={() => handleDelete(user.id)}>
+                        Delete
+                      </PrimaryButton>
+                      <PrimaryButton onClick={() => handleSuspend(user.id)}>
+                        Suspend
+                      </PrimaryButton>
+                      <PrimaryButton onClick={() => handleApprove(user.id)}>
+                        Approve
+                      </PrimaryButton>
+                  </div>
+
                   </td>
                 </tr>
               ))}

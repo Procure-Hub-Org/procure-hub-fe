@@ -1,8 +1,8 @@
-/*import React from 'react';
-import { Button } from '@mui/material';
-import { useTheme } from '@mui/system';
+import React from "react";
+import { Button } from "@mui/material";
+import { useTheme } from "@mui/system";
 
-const BasicButton = ({ children, onClick }) => {
+const BasicButton = ({ children, onClick, color, ...props }) => {
   const theme = useTheme();
 
   return (
@@ -12,21 +12,22 @@ const BasicButton = ({ children, onClick }) => {
         fontFamily: theme.typography.button.fontFamily,
         fontWeight: theme.typography.button.fontWeight,
         fontSize: theme.typography.button.fontSize,
-        textTransform: 'none',
-        color: theme.palette.primary.main,
-        '&:hover': {
+        textTransform: "none",
+        color: color || theme.palette.primary.contrastText, // Use passed color or default to theme's contrastText
+        "&:hover": {
           backgroundColor: theme.palette.primary.light,
         },
       }}
       onClick={onClick}
+      {...props}
     >
       {children}
     </Button>
   );
 };
 
-export default BasicButton;*/
-
+export default BasicButton;
+/*
 import React from 'react';
 import { Button } from '@mui/material';
 
@@ -55,3 +56,4 @@ const BasicButton = ({ children, onClick, ...props }) => {
 };
 
 export default BasicButton;
+*/

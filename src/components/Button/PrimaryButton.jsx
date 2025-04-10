@@ -14,7 +14,7 @@ const PrimaryButton = ({ children, type, ...props }) => {
         fontWeight: theme.typography.button.fontWeight,
         fontSize: theme.typography.button.fontSize,
         textTransform: 'none', // prevent uppercase transformation
-        padding: '12px 18px',
+        padding: '6px 14px',
         borderRadius: '4px',
         boxShadow: 3,
         '&:hover': {

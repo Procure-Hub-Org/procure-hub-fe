@@ -14,8 +14,11 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated } from "../utils/auth";
+import { useTheme } from "@mui/system";
 
 const RegisterPage = () => {
+  const theme = useTheme();
+
   const isLoggedIn = isAuthenticated();
   if (isLoggedIn) {
     window.location.href = "/";
@@ -289,7 +292,10 @@ const RegisterPage = () => {
 
   return (
     <Layout>
-      <AppBar position="static" sx={{ background: "#14110F" }}>
+      <AppBar
+        position="static"
+        sx={{ background: theme.palette.background.default }}
+      >
         <Box
           sx={{
             display: "flex",
