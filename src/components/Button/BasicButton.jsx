@@ -13,8 +13,7 @@ const BasicButton = ({ children, onClick, color, ...props }) => {
         fontWeight: theme.typography.button.fontWeight,
         fontSize: theme.typography.button.fontSize,
         textTransform: "none",
-        //dont know why but it works
-        // color: color || theme.palette.primary.contrastText, // Use passed color or default to theme's contrastText
+        color: color || theme.palette.primary.contrastText, // Use passed color or default to theme's contrastText
         "&:hover": {
           backgroundColor: theme.palette.primary.light,
         },
