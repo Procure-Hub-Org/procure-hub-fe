@@ -1,0 +1,52 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+.dashboard-layout{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+}
+
+.left-column {
+    padding: 2rem;
+    background-color: #242424;
+    height: calc(100vh - 64px); 
+}
+
+
+
+.dashboard-container {
+    padding: 2rem;
+    display: flex;
+    width: 90vw;
+    background-color: #f4f4f4;
+    height: calc(100vh - 64px); 
+}
+
+.dashboard-main {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.item-card {
+    width: 80vw;
+    background-color: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
