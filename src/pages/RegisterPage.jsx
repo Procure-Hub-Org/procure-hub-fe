@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
@@ -37,7 +37,27 @@ const RegisterPage = () => {
     company_address: "",
   });
 
+  const [buyerTypes, setBuyerTypes] = useState([]);
+  const [selectedBuyerType, setSelectedBuyerType] = useState("");
+  const [customBuyerType, setCustomBuyerType] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const fetchBuyerTypes = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`
+        );
+        setBuyerTypes(response.data);
+      } catch (error) {
+        console.error("Failed to fetch buyer types:", error);
+      }
+    };
+
+    if (formData.role === "buyer") {
+      fetchBuyerTypes();
+    }
+  }, [formData.role]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -217,17 +237,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Form is being submitted...");
-
-    const newErrors = {};
-    Object.keys(formData).forEach((field) => {
-      const error = validateField(field, formData[field]);
-      if (error) newErrors[field] = error;
-    });
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) return;
-
+  
     const registrationData = {
       first_name: formData.first_name,
       last_name: formData.last_name,
@@ -238,10 +248,36 @@ const RegisterPage = () => {
       phone_number: formData.phone_number,
       address: formData.address,
       company_address: formData.company_address,
+      buyer_type: selectedBuyerType
     };
-
+  
+    if (selectedBuyerType === "Other" && customBuyerType) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`,
+          { name: customBuyerType }
+        );
+        registrationData.buyer_type = customBuyerType;
+      } catch (error) {
+        alert("Failed to save custom buyer type");
+        return;
+      }
+    } else if (selectedBuyerType) {
+      registrationData.buyer_type = selectedBuyerType;
+    }
+  
+    const newErrors = {};
+    Object.keys(formData).forEach((field) => {
+      const error = validateField(field, formData[field]);
+      if (error) newErrors[field] = error;
+    });
+  
+    setErrors(newErrors);
+  
+    if (Object.keys(newErrors).length > 0) return;
+  
     console.log("Sending registration data:", registrationData);
-
+  
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/user/register`,
@@ -252,7 +288,7 @@ const RegisterPage = () => {
           },
         }
       );
-
+  
       if (response.status === 201) {
         alert("Registration Successful!");
         console.log("Server Response:", response.data);
@@ -262,33 +298,24 @@ const RegisterPage = () => {
       }
     } catch (error) {
       console.error("Error during registration:", error);
-
+  
       if (error.response && error.response.data.error) {
-        // Ako je greška "Email already registered"
         if (error.response.data.error === "Email already registered") {
           setErrors((prevErrors) => ({
             ...prevErrors,
             email: "Email is already registered. Please use a different email.",
           }));
         } else {
-          alert(
-            "An error occurred during registration: " +
-              error.response.data.error
-          );
+          alert("An error occurred during registration: " + error.response.data.error);
         }
       } else {
         alert("An error occurred during registration");
       }
     }
   };
+  
 
   const navigate = useNavigate();
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-  const handleHomeClick = () => {
-    navigate("/");
-  };
 
   return (
     <Layout>
@@ -380,6 +407,33 @@ const RegisterPage = () => {
                     error={!!errors.role}
                     helperText={errors.role}
                   />
+                  {formData.role === "buyer" && (
+                    <>
+                      <CustomSelect
+                        label="Buyer Type"
+                        name="buyer_type"
+                        value={selectedBuyerType}
+                        onChange={(e) => setSelectedBuyerType(e.target.value)}
+                        options={[
+                          ...buyerTypes.map((type) => ({
+                            label: type.name,
+                            value: type.name,
+                          })),
+                          { label: "Other", value: "Other" },
+                        ]}
+                      />
+                      {selectedBuyerType === "Other" && (
+                        <CustomTextField
+                          label="Enter Custom Buyer Type"
+                          name="custom_buyer_type"
+                          value={customBuyerType}
+                          onChange={(e) => setCustomBuyerType(e.target.value)}
+                          required
+                        />
+                      )}
+                    </>
+                  )}
+
                   <CustomTextField
                     label="Company Name"
                     name="company_name"
