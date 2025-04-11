@@ -20,13 +20,13 @@ body, html {
 
 
 .dashboard-container {
+    margin-left: 240px; /* Prevent overlap with sidebar */
     padding: 2rem;
     display: flex;
-    width: 90vw;
+    width: calc(100vw - 240px);
     background-color: #f4f4f4;
-    height: calc(100vh - 64px); 
+    height: calc(100vh - 64px);
 }
-
 .dashboard-main {
     flex-grow: 1;
     padding: 2rem;
@@ -41,7 +41,7 @@ body, html {
 }
 
 .item-card {
-    width: 80vw;
+    width: 100%; /* Instead of 80vw */
     background-color: #ffffff;
     padding: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 
-import Sidebar from "../components/Sidebar/Sidebar";
 import OutlinedButton from '../components/Button/OutlinedButton';
 import Layout from "../components/Layout/Layout";
+import FilterSidebar from '../components/Sidebar/FilteSidebar';
 
 import '../styles/SellerDashboard.css';
 
@@ -65,16 +65,9 @@ const SellerDashboard = () => {
     return (
         <Layout>
             <div className='dashboard-layout'>
-
-                <div className="left-column">
-                        <OutlinedButton onClick={() => setSidebarOpen(true)}>
-                            Open Sidebar
-                        </OutlinedButton>
-                    {sidebarOpen && (
-                        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-                    )}
-                </div>
-
+               <div className='left-column'>
+                <FilterSidebar></FilterSidebar>
+               </div>
                 <div className="dashboard-container">
                     <main className="dashboard-main">
                         <h2>Lista procurement requestova</h2>
