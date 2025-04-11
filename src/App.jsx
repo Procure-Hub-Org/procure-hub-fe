@@ -10,6 +10,7 @@ import CreateUserPage from "./pages/CreateUserPage";
 import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
 import AdminRoute from "./components/Middleware/AdminRoute";
+import SellerDashboard from "./pages/SellerDashboard";
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
           <AdminRoute>
             <CreateUserPage />
           </AdminRoute>
+        }
+      />
+      <Route
+        path="/SD"
+        element={
+          <UnauthenticatedRoute>
+            <SellerDashboard />
+          </UnauthenticatedRoute>
         }
       />
     </Routes>
