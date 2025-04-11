@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
+import CustomSelect from "../components/Input/DropdownSelect";
 import { Card, CardContent, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../utils/auth";
+import { isAuthenticated, isBuyer } from "../utils/auth";
 import axios from "axios";
 import BasicButton from "../components/Button/BasicButton";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -13,6 +14,7 @@ import "../styles/UserProfile.css";
 function UserProfile() {
   const isLoggedIn = isAuthenticated();
   if (!isLoggedIn) {
+    ``;
     window.location.href = "/login";
     return;
   }
@@ -36,7 +38,28 @@ function UserProfile() {
     company_picture: "",
   });
 
+  const [buyerType, setBuyerType] = useState("");
+  const [customBuyerType, setCustomBuyerType] = useState("");
+  const [selectedBuyerType, setSelectedBuyerType] = useState("");
+  const [buyerTypes, setBuyerTypes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  if (isBuyer()) {
+    useEffect(() => {
+      const fetchBuyerTypes = async () => {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_API_URL}/api/buyer-types`
+          );
+          setBuyerTypes(response.data);
+        } catch (error) {
+          console.error("Error fetching buyer types:", error);
+        }
+      };
+      fetchBuyerTypes();
+    }, []);
+  }
+
   const fetchUserData = async () => {
     console.log("fetcha");
     setIsLoading(true);
@@ -54,6 +77,8 @@ function UserProfile() {
       );
       const resData = await response.json();
       setUserData(resData.user);
+      setBuyerType(resData.buyer_type.name);
+
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     } finally {
@@ -256,6 +281,19 @@ function UserProfile() {
     return "";
   };
 
+  const handleBuyerTypeChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedBuyerType(selectedValue);
+    setBuyerType(selectedValue);
+    if (selectedValue === "Other") {
+      setBuyerType("");
+    }
+  };
+
+  const handleCustomBuyerTypeChange = (e) => {
+    setCustomBuyerType(e.target.value);
+  };
+
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const error = validateField(name, value);
@@ -268,6 +306,7 @@ function UserProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(userData);
+
     const userDataToSend = {
       first_name: userData.first_name,
       last_name: userData.last_name,
@@ -276,8 +315,57 @@ function UserProfile() {
       company_name: userData.company_name,
       bio: userData.bio,
       company_address: userData.company_address,
+      buyer_type_id: null,
     };
-    console.log(userDataToSend);
+
+    if (selectedBuyerType === "Other" && customBuyerType) {
+      console.log("uslo", customBuyerType);
+      try {
+        let buyerTypeId;
+        const createResponse = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`,
+          { name: customBuyerType }
+        );
+        buyerTypeId = createResponse.data.id;
+
+        userDataToSend.buyer_type_id = buyerTypeId;
+      } catch (error) {
+        alert("Failed to save or update custom buyer type");
+        return;
+      }
+    } else if (selectedBuyerType) {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`
+        );
+        console.log("Response data:", response.data);
+        if (response.data.length > 0) {
+          const buyerType = response.data.find(
+            (type) => type.name === selectedBuyerType
+          );
+          if (buyerType) {
+            userDataToSend.buyer_type_id = buyerType.id;
+          }
+        }
+      } catch (error) {
+        alert("Failed to fetch buyer type");
+        return;
+      }
+    } else {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types?name=${buyerType}`
+        );
+        if (response.data.length > 0) {
+          userDataToSend.buyer_type_id = response.data[0].id;
+        }
+      } catch (error) {
+        alert("Failed to fetch buyer type");
+        return;
+      }
+    }
+
+    console.log("Za slanje", userDataToSend);
 
     try {
       const token = localStorage.getItem("token");
@@ -293,6 +381,7 @@ function UserProfile() {
       );
       if (response.status === 200) {
         alert("Profile updated successfully!");
+
         console.log("Update Response:", response.data);
       } else {
         alert("Profile update failed: " + response.data.message);
@@ -493,6 +582,34 @@ function UserProfile() {
                 />
               </div>
             </div>
+
+            {isBuyer() && (
+              <>
+                <CustomSelect
+                  label="Buyer Type"
+                  name="buyer_type"
+                  value={buyerType}
+                  onChange={handleBuyerTypeChange}
+                  options={[
+                    ...buyerTypes.map((type) => ({
+                      label: type.name,
+                      value: type.name,
+                    })),
+                    { label: "Other", value: "Other" },
+                  ]}
+                />
+
+                {selectedBuyerType === "Other" && (
+                  <CustomTextField
+                    label="Enter Custom Buyer Type"
+                    name="custom_buyer_type"
+                    value={customBuyerType}
+                    onChange={handleCustomBuyerTypeChange}
+                    required
+                  />
+                )}
+              </>
+            )}
 
             <CustomTextField
               label="Bio"
