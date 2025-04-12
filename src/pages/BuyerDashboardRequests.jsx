@@ -9,12 +9,14 @@ import { isAuthenticated, isBuyer } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/system';
 import { idID } from '@mui/material/locale';
+import { set } from 'date-fns';
 
 const BuyerDashboardRequests = () => {
     const theme = useTheme();
     const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
-    const [activeStatus, setActiveStatus] = useState('active');
+    const [filteredRequests, setFilteredRequests] = useState([]);
+    const [activeStatus, setActiveStatus] = useState('');
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -27,20 +29,30 @@ const BuyerDashboardRequests = () => {
             return;
         }
 
-        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement/requests`, { /*obrisi s i dodaj/buyer*/
+        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement-requests/buyer`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((response) => {
                 setRequests(response.data.requests);
+                setActiveStatus('');
+                setFilteredRequests(response.data.requests)
             })
             .catch((error) => {
                 console.error("Error fetching requests:", error);
             });
     }, [token]);
 
-    const filterRequests = requests.filter(
-        (request) => request.status === activeStatus
-    );
+    const toggleActiveStatus = (status) => {
+        setActiveStatus(status);
+        let filterRequests = [];
+        if (status === '') {
+            filterRequests = requests;
+        }
+        else{
+            filterRequests = requests.filter((request) => request.status === status);
+        }
+        setFilteredRequests(filterRequests);
+    }
 
     const handleViewRequest = (id) => {
         console.log(`View request with ID: ${id}`);
@@ -53,6 +65,7 @@ const BuyerDashboardRequests = () => {
     }
 
     const statusButton = [
+        { status: '', label: 'All' },
         { status: 'active', label: 'Active'},
         { status: 'draft', label: 'Draft' },
         { status: 'closed', label: 'Closed'},
@@ -70,8 +83,9 @@ const BuyerDashboardRequests = () => {
                     {statusButton.map(({ status, label }) => (
                     <PrimaryButton
                         key={status}
-                        onClick={() => setActiveStatus(status)}
-                        className={activeStatus === status ? 'bg-blue-700' : ''}
+                        onClick={() => toggleActiveStatus(status)}
+                        disabled={activeStatus === status}
+                        className={activeStatus === status ? 'bg-blue-700 cursor-not-allowed opacity-60' : ''}
                     >
                         {label}
                     </PrimaryButton>
@@ -93,15 +107,17 @@ const BuyerDashboardRequests = () => {
                             <th className="th">Title</th>
                             <th className="th">Description</th>
                             <th className="th">Category</th>
+                            <th className="th">Status</th>
                             <th className="th">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filterRequests.map((request) => (
+                        {filteredRequests.map((request) => (
                             <tr key={request.id} className="tr">
                             <td className="td">{request.title}</td>
-                            <td className="td">{request.desription}</td>
-                            <td className="td">{request.category}</td>
+                            <td className="td">{request.description}</td>
+                            <td className="td">{request.procurementCategory}</td>
+                            <td className="td">{request.status}</td>
                             <td className="td">
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                                     <PrimaryButton onClick={() => handleViewRequest(request.id)}>
@@ -112,9 +128,9 @@ const BuyerDashboardRequests = () => {
                             </td>
                         </tr>
                     ))}
-                    {filterRequests.length === 0 && (
+                    {filteredRequests.length === 0 && (
                         <tr>
-                            <td colSpan="4" className="td">
+                            <td colSpan="5" className="td">
                                 No requests found.
                             </td>
                         </tr>
