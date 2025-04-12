@@ -1,12 +1,13 @@
 import { AppBar, Toolbar, Typography, Box } from "@mui/material";
 import BasicButton from "../Button/BasicButton";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated, isAdmin } from "../../utils/auth";
+import { isAuthenticated, isAdmin, isBuyer } from "../../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const loggedIn = isAuthenticated();
   const adminUser = isAdmin();
+  const buyerUser = isBuyer();
 
   function onClickLogout() {
     localStorage.removeItem("token");
@@ -51,7 +52,18 @@ const Navbar = () => {
             <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
         )}
-        {loggedIn && !adminUser && (
+        {loggedIn && buyerUser && (
+          <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
+            <BasicButton onClick={() => navigate("/buyer-procurement-requests")}>
+              Procurement Requsts
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/profile")}>
+              Profile
+            </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
+          </Box>
+        )}
+        {loggedIn && !adminUser && !buyerUser &&(
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
