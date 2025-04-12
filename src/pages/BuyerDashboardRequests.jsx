@@ -3,6 +3,7 @@ import {PlusCircle, Eye} from 'lucide-react';
 import "../styles/Buyer.css";
 import axios from 'axios';
 import PrimaryButton from '../components/Button/PrimaryButton';
+import BasicButton from '../components/Button/BasicButton';
 import Layout from '../components/Layout/Layout';
 import { isAuthenticated, isBuyer } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,7 @@ const BuyerDashboardRequests = () => {
             return;
         }
 
-        axios.get(`${import.meta.env.VITE_API_URL}/api/buyer/requests`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement/requests`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((response) => {
@@ -46,62 +47,81 @@ const BuyerDashboardRequests = () => {
         navigate(`/buyer-request/${id}`); // Redirect to the request details page
     }
 
-    /*const handleCreateRequest = () => {
+    const handleCreateRequest = () => {
         console.log("Create new request");
         navigate("/new-request"); // Redirect to the create request page
-    }*/
+    }
+
+    const statusButton = [
+        { status: 'active', label: 'Active'},
+        { status: 'draft', label: 'Draft' },
+        { status: 'closed', label: 'Closed'},
+        { status: 'awarded', label: 'Awarded'},
+    ];
 
     //Loading requests from backend
     return(
         <Layout>
-      <div className="dashboard-container">
-        <div className="button-container">
-          <PrimaryButton onClick={() => navigate("/new-request")}>
-            Create New Request
-          </PrimaryButton>
-        </div>
-        <div className="panel">
-          <table className="table">
-            <thead>
-              <tr>
-                <th className="th">Title</th>
-                <th className="th">Description</th>
-                <th className="th">Category</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="tr">
-                  <td className="td">{user.id}</td>
-                  <td className="td">{user.first_name}</td>
-                  <td className="td">{user.last_name}</td>
-                  <td className="td">{user.email}</td>
-                  <td className="td">{user.role}</td>
-                  <td className="td">{user.status}</td>
-                  <td className="td">
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                      <PrimaryButton onClick={() => handleUpdate(user.id)}>
-                        Update
-                      </PrimaryButton>
-                      <PrimaryButton onClick={() => handleDelete(user.id)}>
-                        Delete
-                      </PrimaryButton>
-                      <PrimaryButton onClick={() => handleSuspend(user.id)}>
-                        Suspend
-                      </PrimaryButton>
-                      <PrimaryButton onClick={() => handleApprove(user.id)}>
-                        Approve
-                      </PrimaryButton>
-                  </div>
+        <div className="dashboard-container">
+            <h3>Procurement Requests</h3>
 
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            <div style={{display: 'flex', alignSelf: 'flex-start', gap: '24px', marginBottom:'24px'}}>
+                {statusButton.map(({ status, label }) => (
+                    <PrimaryButton
+                        key={status}
+                        onClick={() => setActiveStatus(status)}
+                        className={activeStatus === status ? 'bg-blue-700' : ''}
+                    >
+                        {label}
+                    </PrimaryButton>
+                ))}
+            </div>
+
+            <div className="button-container">
+                <PrimaryButton onClick={handleCreateRequest}>
+                    <PlusCircle size={22} />
+                    <span>  New Request</span>
+                </PrimaryButton>
+            </div>
+        
+            <div className="panel">
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th className="th">Title</th>
+                            <th className="th">Description</th>
+                            <th className="th">Category</th>
+                            <th className="th">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {filterRequests.map((request) => (
+                            <tr key={request.id} className="tr">
+                            <td className="td">{request.title}</td>
+                            <td className="td">{request.desription}</td>
+                            <td className="td">{request.category}</td>
+                            <td className="td">
+                                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                                    <PrimaryButton onClick={() => handleViewRequest(request.id)}>
+                                        View
+                                    </PrimaryButton>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                    {filterRequests.length === 0 && (
+                        <tr>
+                            <td colSpan="4" className="td">
+                                No requests found.
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
       </div>
     </Layout>
   );
 };
+
 export default BuyerDashboardRequests;

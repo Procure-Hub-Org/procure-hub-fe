@@ -9,12 +9,24 @@
     padding: 20px;
     box-sizing: border-box;
   }
+
+  .dashboard-container h3 {
+    align-self: flex-start;
+    margin-bottom: 25px;
+  }
   
   .button-container {
-    width: 100%;
+    /*width: 100%;*/
     display: flex;
     justify-content: flex-end;
     margin-bottom: 20px;
+  }
+  
+  .status-buttons-container {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    justify-content: flex-start;
   }
   
   .panel {
