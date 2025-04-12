@@ -27,7 +27,7 @@ const BuyerDashboardRequests = () => {
             return;
         }
 
-        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement/requests`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement/requests`, { /*obrisi s i dodaj/buyer*/
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((response) => {
@@ -65,8 +65,9 @@ const BuyerDashboardRequests = () => {
         <div className="dashboard-container">
             <h3>Procurement Requests</h3>
 
-            <div style={{display: 'flex', alignSelf: 'flex-start', gap: '24px', marginBottom:'24px'}}>
-                {statusButton.map(({ status, label }) => (
+            <div className="parent-button-container">
+                <div className="status-buttons-container">
+                    {statusButton.map(({ status, label }) => (
                     <PrimaryButton
                         key={status}
                         onClick={() => setActiveStatus(status)}
@@ -74,16 +75,17 @@ const BuyerDashboardRequests = () => {
                     >
                         {label}
                     </PrimaryButton>
-                ))}
+                    ))}
+                </div>
+
+                <div className="button-container">
+                    <PrimaryButton onClick={handleCreateRequest}>
+                    <PlusCircle size={25} style={{ paddingRight: '8px' }}/>
+                    <span>New Request</span>
+                    </PrimaryButton>
+                </div>
             </div>
 
-            <div className="button-container">
-                <PrimaryButton onClick={handleCreateRequest}>
-                    <PlusCircle size={22} />
-                    <span>  New Request</span>
-                </PrimaryButton>
-            </div>
-        
             <div className="panel">
                 <table className="table">
                     <thead>
@@ -103,7 +105,8 @@ const BuyerDashboardRequests = () => {
                             <td className="td">
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                                     <PrimaryButton onClick={() => handleViewRequest(request.id)}>
-                                        View
+                                        <Eye size={25} style={{ paddingRight: '8px' }}/>
+                                        <span>View</span>
                                     </PrimaryButton>
                                 </div>
                             </td>
