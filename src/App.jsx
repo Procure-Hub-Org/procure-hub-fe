@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RegisterPage from "./pages/RegisterPage";
 import UserProfile from "./pages/UserProfile";
+import BuyerDashboardRequests from "./pages/BuyerDashboardRequests";
 import PreviewComponent from "./components/PreviewComponent";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateUserPage from "./pages/CreateUserPage";
@@ -36,6 +37,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <UserProfile />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/buyer-procurement-requests"
+        element={
+          <AuthenticatedRoute>
+            <BuyerDashboardRequests />
           </AuthenticatedRoute>
         }
       />
