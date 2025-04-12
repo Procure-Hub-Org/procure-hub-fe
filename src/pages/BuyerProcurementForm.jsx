@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
 import {
     AppBar,
     Box,
-    Button,
     Card,
     CardContent,
     Container,
@@ -22,10 +22,31 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 
-import BasicButton from "../components/Button/BasicButton.jsx";
+// mock data
+const mockFormData = {
+    id: 16,
+    title: "Laptop Purchase",
+    description: "Procurement for office laptops",
+    location: "Sarajevo",
+    deadline: "2025-04-30",
+    budgetMin: 5000,
+    budgetMax: 10000,
+    category: "IT Equipment",
+    status: "draft",
+    items: [
+        { title: "Laptop", description: "Dell XPS 13", quantity: 10 },
+        { title: "Docking Station", description: "USB-C compatible", quantity: 10 },
+    ],
+    requirements: [
+        { type: "Warranty", description: "At least 2 years" },
+        { type: "Delivery", description: "Within 2 weeks" },
+    ],
+};
+
 // import { useTheme } from "@mui/system";
 
 const ProcurementForm = () => {
+    const { id } = useParams(); // Preuzimanje `id` iz parametara rute
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -38,6 +59,31 @@ const ProcurementForm = () => {
         items: [{ title: "", description: "", quantity: 1 }],
         requirements: [{ type: "", description: "" }],
     });
+
+    const navigate = useNavigate();
+
+    // Load if id exists
+    useEffect(() => {
+        if (id == mockFormData.id) {
+            /*
+            const fetchFormData = async () => {
+                try {
+                    const response = await axios.get(`/api/form-data/${id}`); // Preuzimanje podataka za editovanje
+                    if (response.status === 200) {
+                        setFormData(response.data); // Popuniti formu sa podacima iz baze
+                    } else {
+                        console.error("Failed to fetch data", response);
+                    }
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            };
+            fetchFormData();
+
+             */
+            setFormData(mockFormData);
+        }
+    }, [id]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -87,6 +133,11 @@ const ProcurementForm = () => {
         e.preventDefault();
         console.log("Submitted form:", formData);
     };
+
+    const handleSaveDraft = () => {
+        console.log('Close preview');
+        navigate('/buyer-procurement-requests')
+    }
 
     return (
         <Layout>
@@ -181,22 +232,6 @@ const ProcurementForm = () => {
                                         <MenuItem value="IT Equipment">IT Equipment</MenuItem>
                                         <MenuItem value="Office Supplies">Office Supplies</MenuItem>
                                     </Select>
-                                    <Select
-                                        name="status"
-                                        value={formData.status}
-                                        onChange={handleChange}
-                                        displayEmpty
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
-                                    >
-                                        <MenuItem value="" disabled>
-                                            Select Status
-                                        </MenuItem>
-                                        <MenuItem value="draft">Draft</MenuItem>
-                                        <MenuItem value="open">Open</MenuItem>
-                                        <MenuItem value="closed">Closed</MenuItem>
-                                    </Select>
 
                                     <Typography variant="subtitle1" sx={{ mt: 3 }}>
                                         Items
@@ -289,7 +324,7 @@ const ProcurementForm = () => {
                                         + Add Requirement
                                     </OutlinedButton>
 
-                                    <PrimaryButton type="save-draft" startIcon={<SaveIcon />}>
+                                    <PrimaryButton type="save-draft" onClick={handleSaveDraft} startIcon={<SaveIcon />}>
                                         Save Draft
                                     </PrimaryButton>
 
@@ -307,8 +342,3 @@ const ProcurementForm = () => {
 };
 
 export default ProcurementForm;
-
-
-
-
-
