@@ -55,7 +55,7 @@ const Navbar = () => {
         {loggedIn && buyerUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
             <BasicButton onClick={() => navigate("/buyer-procurement-requests")}>
-              Procurement Requsts
+              Procurement Requests
             </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
