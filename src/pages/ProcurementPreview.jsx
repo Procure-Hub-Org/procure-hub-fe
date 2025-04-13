@@ -38,7 +38,7 @@ const PreviewProcurement = () => {
 
     const handleEdit = () => {
         // redirect to the edit form with ID (you can store in URL or context)
-        navigate(`/new-request/${data.id}`); // example route
+        navigate(`/buyer-request/${data.id}`); // example route
     };
 
     const handleClose = () => {

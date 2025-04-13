@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+
 import PrimaryButton from "../components/Button/PrimaryButton";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
+import { isAuthenticated, isBuyer } from '../utils/auth';
 import {
     AppBar,
     Box,
@@ -14,7 +16,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-// import axios from "axios";
+import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
@@ -22,31 +24,14 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 
-// mock data
-const mockFormData = {
-    id: 16,
-    title: "Laptop Purchase",
-    description: "Procurement for office laptops",
-    location: "Sarajevo",
-    deadline: "2025-04-30",
-    budgetMin: 5000,
-    budgetMax: 10000,
-    category: "IT Equipment",
-    status: "draft",
-    items: [
-        { title: "Laptop", description: "Dell XPS 13", quantity: 10 },
-        { title: "Docking Station", description: "USB-C compatible", quantity: 10 },
-    ],
-    requirements: [
-        { type: "Warranty", description: "At least 2 years" },
-        { type: "Delivery", description: "Within 2 weeks" },
-    ],
-};
-
 // import { useTheme } from "@mui/system";
 
 const ProcurementForm = () => {
     const { id } = useParams(); // Preuzimanje `id` iz parametara rute
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const token = localStorage.getItem("token");
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -64,26 +49,28 @@ const ProcurementForm = () => {
 
     // Load if id exists
     useEffect(() => {
-        if (id == mockFormData.id) {
-            /*
-            const fetchFormData = async () => {
-                try {
-                    const response = await axios.get(`/api/form-data/${id}`); // Preuzimanje podataka za editovanje
-                    if (response.status === 200) {
-                        setFormData(response.data); // Popuniti formu sa podacima iz baze
-                    } else {
-                        console.error("Failed to fetch data", response);
-                    }
-                } catch (error) {
-                    console.error("Error fetching data:", error);
-                }
-            };
-            fetchFormData();
-
-             */
-            setFormData(mockFormData);
+        if (!isBuyer()) {
+            if (!isAuthenticated()) {
+                window.location.href = "/login";
+            } else {
+                window.location.href = "/";
+            }
+            return;
         }
-    }, [id]);
+        fetchCategories(); // Fetch categories on component mount
+    }, [token]);
+
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/api/procurement-categories`
+            );
+            setCategories(response.data.data);
+            console.log("Fetched categories:", response.data.data);
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -128,10 +115,58 @@ const ProcurementForm = () => {
         setFormData((prev) => ({ ...prev, requirements: updated }));
     };
 
+    const getCategoryName = (id) => {
+        const category = categories.find((cat) => cat.id === id);   
+        return category ? category.name : "Unknown Category";
+    };
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Submitted form:", formData);
+        console.log("Selected category:", selectedCategory);
+
+        const requestData = {
+            title: formData.title,
+            description: formData.description,
+            deadline: formData.deadline,
+            budget_min: formData.budgetMin,
+            budget_max: formData.budgetMax,
+            category: getCategoryName(selectedCategory),
+            status: "active",
+            location: formData.location,
+            items: formData.items,
+            requirements: formData.requirements,
+        };
+          
+    
+        console.log("Sending request data:", requestData);
+          
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            );
+        
+            if (response.status === 201) {
+                alert("Request adding Successful!");
+                console.log("Server Response:", response.data);
+                navigate("/buyer-procurement-requests"); // Redirect to the requests page
+            } else {
+                alert("Request adding failed: " + response.data.message);
+            }
+        } catch (error) {
+            console.error("Error during creation of request:", error);
+            if (error.response) {
+                alert("Request adding failed: " + error.response.data.message);
+            } else {
+                alert("Request adding failed: " + error.message);
+            }
+        };
     };
 
     const handleSaveDraft = () => {
@@ -217,21 +252,18 @@ const ProcurementForm = () => {
                                         required
                                         sx={{ mb: 2 }}
                                     />
-                                    <Select
+                                    <CustomSelect
+                                        label="Category"
                                         name="category"
-                                        value={formData.category}
-                                        onChange={handleChange}
-                                        displayEmpty
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
-                                    >
-                                        <MenuItem value="" disabled>
-                                            Select Category
-                                        </MenuItem>
-                                        <MenuItem value="IT Equipment">IT Equipment</MenuItem>
-                                        <MenuItem value="Office Supplies">Office Supplies</MenuItem>
-                                    </Select>
+                                        value={selectedCategory}
+                                        onChange={(e) => setSelectedCategory(e.target.value)}
+                                        options={[
+                                            ...categories.map((c) => ({
+                                                label: c.name,
+                                                value: c.id,
+                                            })),
+                                        ]}
+                                    />
 
                                     <Typography variant="subtitle1" sx={{ mt: 3 }}>
                                         Items
@@ -287,16 +319,19 @@ const ProcurementForm = () => {
                                     </Typography>
                                     {formData.requirements.map((req, index) => (
                                         <Box key={index} sx={{ mb: 2 }}>
-                                            <TextField
+                                            <CustomSelect
                                                 label="Requirement Type"
+                                                name ="requirementType"	
                                                 value={req.type}
                                                 onChange={(e) =>
                                                     handleRequirementChange(index, "type", e.target.value)
                                                 }
-                                                fullWidth
-                                                required
-                                                sx={{ mb: 1 }}
+                                                options={[
+                                                    { label: "Legal", value: "Legal" },
+                                                    { label: "Technical", value: "Technical" },
+                                                ]}
                                             />
+                                            
                                             <TextField
                                                 label="Requirement Description"
                                                 value={req.description}
@@ -328,7 +363,7 @@ const ProcurementForm = () => {
                                         Save Draft
                                     </PrimaryButton>
 
-                                    <PrimaryButton type="submit" fullWidth startIcon={<SendIcon />}>
+                                    <PrimaryButton type="submit" onClick={handleSubmit} fullWidth startIcon={<SendIcon />}>
                                         Submit Procurement
                                     </PrimaryButton>
                                 </form>

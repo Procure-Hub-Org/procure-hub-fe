@@ -60,6 +60,14 @@ function App() {
         </AuthenticatedRoute>} 
       />
 
+      <Route 
+        path="/buyer-request/:id" 
+        element={
+        <AuthenticatedRoute>
+          <BuyerProcurementForm />
+        </AuthenticatedRoute>} 
+      />
+
       <Route
         path="/seller-procurement-requests"
         element={
