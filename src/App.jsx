@@ -11,6 +11,7 @@ import CreateUserPage from "./pages/CreateUserPage";
 import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
 import AdminRoute from "./components/Middleware/AdminRoute";
+import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
 
 function App() {
   return (
@@ -48,6 +49,8 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+
+      <Route path="/new-request" element={<BuyerProcurementForm />} />
       <Route path="/preview" element={<PreviewComponent />} />
       <Route
         path="/admin"
