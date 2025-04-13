@@ -21,7 +21,7 @@ const dummyData = {
     budgetMin: 5000,
     budgetMax: 10000,
     category: "IT Equipment",
-    status: "draft",
+    status: "awarded",  // Updated to "awarded" for demo purposes
     items: [
         { title: "Laptop", description: "Dell XPS 13", quantity: 10 },
         { title: "Docking Station", description: "USB-C compatible", quantity: 10 },
@@ -50,12 +50,31 @@ const PreviewProcurement = () => {
         <Layout>
             <Container maxWidth="md">
                 <Box sx={{ mt: 4, position: "relative" }}>
-                    {/* Status Chip */}
-                    <Chip
-                        label={data.status.toUpperCase()}
-                        color={data.status === "draft" ? "warning" : "success"}
-                        sx={{ position: "absolute", top: 5, right: 5 }}
-                    />
+                    {/* Status and Awarded-to Box Grouped */}
+                    <Box sx={{
+                        position: "absolute",
+                        top: 5,
+                        right: 5,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-end",
+                    }}>
+                        {/* Status Chip */}
+                        <Chip
+                            label={data.status.toUpperCase()}
+                            color={data.status === "draft" ? "warning" : "success"}
+                            sx={{ mb: 1 }}
+                        />
+
+                        {/* Show "Awarded To" if status is "awarded" */}
+                        {data.status === "awarded" && (
+                            <Box>
+                                <Typography variant="body1" color="primary">
+                                    <strong>Awarded to: </strong> Jane Doe
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
 
                     <Card>
                         <CardContent>
@@ -112,7 +131,7 @@ const PreviewProcurement = () => {
                                         borderRadius: 2,
                                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                     }}>
-                                        <Typography variant="subtitle1" sx={{ mb: 1}}>
+                                        <Typography variant="subtitle1" sx={{ mb: 1 }}>
                                             Requirement type: <strong>{req.type}</strong>
                                         </Typography>
                                         <Typography variant="body2" sx={{ mb: 1 }}>
