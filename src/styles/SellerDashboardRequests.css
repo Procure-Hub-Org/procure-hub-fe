@@ -1,0 +1,158 @@
+.row-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    gap: 1rem;
+    padding: 0 2rem 2rem;
+    justify-content: center;
+}
+
+.left-column-fixed {
+    max-width: 20%;
+}
+
+.right-column-flexible {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+    max-width: 50vw;
+}
+
+
+.scrollable-list-container {
+    max-height: 75vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.scrollable-list-container .request-card:last-child {
+    margin-bottom: 1rem;
+}
+
+/* Basic Card Styling */
+.request-card {
+    border: 1px solid #e0e0e0; /* Light grey border */
+    border-radius: 8px;       /* Rounded corners */
+    margin-bottom: 1.5rem;    /* Space between cards */
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    overflow: hidden; /* Ensures content respects border-radius */
+}
+
+/* Card Header */
+.card-header {
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa; /* Very light grey background */
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.card-title {
+    margin: 0; /* Remove default heading margin */
+    font-size: 1.15rem; /* Slightly larger title */
+    font-weight: 600;
+}
+
+.card-status {
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px; /* Pill shape */
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+/* Status-specific styling */
+.status-active {
+    background-color: #d1e7dd; /* Bootstrap success light */
+    color: #0f5132;      /* Bootstrap success dark */
+}
+.status-pending { /* Add other statuses as needed */
+    background-color: #fff3cd; /* Bootstrap warning light */
+    color: #664d03;      /* Bootstrap warning dark */
+}
+/* Add more .status-X classes as needed */
+
+
+/* Card Body */
+.card-body {
+    padding: 1rem;
+}
+
+.card-description {
+    margin-bottom: 1.25rem;
+    color: #555;
+}
+
+/* Details Grid - Using Flexbox for a simple grid-like layout */
+.card-details-grid {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    gap: 0.75rem 1rem; /* Row and column gap */
+    font-size: 0.9rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column; /* Stack label and value vertically */
+    flex-basis: calc(50% - 0.5rem); /* Aim for 2 columns, adjust for gap */
+    min-width: 150px; /* Prevent items from becoming too narrow */
+}
+
+.detail-item strong {
+    color: #333;
+    margin-bottom: 0.15rem; /* Small space between label and value */
+    font-weight: 500;
+}
+
+.detail-item span {
+    color: #666;
+}
+
+/* Allow specific items like documentation to span full width if needed */
+.detail-item.full-width {
+    flex-basis: 100%;
+}
+
+
+/* Card Footer */
+.card-footer {
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.85rem;
+    color: #6c757d; /* Grey text */
+}
+
+.buyer-info strong {
+    color: #495057; /* Slightly darker for the name */
+}
+
+/* Helper Flexbox classes (if not using a framework like Bootstrap/Tailwind) */
+.d-flex {
+    display: flex;
+}
+.justify-content-between {
+    justify-content: space-between;
+}
+.align-items-center {
+    align-items: center;
+}
+
+/* Optional: Add responsiveness for smaller screens */
+@media (max-width: 600px) {
+    .card-details-grid {
+        gap: 0.75rem; /* Reduce gap */
+    }
+    .detail-item {
+        flex-basis: 100%; /* Stack details in a single column */
+        min-width: auto;
+    }
+    .card-header, .card-footer {
+        flex-direction: column; /* Stack header/footer items */
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    .card-status {
+        margin-top: 0.25rem; /* Add space below title when stacked */
+    }
+}
