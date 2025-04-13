@@ -12,11 +12,8 @@ import CreateUserPage from "./pages/CreateUserPage";
 import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
 import AdminRoute from "./components/Middleware/AdminRoute";
-<<<<<<< HEAD
 import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
-=======
 import SellerFavorites from "./pages/SellerFavorites.jsx";
->>>>>>> develop
 
 function App() {
   return (
@@ -54,10 +51,15 @@ function App() {
           </AuthenticatedRoute>
         }
       />
-<<<<<<< HEAD
 
-      <Route path="/new-request" element={<BuyerProcurementForm />} />
-=======
+      <Route 
+        path="/new-request" 
+        element={
+        <AuthenticatedRoute>
+          <BuyerProcurementForm />
+        </AuthenticatedRoute>} 
+      />
+
       <Route
         path="/seller-procurement-requests"
         element={
@@ -74,7 +76,6 @@ function App() {
           </AuthenticatedRoute>
         }
       />
->>>>>>> develop
       <Route path="/preview" element={<PreviewComponent />} />
       <Route
         path="/admin"
