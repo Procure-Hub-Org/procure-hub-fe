@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
+import { useEffect } from "react";
 import {
   Container,
   Card,
@@ -44,8 +45,27 @@ const CreateUserPage = () => {
     company_address: "",
   });
 
-  const [errors, setErrors] = useState({});
+   const [buyerTypes, setBuyerTypes] = useState([]);
+    const [selectedBuyerType, setSelectedBuyerType] = useState("");
+    const [customBuyerType, setCustomBuyerType] = useState("");
 
+  const [errors, setErrors] = useState({});
+ useEffect(() => {
+    const fetchBuyerTypes = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`
+        );
+        setBuyerTypes(response.data);
+      } catch (error) {
+        console.error("Failed to fetch buyer types:", error);
+      }
+    };
+
+    if (formData.role === "buyer") {
+      fetchBuyerTypes();
+    }
+  }, [formData.role]);
   const handleChange = (e) => {
     console.log(formData.role);
     const { name, value, type, checked } = e.target;
@@ -273,7 +293,23 @@ const CreateUserPage = () => {
       ...(formData.role !== "admin" && {
         company_address: formData.company_address,
       }),
+      buyer_type: selectedBuyerType
     };
+
+    if (selectedBuyerType === "Other" && customBuyerType) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/api/buyer-types`,
+          { name: customBuyerType }
+        );
+        userData.buyer_type = customBuyerType;
+      } catch (error) {
+        alert("Failed to save custom buyer type");
+        return;
+      }
+    } else if (selectedBuyerType) {
+      userData.buyer_type = selectedBuyerType;
+    }
 
     console.log("Sending user data:", userData);
 
@@ -405,6 +441,32 @@ const CreateUserPage = () => {
                     error={!!errors.role}
                     helperText={errors.role}
                   />
+                     {formData.role === "buyer" && (
+                    <>
+                      <CustomSelect
+                        label="Buyer Type"
+                        name="buyer_type"
+                        value={selectedBuyerType}
+                        onChange={(e) => setSelectedBuyerType(e.target.value)}
+                        options={[
+                          ...buyerTypes.map((type) => ({
+                            label: type.name,
+                            value: type.name,
+                          })),
+                          { label: "Other", value: "Other" },
+                        ]}
+                      />
+                      {selectedBuyerType === "Other" && (
+                        <CustomTextField
+                          label="Enter Custom Buyer Type"
+                          name="custom_buyer_type"
+                          value={customBuyerType}
+                          onChange={(e) => setCustomBuyerType(e.target.value)}
+                          required
+                        />
+                      )}
+                    </>
+                  )}
                   <CustomTextField
                     label="Phone Number"
                     name="phone_number"
