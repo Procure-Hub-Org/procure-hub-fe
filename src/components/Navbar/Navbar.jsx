@@ -10,7 +10,6 @@ const Navbar = () => {
   const buyerUser = isBuyer();
   const sellerUser = isSeller();
 
-
   function onClickLogout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
@@ -56,7 +55,9 @@ const Navbar = () => {
         )}
         {loggedIn && buyerUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-            <BasicButton onClick={() => navigate("/buyer-procurement-requests")}>
+            <BasicButton
+              onClick={() => navigate("/buyer-procurement-requests")}
+            >
               Procurement Requests
             </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
@@ -66,17 +67,22 @@ const Navbar = () => {
           </Box>
         )}
         {loggedIn && sellerUser && (
-            <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-                <BasicButton onClick={() => navigate("/seller-procurement-requests")}>
-                    Procurement Requests
-                </BasicButton>
-                <BasicButton onClick={() => navigate("/profile")}>
-                    Profile
-                </BasicButton>
-                <BasicButton onClick={onClickLogout}>Logout</BasicButton>
-            </Box>
+          <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
+            <BasicButton
+              onClick={() => navigate("/seller-procurement-requests")}
+            >
+              Procurement Requests
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/seller-favorites")}>
+              Favorites
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/profile")}>
+              Profile
+            </BasicButton>
+            <BasicButton onClick={onClickLogout}>Logout</BasicButton>
+          </Box>
         )}
-        {loggedIn && !adminUser && !buyerUser && !sellerUser &&(
+        {loggedIn && !adminUser && !buyerUser && !sellerUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile

@@ -12,6 +12,7 @@ import CreateUserPage from "./pages/CreateUserPage";
 import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
 import AdminRoute from "./components/Middleware/AdminRoute";
+import SellerFavorites from "./pages/SellerFavorites.jsx";
 
 function App() {
   return (
@@ -54,6 +55,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <SellerDashboardRequests />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route 
+        path="/seller-favorites"
+        element={
+          <AuthenticatedRoute>
+            <SellerFavorites />
           </AuthenticatedRoute>
         }
       />

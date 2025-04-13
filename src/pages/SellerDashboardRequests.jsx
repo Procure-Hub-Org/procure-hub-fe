@@ -13,6 +13,8 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import dayjs from "dayjs";
 import "../styles/SellerDashboardRequests.css";
+import { fetchFavorites } from "../utils/favorites";
+import ProcurementRequestCard from '../components/Cards/ProcurementRequestCard.jsx';
 
 const SellerDashboardRequests = () => {
     const theme = useTheme();
@@ -27,6 +29,7 @@ const SellerDashboardRequests = () => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [budgetMin, setBudgetMin] = useState();
     const [budgetMax, setBudgetMax] = useState();
+    const [followedRequests, setFollowedRequests] = useState({});
 
     const fetchBuyerTypes = async () => {
         try {
@@ -75,17 +78,28 @@ const SellerDashboardRequests = () => {
 
     useEffect(() => {
         if (!isSeller()) {
-            if (!isAuthenticated()) {
-                navigate("/login");
-            } else {
-                navigate("/");
-            }
-            return;
-        }
+          if (!isAuthenticated()) {
+            navigate("/login");
+          } else {
+            navigate("/");
+          }
+          return;
+        }     
         fetchBuyerTypes();
         fetchCategories();
         fetchRequests();
-    }, [token]);
+      
+        const loadFavorites = async () => {
+          const favorites = await fetchFavorites();
+          const followedMap = {};
+          favorites.forEach((req) => {
+            followedMap[req.id] = true;
+          });
+          setFollowedRequests(followedMap);
+        };
+      
+        loadFavorites();
+      }, [token]);
 
     const onChangeDate = (date) => {
         setSelectedDate(date)
@@ -98,10 +112,6 @@ const SellerDashboardRequests = () => {
         setSelectedDate(null)
         setBudgetMin('')
         setBudgetMax('')
-    }
-
-    function onClickFollow(id) {
-        console.log(`Follow request with ID: ${id}`);
     }
 
     return (
@@ -175,84 +185,27 @@ const SellerDashboardRequests = () => {
 
                     </div>
                     <div className="right-column-flexible">
-
-                        {/* 1. Title */}
-                        <h3>Seller Dashboard - Procurement Requests</h3>
-
-                        {/* 3. Requests List or "No requests" message */}
-                        {/* Optional: Wrap list area in a div */}
-                        <div className="requests-list-section">
-                            <div className="scrollable-list-container">
-                                {requests.length > 0 ? (
-                                    <div className="requests-container"> {/* This is your existing inner container */}
-                                        {requests.map((request) => (
-                                            <div key={request.id} className="request-card">
-                                                {/* Card Header */}
-                                                <div
-                                                    className="card-header d-flex justify-content-between align-items-center">
-                                                    <h3 className="card-title">{request.title}</h3>
-                                                    <PrimaryButton onClick={() => onClickFollow(request.id)}>
-                                                        Follow
-                                                    </PrimaryButton>
-                                                </div>
-
-                                                {/* Card Body */}
-                                                <div className="card-body">
-                                                    <p className="card-description">{request.description}</p>
-                                                    <div
-                                                        className="card-details-grid"> {/* Grid or Flex container for details */}
-                                                        <div className="detail-item">
-                                                            <strong>Category:</strong>
-                                                            <span>{request.category_name}</span>
-                                                        </div>
-                                                        <div className="detail-item">
-                                                            <strong>Location:</strong>
-                                                            <span>{request.location}</span>
-                                                        </div>
-                                                        <div className="detail-item">
-                                                            <strong>Budget:</strong>
-                                                            <span>{request.budget_min} - {request.budget_max}</span> {/* Consider adding currency */}
-                                                        </div>
-                                                        <div className="detail-item">
-                                                            <strong>Deadline:</strong>
-                                                            <span>{dayjs(request.deadline).format('MMM D, YYYY h:mm A')}</span>
-                                                        </div>
-                                                        {request.buyer_type_name && ( // Conditionally show buyer type
-                                                            <div className="detail-item">
-                                                                <strong>Buyer Type:</strong>
-                                                                <span>{request.buyer_type_name}</span>
-                                                            </div>
-                                                        )}
-                                                        <div
-                                                            className="detail-item full-width"> {/* Allow documentation to take full width */}
-                                                            <strong>Documentation:</strong>
-                                                            <span>{request.documentation}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Card Footer */}
-                                                <div
-                                                    className="card-footer d-flex justify-content-between align-items-center">
-                                                            <span className="buyer-info">
-                                                                Posted by: <strong>{request.buyer_full_name}</strong>
-                                                            </span>
-                                                    <span className="date-info">
-                                                                Created: {dayjs(request.created_at).format('MMM D, YYYY')}
-                                                            </span>
-                                                    <span className={`card-status status-${request.status}`}>
-                                                                {request.status}
-                                                            </span>
-                                                </div>
-                                            </div> // End request-card
-                                        ))}
-                                    </div> // End requests-container
-                                ) : (
-                                    <p className="no-requests-message">No requests available</p>
-                                )}
+                <h3>Seller Dashboard - Procurement Requests</h3>
+                <div className="requests-list-section">
+                    <div className="scrollable-list-container">
+                        {requests.length > 0 ? (
+                            <div className="requests-container">
+                                {requests.map((request) => (
+                                    <ProcurementRequestCard
+                                        key={request.id}
+                                        request={request}
+                                        followedRequests={followedRequests}
+                                        setFollowedRequests={setFollowedRequests}
+                                    />
+                                ))}
                             </div>
-                        </div>
+                        ) : (
+                            <p>No requests available</p>
+                        )}
                     </div>
+                </div>
+                </div>
+                
                 </div>
             </Layout>
         </>
