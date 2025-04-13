@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import RegisterPage from "./pages/RegisterPage";
 import UserProfile from "./pages/UserProfile";
 import BuyerDashboardRequests from "./pages/BuyerDashboardRequests";
+import SellerDashboardRequests from "./pages/SellerDashboardRequests.jsx";
 import PreviewComponent from "./components/PreviewComponent";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateUserPage from "./pages/CreateUserPage";
@@ -45,6 +46,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <BuyerDashboardRequests />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/seller-procurement-requests"
+        element={
+          <AuthenticatedRoute>
+            <SellerDashboardRequests />
           </AuthenticatedRoute>
         }
       />
