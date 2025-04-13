@@ -169,9 +169,52 @@ const ProcurementForm = () => {
         };
     };
 
-    const handleSaveDraft = () => {
-        console.log('Close preview');
-        navigate('/buyer-procurement-requests')
+    const handleSaveDraft = async (e) => {
+        e.preventDefault();
+        console.log("Submitted form:", formData);
+        console.log("Selected category:", selectedCategory);
+
+        const requestData = {
+            title: formData.title,
+            description: formData.description,
+            deadline: formData.deadline,
+            budget_min: formData.budgetMin,
+            budget_max: formData.budgetMax,
+            category: getCategoryName(selectedCategory),
+            status: "draft",
+            location: formData.location,
+            items: formData.items,
+            requirements: formData.requirements,
+        };
+          
+    
+        console.log("Sending request data:", requestData);
+          
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            );
+        
+            if (response.status === 201) {
+                alert("Request adding Successful!");
+                console.log("Server Response:", response.data);
+                navigate("/buyer-procurement-requests"); // Redirect to the requests page
+            } else {
+                alert("Request adding failed: " + response.data.message);
+            }
+        } catch (error) {
+            console.error("Error during creation of request:", error);
+            if (error.response) {
+                alert("Request adding failed: " + error.response.data.message);
+            } else {
+                alert("Request adding failed: " + error.message);
+            }
+        };
     }
 
     return (
