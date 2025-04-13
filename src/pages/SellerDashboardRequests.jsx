@@ -11,7 +11,6 @@ import CustomTextField from "../components/Input/TextField.jsx";
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import dayjs from "dayjs";
 import "../styles/SellerDashboardRequests.css";
 import { fetchFavorites } from "../utils/favorites";
 import ProcurementRequestCard from '../components/Cards/ProcurementRequestCard.jsx';
@@ -59,7 +58,7 @@ const SellerDashboardRequests = () => {
                 Authorization: `Bearer ${token}`,
             },
             params: {
-                buyer_id: selectedBuyerType,
+                buyer_type_name: selectedBuyerType,
                 category_id: selectedCategory,
                 location: location,
                 deadline: selectedDate,
@@ -128,7 +127,7 @@ const SellerDashboardRequests = () => {
                             options={[
                                 ...buyerTypes.map((type) => ({
                                     label: type.name,
-                                    value: type.id,
+                                    value: type.name,
                                 })),
                             ]}
                         />
