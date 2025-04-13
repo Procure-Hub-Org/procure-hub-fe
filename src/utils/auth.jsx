@@ -12,3 +12,8 @@ export const isBuyer = () => {
     const token = localStorage.getItem("role");
     return token === "buyer";
 };
+
+export const isSeller = () => {
+    const role = localStorage.getItem("role");
+    return role === "seller";
+};

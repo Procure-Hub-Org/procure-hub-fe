@@ -77,7 +77,8 @@ function UserProfile() {
       );
       const resData = await response.json();
       setUserData(resData.user);
-      setBuyerType(resData.buyer_type.name);
+      if (resData.buyer_type)
+        setBuyerType(resData.buyer_type.name);
 
     } catch (error) {
       console.error("Failed to fetch user data:", error);
@@ -435,7 +436,7 @@ function UserProfile() {
                       }`}
                     />
                   )}
-                  <BasicButton
+                  <PrimaryButton
                     component="label"
                     startIcon={<CloudUploadIcon />}
                   >
@@ -446,7 +447,7 @@ function UserProfile() {
                       className="visually-hidden-input"
                       onChange={handleFileChange}
                     />
-                  </BasicButton>
+                  </PrimaryButton>
                 </div>
               </div>
 
@@ -468,7 +469,7 @@ function UserProfile() {
                       }`}
                     />
                   )}
-                  <BasicButton
+                  <PrimaryButton
                     startIcon={<CloudUploadIcon />}
                     component="label"
                   >
@@ -479,7 +480,7 @@ function UserProfile() {
                       className="visually-hidden-input"
                       onChange={handleFileChange}
                     />
-                  </BasicButton>
+                  </PrimaryButton>
                 </div>
               </div>
 
