@@ -12,7 +12,10 @@ import CreateUserPage from "./pages/CreateUserPage";
 import AuthenticatedRoute from "./components/Middleware/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/Middleware/UnauthenticatedRoute";
 import AdminRoute from "./components/Middleware/AdminRoute";
+import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
+import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
+import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
 
 function App() {
   return (
@@ -50,6 +53,31 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+
+      <Route 
+        path="/new-request" 
+        element={
+        <AuthenticatedRoute>
+          <BuyerProcurementForm />
+        </AuthenticatedRoute>} 
+      />
+
+      <Route 
+        path="/buyer-request/:id" 
+        element={
+        <AuthenticatedRoute>
+          <ProcurementPreview />
+        </AuthenticatedRoute>} 
+      />
+
+      <Route 
+        path="/edit-request/:id" 
+        element={
+        <AuthenticatedRoute>
+          <EditProcurementForm />
+        </AuthenticatedRoute>} 
+      />
+
       <Route
         path="/seller-procurement-requests"
         element={
