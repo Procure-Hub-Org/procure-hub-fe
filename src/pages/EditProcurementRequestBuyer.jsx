@@ -24,6 +24,7 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import { DateTimeField } from "@mui/x-date-pickers";
 
 // import { useTheme } from "@mui/system";
 
@@ -35,12 +36,20 @@ const EditProcurementForm = () => {
     const location = useLocation();
     const {procurementData} = location.state;
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
+
     const [formData, setFormData] = useState({
         title: procurementData.title,
         description: procurementData.description,
         location: procurementData.location,
-        budgetMin: procurementData.budget_min,
-        budgetMax: procurementData.budget_max,
+        budget_min: Number(procurementData.budget_min),
+        budget_max: Number(procurementData.budget_max),
         deadline: procurementData.deadline,
         category: procurementData.category_id,
         status: procurementData.status,
@@ -61,7 +70,11 @@ const EditProcurementForm = () => {
             return;
         }
         if (procurementData) {
-            setFormData(procurementData);
+            console.log("Recieved data:", procurementData);
+            setFormData({
+                ...procurementData,
+                deadline: formatDate(procurementData.deadline),
+            });
             setSelectedCategory(procurementData.category_id); 
         }
         fetchCategories(); // Fetch categories on component mount
@@ -135,8 +148,8 @@ const EditProcurementForm = () => {
             title: formData.title,
             description: formData.description,
             deadline: formData.deadline,
-            budget_min: formData.budgetMin,
-            budget_max: formData.budgetMax,
+            budget_min: Number(formData.budget_min),
+            budget_max: Number(formData.budget_max),
             category: getCategoryName(selectedCategory),
             status: "active",
             location: formData.location,
@@ -157,12 +170,13 @@ const EditProcurementForm = () => {
             }
             );
         
-            if (response.status === 201) {
+            if((response.status != 200 && response.status != 201)) {
+                alert("Request adding failed: " + response.data.message);
+            }
+            else {
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
-                navigate("/buyer-procurement-requests"); // Redirect to the requests page
-            } else {
-                alert("Request adding failed: " + response.data.message);
+                handleClosePreview(id);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
@@ -183,8 +197,8 @@ const EditProcurementForm = () => {
             title: formData.title,
             description: formData.description,
             deadline: formData.deadline,
-            budget_min: formData.budgetMin,
-            budget_max: formData.budgetMax,
+            budget_min: Number(formData.budget_min),
+            budget_max: Number(formData.budget_max),
             category: getCategoryName(selectedCategory),
             status: "draft",
             location: formData.location,
@@ -194,6 +208,7 @@ const EditProcurementForm = () => {
           
     
         console.log("Sending request data:", requestData);
+        console.log("formData to send:", formData);
           
         try {
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
@@ -204,20 +219,21 @@ const EditProcurementForm = () => {
                 },
             }
             );
-        
-            if (response.status === 201) {
-                alert("Request adding Successful!");
+
+            if((response.status !== 200 && response.status !== 201)) {
+                alert("Request update failed: " + response.data.message + " " + response.status);
+            }
+            else {
+                alert("Request update Successful!");
                 console.log("Server Response:", response.data);
-                navigate("/buyer-request/:id"); // Redirect to the requests page
-            } else {
-                alert("Request adding failed: " + response.data.message);
+                handleClosePreview(id);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                alert("Request update failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                alert("Request update failed: " + error.message);
             }
         };
     }
@@ -288,7 +304,7 @@ const EditProcurementForm = () => {
                                         label="Budget Min"
                                         name="budgetMin"
                                         type="number"
-                                        value={formData.budgetMin}
+                                        value={formData.budget_min}
                                         onChange={handleChange}
                                         fullWidth
                                         required
@@ -298,7 +314,7 @@ const EditProcurementForm = () => {
                                         label="Budget Max"
                                         name="budgetMax"
                                         type="number"
-                                        value={formData.budgetMax}
+                                        value={formData.budget_max}
                                         onChange={handleChange}
                                         fullWidth
                                         required
@@ -411,15 +427,15 @@ const EditProcurementForm = () => {
                                         + Add Requirement
                                     </OutlinedButton>
 
-                                    <SecondaryButton type="save-draft" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
+                                    <SecondaryButton type="button" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
                                         Cancel
                                     </SecondaryButton>
 
-                                    <PrimaryButton type="save-draft" onClick={handleSaveDraft} startIcon={<SaveIcon />}>
+                                    <PrimaryButton type="button" onClick={(e) => handleSaveDraft(e)} startIcon={<SaveIcon />}>
                                         Save Draft
                                     </PrimaryButton>
 
-                                    <PrimaryButton type="submit" onClick={handleSubmit} fullWidth startIcon={<SendIcon />}>
+                                    <PrimaryButton type="submit" onClick={(e) => handleSubmit(e)} fullWidth startIcon={<SendIcon />}>
                                         Submit Procurement
                                     </PrimaryButton>
                                 </form>

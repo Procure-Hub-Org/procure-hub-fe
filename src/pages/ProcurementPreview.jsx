@@ -51,7 +51,7 @@ const PreviewProcurement = () => {
 
     const handleEdit = () => {
         // Redirect to the BuyerProcurementForm with the data pre-filled for editing
-        console.log("Data to send to form:", data.category_id);
+        console.log("Data to send to form:", data);
         navigate(`/edit-request/${data.id}`, { state: { procurementData: data } });
     };
 
