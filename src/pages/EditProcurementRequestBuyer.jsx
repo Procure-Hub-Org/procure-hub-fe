@@ -207,7 +207,7 @@ const EditProcurementForm = () => {
             if (response.status === 201) {
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
-                navigate("/buyer-procurement-requests"); // Redirect to the requests page
+                navigate("/buyer-request/:id"); // Redirect to the requests page
             } else {
                 alert("Request adding failed: " + response.data.message);
             }
