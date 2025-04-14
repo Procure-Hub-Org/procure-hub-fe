@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, use} from "react";
 import { useLocation } from 'react-router-dom';
 import PrimaryButton from "../components/Button/PrimaryButton";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,6 +23,7 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 // ikonice
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
 
 // import { useTheme } from "@mui/system";
 
@@ -41,7 +42,7 @@ const EditProcurementForm = () => {
         budgetMin: procurementData.budget_min,
         budgetMax: procurementData.budget_max,
         deadline: procurementData.deadline,
-        category: procurementData.procurementCategory,
+        category: procurementData.category_id,
         status: procurementData.status,
         items: procurementData.items,
         requirements: procurementData.requirements,
@@ -61,7 +62,7 @@ const EditProcurementForm = () => {
         }
         if (procurementData) {
             setFormData(procurementData);
-            setSelectedCategory(procurementData.category); 
+            setSelectedCategory(procurementData.category_id); 
         }
         fetchCategories(); // Fetch categories on component mount
     }, [token, procurementData]);
@@ -220,6 +221,10 @@ const EditProcurementForm = () => {
             }
         };
     }
+
+    const handleClosePreview = (id) => {
+        navigate(`/buyer-request/${id}`); // Redirect to the requests page
+    };
 
     return (
         <Layout>
@@ -405,6 +410,10 @@ const EditProcurementForm = () => {
                                     >
                                         + Add Requirement
                                     </OutlinedButton>
+
+                                    <SecondaryButton type="save-draft" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
+                                        Cancel
+                                    </SecondaryButton>
 
                                     <PrimaryButton type="save-draft" onClick={handleSaveDraft} startIcon={<SaveIcon />}>
                                         Save Draft
