@@ -23,6 +23,7 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 // ikonice
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
 
 // import { useTheme } from "@mui/system";
 
@@ -120,6 +121,10 @@ const ProcurementForm = () => {
         return category ? category.name : "Unknown Category";
     };
 
+    const handleCloseForm = () => {
+        navigate(`/buyer-procurement-requests`); // Redirect to the requests page
+    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -178,8 +183,8 @@ const ProcurementForm = () => {
             title: formData.title,
             description: formData.description,
             deadline: formData.deadline,
-            budget_min: formData.budgetMin,
-            budget_max: formData.budgetMax,
+            budget_min: Number(formData.budgetMin),
+            budget_max: Number(formData.budgetMax),
             category: getCategoryName(selectedCategory),
             status: "draft",
             location: formData.location,
@@ -401,6 +406,10 @@ const ProcurementForm = () => {
                                     >
                                         + Add Requirement
                                     </OutlinedButton>
+
+                                    <SecondaryButton type="button" onClick={() => handleCloseForm()} startIcon={<CloseIcon />}>
+                                        Cancel
+                                    </SecondaryButton>
 
                                     <PrimaryButton type="save-draft" onClick={handleSaveDraft} startIcon={<SaveIcon />}>
                                         Save Draft

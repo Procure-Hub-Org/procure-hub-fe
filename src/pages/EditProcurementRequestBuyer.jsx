@@ -302,7 +302,7 @@ const EditProcurementForm = () => {
                                     />
                                     <TextField
                                         label="Budget Min"
-                                        name="budgetMin"
+                                        name="budget_min"
                                         type="number"
                                         value={formData.budget_min}
                                         onChange={handleChange}
@@ -312,7 +312,7 @@ const EditProcurementForm = () => {
                                     />
                                     <TextField
                                         label="Budget Max"
-                                        name="budgetMax"
+                                        name="budget_max"
                                         type="number"
                                         value={formData.budget_max}
                                         onChange={handleChange}
