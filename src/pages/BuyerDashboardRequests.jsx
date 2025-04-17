@@ -70,6 +70,7 @@ const BuyerDashboardRequests = () => {
         { status: 'draft', label: 'Draft' },
         { status: 'closed', label: 'Closed'},
         { status: 'awarded', label: 'Awarded'},
+        { status: 'frozen', label: 'Frozen'},
     ];
 
     //Loading requests from backend
