@@ -58,11 +58,6 @@
   
   .table th, .table td {
     padding: 10px;
-    border: 1px solid #ddd; /* Ovo je osnovna boja, dinamičke boje za pozadinu i tekst idu u JSX */
-  }
-  
-  .table th {
-    background-color: #f2f2f2;
   }
   
   .table td {

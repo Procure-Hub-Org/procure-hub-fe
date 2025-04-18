@@ -67,12 +67,16 @@ const AdminProcurementDashboard = () => {
     const requestsPerPage = 5;
     const [dateFrom, setDateFrom] = useState("");
     const [dateTo, setDateTo] = useState("");
-    const [bidsFrom, setBidsFrom] = useState(0);
-    const [bidsTo, setBidsTo] = useState(0);
-    const [logsFrom, setLogsFrom] = useState(0);
-    const [logsTo, setLogsTo] = useState(0);
-    const [sidebarOpen, setSidebarOpen] = useState(true); 
-  const theme = useTheme();
+    const [bidsFrom, setBidsFrom] = useState("");
+    const [bidsTo, setBidsTo] = useState("");
+    const [logsFrom, setLogsFrom] = useState("");
+    const [logsTo, setLogsTo] = useState("");    
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [dateError, setDateError] = useState("");
+    const [bidsError, setBidsError] = useState("");
+    const [logsError, setLogsError] = useState("");
+ 
+    const theme = useTheme();
 
   const filteredRequests = requests
     .filter((req) => 
@@ -93,19 +97,30 @@ const AdminProcurementDashboard = () => {
       );
     })
     .filter((req) => {
-      // Filtriranje prema opsegu broja bidova
-      return (
-        (bidsFrom === 0 || req.bids >= bidsFrom) &&
-        (bidsTo === 0 || req.bids <= bidsTo)
-      );
-    })
-    .filter((req) => {
-      // Filtriranje prema opsegu broja logova
-      return (
-        (logsFrom === 0 || req.logs >= logsFrom) &&
-        (logsTo === 0 || req.logs <= logsTo)
-      );
-    });
+        const from = bidsFrom !== "" ? Number(bidsFrom) : null;
+        const to = bidsTo !== "" ? Number(bidsTo) : null;
+      
+        if ((from != null && from < 0) || (to != null && to < 0)) return false;
+        if (from != null && to != null && from > to) return false;
+      
+        return (
+          (from == null || req.bids >= from) &&
+          (to == null || req.bids <= to)
+        );
+      })
+      .filter((req) => {
+        const from = logsFrom !== "" ? Number(logsFrom) : null;
+        const to = logsTo !== "" ? Number(logsTo) : null;
+      
+        if ((from != null && from < 0) || (to != null && to < 0)) return false;
+        if (from != null && to != null && from > to) return false;
+      
+        return (
+          (from == null || req.logs >= from) &&
+          (to == null || req.logs <= to)
+        );
+      })
+      
 
   const indexOfLast = currentPage * requestsPerPage;
   const indexOfFirst = indexOfLast - requestsPerPage;
@@ -120,6 +135,42 @@ const AdminProcurementDashboard = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // toggle sidebar visibility
   };
+
+  useEffect(() => {
+    let isValid = true;
+  
+    // Date validation
+    if (dateFrom && dateTo && new Date(dateFrom) > new Date(dateTo)) {
+      setDateError("Start date must be earlier than or equal to end date.");
+      isValid = false;
+    } else {
+      setDateError("");
+    }
+  
+    // Bids validation
+    if ((bidsFrom && bidsFrom < 0) || (bidsTo && bidsTo < 0)) {
+      setBidsError("Number of bids cannot be negative.");
+      isValid = false;
+    } else if (bidsFrom && bidsTo && Number(bidsFrom) > Number(bidsTo)) {
+      setBidsError("Minimum number of bids must be less than or equal to maximum.");
+      isValid = false;
+    } else {
+      setBidsError("");
+    }
+  
+    // Logs validation
+    if ((logsFrom && logsFrom < 0) || (logsTo && logsTo < 0)) {
+      setLogsError("Number of logs cannot be negative.");
+      isValid = false;
+    } else if (logsFrom && logsTo && Number(logsFrom) > Number(logsTo)) {
+      setLogsError("Minimum number of logs must be less than or equal to maximum.");
+      isValid = false;
+    } else {
+      setLogsError("");
+    }
+  }, [dateFrom, dateTo, bidsFrom, bidsTo, logsFrom, logsTo]);
+  
+  
 
   return (
     <Layout>
@@ -160,10 +211,11 @@ const AdminProcurementDashboard = () => {
                     value={dateTo}
                     onChange={(e) => setDateTo(e.target.value)}
                     />
+                    {dateError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{dateError}</div>)}
                 </div>
 
                 <div>
-                    <label>From and To Bids</label>
+                    <label>Bids</label>
                     <CustomTextField
                     label="From"
                     type="number"
@@ -176,10 +228,11 @@ const AdminProcurementDashboard = () => {
                     value={bidsTo}
                     onChange={(e) => setBidsTo(e.target.value)}
                     />
+                    {bidsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{bidsError}</div>)}
                 </div>
 
                 <div>
-                    <label>From and To Logs</label>
+                    <label>Logs</label>
                     <CustomTextField
                     label="From"
                     type="number"
@@ -192,7 +245,24 @@ const AdminProcurementDashboard = () => {
                     value={logsTo}
                     onChange={(e) => setLogsTo(e.target.value)}
                     />
+                    {logsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{logsError}</div>)}
                 </div>
+                <PrimaryButton
+                    onClick={() => {
+                        setEmailSearch("");
+                        setStatusFilter("");
+                        setDateFrom("");
+                        setDateTo("");
+                        setBidsFrom("");
+                        setBidsTo("");
+                        setLogsFrom("");
+                        setLogsTo("");
+                    }}
+                    style={{ marginTop: "20px" }}
+                    >
+                    Clear Filters
+                </PrimaryButton>
+
                 </div>
             )}
         </div>
