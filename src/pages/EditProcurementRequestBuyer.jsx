@@ -4,6 +4,7 @@ import PrimaryButton from "../components/Button/PrimaryButton";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
+import Checkbox from "@mui/material/Checkbox";
 import { isAuthenticated, isBuyer } from '../utils/auth';
 import {
     AppBar,
@@ -25,6 +26,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { DateTimeField } from "@mui/x-date-pickers";
+import { Check } from "lucide-react";
 
 // import { useTheme } from "@mui/system";
 
@@ -34,6 +36,8 @@ const EditProcurementForm = () => {
     const [criterias, setCriteriaTypes] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedCriteria, setSelectedCriteria] = useState("");
+    const [enableBidEditing, setEnableBidEditing] = useState(false);
+    const [bidEditDeadline, setBidEditDeadline] = useState("");
     const token = localStorage.getItem("token");
     const location = useLocation();
     const {procurementData} = location.state;
@@ -176,9 +180,48 @@ const EditProcurementForm = () => {
         return category ? category.name : "Unknown Category";
     };
 
+    const validateFormData = (formData, enableBidEditing, bidEditDeadline) => {
+        // Criteria validation
+        const totalWeight = formData.criteria.reduce((sum, crit) => sum + Number(crit.weight), 0);
+        if (totalWeight !== 100) {
+            return { valid: false, message: "Sum of criteria weights must be 100%." };
+        }
+    
+        const uniqueIds = new Set();
+        for (const crit of formData.criteria) {
+            if (uniqueIds.has(crit.id)) {
+                return { valid: false, message: `Criteria '${crit.name}' is added more than once.` };
+            }
+            uniqueIds.add(crit.id);
+        }
+    
+        // Bid editing deadline validation
+        if (enableBidEditing) {
+            if (!bidEditDeadline) {
+                return { valid: false, message: "Set the deadline for bid proposals editing." };
+            }
+    
+            const bidDate = new Date(bidEditDeadline);
+            const mainDeadline = new Date(formData.deadline);
+    
+            if (bidDate >= mainDeadline) {
+                return { valid: false, message: "The bid proposal editing deadline must be before the deadline of procurement request." };
+            }
+        }
+    
+        return { valid: true };
+    };
+    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
+        if (!validation.valid) {
+            alert(validation.message);
+            return;
+        }
 
         const requestData = {
             title: formData.title,
@@ -192,7 +235,7 @@ const EditProcurementForm = () => {
             items: formData.items,
             requirements: formData.requirements,
             criteria: formData.criteria,
-            bid_edit_deadline: formData.bid_edit_deadline,
+            bid_edit_deadline: formData.bid_edit_deadline ? bidEditDeadline : null,
         };
           
     
@@ -230,6 +273,13 @@ const EditProcurementForm = () => {
         e.preventDefault();
         console.log("Submitted form:", formData);
         console.log("Selected category:", selectedCategory);
+        console.log("Selected criteria:", selectedCriteria);
+
+        const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
+        if (!validation.valid) {
+            alert(validation.message);
+            return;
+        }
 
         const requestData = {
             title: formData.title,
@@ -243,7 +293,7 @@ const EditProcurementForm = () => {
             items: formData.items,
             requirements: formData.requirements,
             criteria: formData.criteria,
-            bid_edit_deadline: formData.bid_edit_deadline,
+            bid_edit_deadline: formData.bid_edit_deadline ? bidEditDeadline : null,
         };
           
     
@@ -486,7 +536,7 @@ const EditProcurementForm = () => {
                                             />
                                             
                                             <TextField
-                                                label="Criteria Weight"
+                                                label="Criteria Weight (%)"	
                                                 value={crit.weight}
                                                 onChange={(e) =>
                                                     handleCriteriaChange(index, "weight", e.target.value)
@@ -494,6 +544,17 @@ const EditProcurementForm = () => {
                                                 fullWidth
                                                 required
                                             />
+
+                                            <Checkbox
+                                                label="Is must-have"
+                                                checked={crit.isChecked}
+                                                onChange={(e) =>
+                                                    handleCriteriaChange(index, "isChecked", e.target.checked)
+                                                }
+                                                color="primary"
+                                                inputProps={{ "aria-label": "primary checkbox" }}
+                                            />
+
                                             {formData.criteria.length > 1 && (
                                                 <SecondaryButton
                                                     onClick={() => removeCriteria(index)}
@@ -511,6 +572,31 @@ const EditProcurementForm = () => {
                                     >
                                         + Add Criteria
                                     </OutlinedButton>
+
+                                    <Checkbox
+                                        label="Enable Bid Editing"
+                                        checked={enableBidEditing}
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            setEnableBidEditing(checked);
+                                            if (checked && formData.deadline) {
+                                              setBidEditDeadline(formData.deadline); // deadline is set to the same value as the main deadline
+                                            } else {
+                                              setBidEditDeadline("");
+                                            }
+                                        }}
+                                    />
+
+                                    {enableBidEditing && (
+                                        <TextField
+                                            label="Deadline for Bid Editing"
+                                            type="datetime-local"
+                                            value={bidEditDeadline}
+                                            onChange={(e) => setBidEditDeadline(e.target.value)}
+                                            InputLabelProps={{ shrink: true }}
+                                            required
+                                        />
+                                    )}
 
                                     <SecondaryButton type="button" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
                                         Cancel
