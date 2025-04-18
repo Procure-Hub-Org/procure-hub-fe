@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState } from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import Layout from "../components/Layout/Layout.jsx";
-import {Box, Card, CardContent, Chip, Container, Typography} from "@mui/material";
+import {Box, Card, CardContent, Chip, Container, Typography, Button} from "@mui/material";
 // import PrimaryButton from "../components/Button/PrimaryButton.jsx";
 // import EditIcon from "@mui/icons-material/Edit";
 // import SendIcon from "@mui/icons-material/Send";
@@ -11,29 +11,9 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import {isAuthenticated, isAdmin} from "../utils/auth.jsx";
 import axios from "axios";
 import {useTheme} from "@mui/material/styles";
+import OutlinedButton from "../components/Button/OutlinedButton.jsx";
+import PrimaryButton from "../components/Button/PrimaryButton.jsx";
 
-/* Dummy data jer nije implemented api*/
-const dummyData = {
-    id: 1,
-    title: "Procurement of Office Chairs",
-    description: "Need ergonomic chairs for all offices",
-    location: "Sarajevo",
-    deadline: "2025-05-01",
-    budget_min: 500,
-    budget_max: 1500,
-    status: "draft",
-    procurementCategory: {
-        name: "Office Equipment"
-    },
-    items: [
-        { title: "Chair Model A", description: "Mesh back, adjustable height", quantity: 20 },
-        { title: "Chair Model B", description: "Leather, fixed arms", quantity: 10 }
-    ],
-    requirements: [
-        { type: "Delivery", description: "Within 10 days after contract signing" },
-        { type: "Warranty", description: "Minimum 2 years" }
-    ]
-};
 
 const AdminProcurementPreview = () => {
     const navigate = useNavigate();
@@ -72,6 +52,36 @@ const AdminProcurementPreview = () => {
         navigate('/admin-procurement-requests')
     };
 
+    {/* Manage bids - mock data for now*/}
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 2;  // Number of bids per page
+
+    const mockBids = [
+        { seller: "Seller 1", price: "1000 BAM", timeline: "30 days", proposalText: "Proposal for procurement request 1", submittedAt: "2025-04-10 12:30" },
+        { seller: "Seller 2", price: "1200 BAM", timeline: "25 days", proposalText: "Proposal for procurement request 2", submittedAt: "2025-04-12 14:15" },
+        { seller: "Seller 3", price: "950 BAM", timeline: "35 days", proposalText: "Proposal for procurement request 3", submittedAt: "2025-04-14 10:00" },
+        { seller: "Seller 4", price: "1100 BAM", timeline: "28 days", proposalText: "Proposal for procurement request 4", submittedAt: "2025-04-15 08:00" },
+        { seller: "Seller 5", price: "1050 BAM", timeline: "32 days", proposalText: "Proposal for procurement request 5", submittedAt: "2025-04-17 13:00" },
+        { seller: "Seller 6", price: "980 BAM", timeline: "40 days", proposalText: "Proposal for procurement request 6", submittedAt: "2025-04-20 09:30" }
+    ];
+
+    const indexOfLastBid = currentPage * itemsPerPage;
+    const indexOfFirstBid = indexOfLastBid - itemsPerPage;
+    const currentBids = mockBids.slice(indexOfFirstBid, indexOfLastBid);
+
+    const handleNextPage = () => {
+        if (currentPage < Math.ceil(mockBids.length / itemsPerPage)) {
+            setCurrentPage(prev => prev + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(prev => prev - 1);
+        }
+    };
+    //---------------------------------------------------------------------
+
     if (!data) {
         return (
             <Layout>
@@ -83,9 +93,9 @@ const AdminProcurementPreview = () => {
     }else{
         return (
             <Layout>
-                <Container maxWidth="sm">
+                <Container maxWidth="md">
                     {/* Request details - preview of the request and additional buttons*/}
-                    <Container maxWidth="sm">
+                    <Container maxWidth="md">
                         <Box sx={{mt: 4, position: "relative"}}>
                             {/* Status and Awarded-to Box Grouped */}
                             <Box sx={{
@@ -183,10 +193,36 @@ const AdminProcurementPreview = () => {
                         </Box>
                     </Container>
                     {/* List of bids related to the request*/}
-                    <Container maxWidth="sm"></Container>
-                    <SecondaryButton onClick={handleClose}>
-                        Close Preview
-                    </SecondaryButton>
+                    <Container maxWidth="md">
+                        <Box sx={{mt: 4, position: "relative"}}>
+                            <Typography variant="h5" fontWeight={"bolder"}>Bids</Typography>
+                            {currentBids.map((bid, index) => (
+                                <Box key={index} sx={{
+                                    mb: 2,
+                                    p: 2,
+                                    border: '1px solid #ccc',
+                                    borderRadius: 2,
+                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                }}>
+                                    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>Seller: {bid.seller}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Price: {bid.price}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Timeline: {bid.timeline}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Proposal: {bid.proposalText}</Typography>
+                                    <Typography variant="body2" sx={{ mb: 1 }}>Submitted at: {bid.submittedAt}</Typography>
+                                </Box>
+                            ))}
+                            {/* Pagination controls */}
+                            <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
+                                <PrimaryButton variant="outlined" onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</PrimaryButton>
+                                <OutlinedButton variant="outlined" onClick={handleNextPage} disabled={currentPage === Math.ceil(mockBids.length / itemsPerPage)}>Next</OutlinedButton>
+                            </Box>
+                        </Box>
+                    </Container>
+                    <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+                        <SecondaryButton onClick={handleClose}>
+                            Close Preview
+                        </SecondaryButton>
+                    </Box>
                 </Container>
             </Layout>
         );
