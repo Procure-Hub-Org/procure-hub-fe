@@ -65,6 +65,11 @@ const AdminProcurementPreview = () => {
         { seller: "Seller 6", price: "980 BAM", timeline: "40 days", proposalText: "Proposal for procurement request 6", submittedAt: "2025-04-20 09:30" }
     ];
 
+    const mockLogs = [
+        { action: "Created", time: "2025-04-10 12:30", user: "Admin" },
+        { action: "Edited", time: "2025-04-12 14:15", user: "Admin" }
+    ];
+
     const indexOfLastBid = currentPage * itemsPerPage;
     const indexOfFirstBid = indexOfLastBid - itemsPerPage;
     const currentBids = mockBids.slice(indexOfFirstBid, indexOfLastBid);
@@ -79,6 +84,13 @@ const AdminProcurementPreview = () => {
         if (currentPage > 1) {
             setCurrentPage(prev => prev - 1);
         }
+    };
+
+    // Manage view toggling between bids and logs
+    const [view, setView] = useState('bids'); // 'bids' or 'logs'
+
+    const toggleView = (newView) => {
+        setView(newView);
     };
     //---------------------------------------------------------------------
 
@@ -192,31 +204,72 @@ const AdminProcurementPreview = () => {
                             </Card>
                         </Box>
                     </Container>
+
                     {/* List of bids related to the request*/}
+
                     <Container maxWidth="md">
-                        <Box sx={{mt: 4, position: "relative"}}>
-                            <Typography variant="h5" fontWeight={"bolder"}>Bids</Typography>
-                            {currentBids.map((bid, index) => (
-                                <Box key={index} sx={{
-                                    mb: 2,
-                                    p: 2,
-                                    border: '1px solid #ccc',
-                                    borderRadius: 2,
-                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                                }}>
-                                    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>Seller: {bid.seller}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Price: {bid.price}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Timeline: {bid.timeline}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Proposal: {bid.proposalText}</Typography>
-                                    <Typography variant="body2" sx={{ mb: 1 }}>Submitted at: {bid.submittedAt}</Typography>
+                        <Card sx={{ mt: 3}}>
+                            <CardContent>
+                                {/* Toggle between bids and logs */}
+                                <Box sx={{display: 'flex', mb: 2}}>
+                                    <PrimaryButton onClick={() => toggleView('bids')} sx={{ marginRight: 2, textTransform: 'none'}} variant={view === 'bids' ? 'contained' : 'outlined'}>Bids</PrimaryButton>
+                                    <PrimaryButton onClick={() => toggleView('logs')} variant={view === 'logs' ? 'contained' : 'outlined'}>Logs</PrimaryButton>
                                 </Box>
-                            ))}
-                            {/* Pagination controls */}
-                            <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-                                <PrimaryButton variant="outlined" onClick={handlePreviousPage} disabled={currentPage === 1}>Previous</PrimaryButton>
-                                <OutlinedButton variant="outlined" onClick={handleNextPage} disabled={currentPage === Math.ceil(mockBids.length / itemsPerPage)}>Next</OutlinedButton>
-                            </Box>
-                        </Box>
+
+                                {view === 'bids' && (
+                                    <>
+                                        {mockBids.map((bid, index) => (
+                                            <Box key={index} sx={{
+                                                mb: 2,
+                                                p: 2,
+                                                border: '1px solid #ccc',
+                                                borderRadius: 2,
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                            }}>
+                                                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>Seller: {bid.seller}</Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>Price:</strong> {bid.price}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>Timeline:</strong> {bid.timeline}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>Proposal:</strong> {bid.proposalText}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>Submitted at:</strong> {bid.submittedAt}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </>
+                                )}
+
+                                {view === 'logs' && (
+                                    <>
+                                        {mockLogs.map((log, index) => (
+                                            <Box key={index} sx={{
+                                                mb: 2,
+                                                p: 2,
+                                                border: '1px solid #ccc',
+                                                borderRadius: 2,
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                            }}>
+                                                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                                                    <strong>Action:</strong> {log.action}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>Time:</strong> {log.time}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    <strong>User:</strong> {log.user}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </>
+                                )}
+                            </CardContent>
+                        </Card>
+
                     </Container>
                     <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
                         <SecondaryButton onClick={handleClose}>
