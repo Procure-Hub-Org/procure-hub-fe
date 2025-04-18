@@ -58,6 +58,7 @@ const EditProcurementForm = () => {
         items: procurementData.items,
         requirements: procurementData.requirements,
         criteria: procurementData.criteria,
+        bid_edit_deadline: procurementData.bid_edit_deadline,
     });
 
     const navigate = useNavigate();
@@ -125,6 +126,12 @@ const EditProcurementForm = () => {
         setFormData((prev) => ({ ...prev, requirements: updated }));
     };
 
+    const handleCriteriaChange = (index, field, value) => {
+        const updated = [...formData.criteria];
+        updated[index][field] = value;
+        setFormData((prev) => ({ ...prev, criteria: updated }));
+    };
+
     const addItem = () => {
         setFormData((prev) => ({
             ...prev,
@@ -139,6 +146,13 @@ const EditProcurementForm = () => {
         }));
     };
 
+    const addCriteria = () => {
+        setFormData((prev) => ({
+            ...prev,
+            criteria: [...prev.criteria, { type: "", weight: 0 }],
+        }));
+    };
+
     const removeItem = (index) => {
         const updated = [...formData.items];
         updated.splice(index, 1);
@@ -149,6 +163,12 @@ const EditProcurementForm = () => {
         const updated = [...formData.requirements];
         updated.splice(index, 1);
         setFormData((prev) => ({ ...prev, requirements: updated }));
+    };
+
+    const removeCriteria = (index) => {
+        const updated = [...formData.criteria];
+        updated.splice(index, 1);
+        setFormData((prev) => ({ ...prev, criteria: updated }));
     };
 
     const getCategoryName = (id) => {
@@ -171,6 +191,8 @@ const EditProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
+            criteria: formData.criteria,
+            bid_edit_deadline: formData.bid_edit_deadline,
         };
           
     
@@ -220,6 +242,8 @@ const EditProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
+            criteria: formData.criteria,
+            bid_edit_deadline: formData.bid_edit_deadline,
         };
           
     
@@ -441,6 +465,51 @@ const EditProcurementForm = () => {
                                         sx={{ mb: 2 }}
                                     >
                                         + Add Requirement
+                                    </OutlinedButton>
+
+                                    <Typography variant="subtitle1" sx={{ mt: 3 }}>
+                                        Criteria
+                                    </Typography>
+                                    {formData.criteria.map((crit, index) => (
+                                        <Box key={index} sx={{ mb: 2 }}>
+                                            <CustomSelect
+                                                label="Criteria Type"
+                                                name="criteria"
+                                                value={selectedCriteria}
+                                                onChange={(e) => setSelectedCriteria(e.target.value)}
+                                                options={[
+                                                    ...criterias.map((c) => ({
+                                                        label: c.name,
+                                                        value: c.id,
+                                                    })),
+                                                ]}
+                                            />
+                                            
+                                            <TextField
+                                                label="Criteria Weight"
+                                                value={crit.weight}
+                                                onChange={(e) =>
+                                                    handleCriteriaChange(index, "weight", e.target.value)
+                                                }
+                                                fullWidth
+                                                required
+                                            />
+                                            {formData.criteria.length > 1 && (
+                                                <SecondaryButton
+                                                    onClick={() => removeCriteria(index)}
+                                                    fullWidth
+                                                >
+                                                    Remove Criteria
+                                                </SecondaryButton>
+                                            )}
+                                        </Box>
+                                    ))}
+                                    <OutlinedButton
+                                        onClick={addCriteria}
+                                        fullWidth
+                                        sx={{ mb: 2 }}
+                                    >
+                                        + Add Criteria
                                     </OutlinedButton>
 
                                     <SecondaryButton type="button" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
