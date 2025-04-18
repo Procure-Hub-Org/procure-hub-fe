@@ -31,7 +31,9 @@ import { DateTimeField } from "@mui/x-date-pickers";
 const EditProcurementForm = () => {
     const { id } = useParams(); // Preuzimanje `id` iz parametara rute
     const [categories, setCategories] = useState([]);
+    const [criterias, setCriteriaTypes] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedCriteria, setSelectedCriteria] = useState("");
     const token = localStorage.getItem("token");
     const location = useLocation();
     const {procurementData} = location.state;
@@ -55,6 +57,7 @@ const EditProcurementForm = () => {
         status: procurementData.status,
         items: procurementData.items,
         requirements: procurementData.requirements,
+        criteria: procurementData.criteria,
     });
 
     const navigate = useNavigate();
@@ -78,6 +81,7 @@ const EditProcurementForm = () => {
             setSelectedCategory(procurementData.category_id); 
         }
         fetchCategories(); // Fetch categories on component mount
+        fetchCriteriaTypes(); // Fetch criterias on component mount
     }, [token, procurementData]);
 
     const fetchCategories = async () => {
@@ -89,6 +93,18 @@ const EditProcurementForm = () => {
             console.log("Fetched categories:", response.data.data);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
+        }
+    };
+
+    const fetchCriteriaTypes = async () => {
+        try {
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/api/procurement-criterias`
+            );
+            setCriteriaTypes(response.data.data);
+            console.log("Fetched criterias:", response.data.data);
+        } catch (error) {
+            console.error("Failed to fetch criteria:", error);
         }
     };
 
