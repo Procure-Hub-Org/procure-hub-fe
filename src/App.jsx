@@ -17,6 +17,7 @@ import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
 import AdminProcurementDashboard from "./pages/AdminProcurementRequests.jsx";
+import AdminProcurementPreview from "./pages/AdminProcurementPreview.jsx";
 
 function App() {
   return (
@@ -109,6 +110,14 @@ function App() {
         element={
           <AdminRoute>
             <AdminProcurementDashboard />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin-procurement-requests/:id"
+        element={
+          <AdminRoute>
+              <AdminProcurementPreview />
           </AdminRoute>
         }
       />

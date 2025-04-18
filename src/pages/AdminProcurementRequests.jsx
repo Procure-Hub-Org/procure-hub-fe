@@ -10,6 +10,8 @@ import CustomInput from "../components/Input/CustomInput";
 import { Eye, Flag, ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/Admin.css";
 import "../styles/AdminProcurementRequests.css";
+import {useNavigate, useParams} from "react-router-dom";
+
 
 const dummyRequests = [
   {
@@ -77,6 +79,9 @@ const AdminProcurementDashboard = () => {
     const [logsError, setLogsError] = useState("");
  
     const theme = useTheme();
+
+  const navigate = useNavigate();
+
 
   const filteredRequests = requests
     .filter((req) => 
@@ -302,7 +307,7 @@ useEffect(() => {
                 <tr
                   key={req.id}
                   className="tr"
-                  onClick={() => alert("View " + req.id)} // Kada se klikne na red
+                  onClick={() => navigate(`/admin-procurement-requests/${req.id}`)} // Kada se klikne na red
                   style={{ cursor: "pointer" }}
                 >
                   <td className="td">{req.title}</td>
