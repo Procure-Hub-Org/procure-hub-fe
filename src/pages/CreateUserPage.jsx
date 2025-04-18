@@ -203,26 +203,6 @@ const CreateUserPage = () => {
           "Company name can only contain letters, numbers, spaces, and certain special characters",
       },
     ],
-    company_name: [
-      {
-        test: (value) => formData.role === "admin" || !!value,
-        message: "Company name is required",
-      },
-      {
-        test: (value) => formData.role === "admin" || value.length >= 2,
-        message: "Company name must be at least 2 characters long",
-      },
-      {
-        test: (value) => formData.role === "admin" || value.length <= 50,
-        message: "Company name cannot exceed 50 characters",
-      },
-      {
-        test: (value) =>
-          formData.role === "admin" || /^[A-Za-z0-9\s,.-]+$/.test(value),
-        message:
-          "Company name can only contain letters, numbers, spaces, and certain special characters",
-      },
-    ],
     company_address: [
       {
         test: (value) => formData.role === "admin" || !!value,
