@@ -136,40 +136,40 @@ const AdminProcurementDashboard = () => {
     setSidebarOpen(!sidebarOpen); // toggle sidebar visibility
   };
 
-  useEffect(() => {
-    let isValid = true;
-  
-    // Date validation
-    if (dateFrom && dateTo && new Date(dateFrom) > new Date(dateTo)) {
-      setDateError("Start date must be earlier than or equal to end date.");
-      isValid = false;
-    } else {
-      setDateError("");
-    }
-  
-    // Bids validation
-    if ((bidsFrom && bidsFrom < 0) || (bidsTo && bidsTo < 0)) {
-      setBidsError("Number of bids cannot be negative.");
-      isValid = false;
-    } else if (bidsFrom && bidsTo && Number(bidsFrom) > Number(bidsTo)) {
-      setBidsError("Minimum number of bids must be less than or equal to maximum.");
-      isValid = false;
-    } else {
-      setBidsError("");
-    }
-  
-    // Logs validation
-    if ((logsFrom && logsFrom < 0) || (logsTo && logsTo < 0)) {
-      setLogsError("Number of logs cannot be negative.");
-      isValid = false;
-    } else if (logsFrom && logsTo && Number(logsFrom) > Number(logsTo)) {
-      setLogsError("Minimum number of logs must be less than or equal to maximum.");
-      isValid = false;
-    } else {
-      setLogsError("");
-    }
-  }, [dateFrom, dateTo, bidsFrom, bidsTo, logsFrom, logsTo]);
-  
+useEffect(() => {
+  let isValid = true;
+
+  // Date validation
+  if (dateFrom && dateTo && new Date(dateFrom) > new Date(dateTo)) {
+    setDateError("Start date must be earlier than or equal to end date.");
+    isValid = false;
+  } else {
+    setDateError("");
+  }
+
+  // Bids validation
+  if ((bidsFrom && bidsFrom < 0) || (bidsTo && bidsTo < 0)) {
+    setBidsError("Number of bids cannot be negative.");
+    isValid = false;
+  } else if (bidsFrom && bidsTo && Number(bidsFrom) > Number(bidsTo)) {
+    setBidsError("Minimum number of bids must be less than or equal to maximum.");
+    isValid = false;
+  } else {
+    setBidsError("");
+  }
+
+  // Logs validation
+  if ((logsFrom && logsFrom < 0) || (logsTo && logsTo < 0)) {
+    setLogsError("Number of logs cannot be negative.");
+    isValid = false;
+  } else if (logsFrom && logsTo && Number(logsFrom) > Number(logsTo)) {
+    setLogsError("Minimum number of logs must be less than or equal to maximum.");
+    isValid = false;
+  } else {
+    setLogsError("");
+  }
+}, [dateFrom, dateTo, bidsFrom, bidsTo, logsFrom, logsTo]);
+
   
 
   return (
@@ -186,68 +186,77 @@ const AdminProcurementDashboard = () => {
             {sidebarOpen && (
                 <div>
                 <h4>Filters</h4>
-                <CustomSearchInput
-                    label="Search by Email"
-                    value={emailSearch}
-                    onChange={(e) => setEmailSearch(e.target.value)}
-                    placeholder="Enter email"
-                />
-                <CustomDropdownSelect
-                    label="Status"
-                    options={statusOptions}
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                <div style={{ marginBottom: '-15px' }}>
+        <CustomSearchInput
+            label="Search by Email"
+            value={emailSearch}
+            onChange={(e) => setEmailSearch(e.target.value)}
+            placeholder="Enter email"
+        />
+    </div>
+    <div>
+        <CustomDropdownSelect
+            label="Status"
+            options={statusOptions}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+        />
+    </div>
 
-                <div>
-                    <label>From and To Date</label>
-                    <CustomTextField
-                    type="date"
-                    value={dateFrom}
-                    onChange={(e) => setDateFrom(e.target.value)}
-                    />
-                    <CustomTextField
-                    type="date"
-                    value={dateTo}
-                    onChange={(e) => setDateTo(e.target.value)}
-                    />
-                    {dateError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{dateError}</div>)}
-                </div>
+    <div>
+        <label style={{ marginBottom: '-8px', display: 'block' }}>From and To Date</label>
+        <CustomTextField
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            style={{ marginBottom: '-5px' }}
+        />
+        <CustomTextField
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+        />
+        {dateError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{dateError}</div>)}
+    </div>
+    <div>
+        <label style={{ marginBottom: '-8px', display: 'block' }}>Bids</label>
+        <div style={{ display: 'flex', gap: '0px' }}>
+            <CustomTextField
+                label="From"
+                type="number"
+                value={bidsFrom}
+                onChange={(e) => setBidsFrom(e.target.value)}
+            />
+            <CustomTextField
+                label="To"
+                type="number"
+                value={bidsTo}
+                onChange={(e) => setBidsTo(e.target.value)}
+            />
+        </div>
+        {bidsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{bidsError}</div>)}
+    </div>
 
-                <div>
-                    <label>Bids</label>
-                    <CustomTextField
-                    label="From"
-                    type="number"
-                    value={bidsFrom}
-                    onChange={(e) => setBidsFrom(e.target.value)}
-                    />
-                    <CustomTextField
-                    label="To"
-                    type="number"
-                    value={bidsTo}
-                    onChange={(e) => setBidsTo(e.target.value)}
-                    />
-                    {bidsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{bidsError}</div>)}
-                </div>
-
-                <div>
-                    <label>Logs</label>
-                    <CustomTextField
-                    label="From"
-                    type="number"
-                    value={logsFrom}
-                    onChange={(e) => setLogsFrom(e.target.value)}
-                    />
-                    <CustomTextField
-                    label="To"
-                    type="number"
-                    value={logsTo}
-                    onChange={(e) => setLogsTo(e.target.value)}
-                    />
-                    {logsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{logsError}</div>)}
-                </div>
-                <PrimaryButton
+    <div>
+        <label style={{ marginBottom: '-8px', display: 'block' }}>Logs</label>
+        <div style={{ display: 'flex', gap: '0px' }}>
+            <CustomTextField
+                label="From"
+                type="number"
+                value={logsFrom}
+                onChange={(e) => setLogsFrom(e.target.value)}
+            />
+            <CustomTextField
+                label="To"
+                type="number"
+                value={logsTo}
+                onChange={(e) => setLogsTo(e.target.value)}
+            />
+        </div>
+        {logsError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{logsError}</div>)}
+    </div>
+    <PrimaryButton
                     onClick={() => {
                         setEmailSearch("");
                         setStatusFilter("");
@@ -258,10 +267,12 @@ const AdminProcurementDashboard = () => {
                         setLogsFrom("");
                         setLogsTo("");
                     }}
-                    style={{ marginTop: "20px" }}
+                    style={{ marginTop: "5px" }}
                     >
                     Clear Filters
                 </PrimaryButton>
+</div>
+                
 
                 </div>
             )}
@@ -296,12 +307,13 @@ const AdminProcurementDashboard = () => {
                 >
                   <td className="td">{req.title}</td>
                   <td className="td">{req.description}</td>
-                  <td className="td">{req.category}</td>
-                  <td className="td">{req.status}</td>
-                  <td className="td">{req.deadline}</td>
-                  <td className="td">{req.bids}</td>
-                  <td className="td">{req.logs}</td>
-                  <td className="td">{req.buyerEmail}</td>
+                  <td className="td td-center">{req.category}</td>
+                  <td className="td td-center">{req.status}</td>
+                  <td className="td td-center">{req.deadline}</td>
+                  <td className="td td-center">{req.bids}</td>
+                  <td className="td td-center">{req.logs}</td>
+                  <td className="td td-center">{req.buyerEmail}</td>
+
                   <td className="td">
                     {req.flagged && <Flag color="red" size={20} />}
                   </td>

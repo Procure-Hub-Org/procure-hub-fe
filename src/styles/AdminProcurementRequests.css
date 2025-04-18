@@ -59,7 +59,9 @@
   .table th, .table td {
     padding: 10px;
   }
-  
+  .table .td-center{
+    text-align: center;
+  }
   .table td {
     text-align: left;
   }
@@ -73,4 +75,3 @@
     padding: 20px;
     background: #f8f8f8;
   }
-  
