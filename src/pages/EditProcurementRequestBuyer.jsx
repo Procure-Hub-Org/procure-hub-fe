@@ -16,6 +16,7 @@ import {
     Select,
     TextField,
     Typography,
+    FormControlLabel,
 } from "@mui/material";
 import axios from "axios";
 import Layout from "../components/Layout/Layout";
@@ -545,14 +546,18 @@ const EditProcurementForm = () => {
                                                 required
                                             />
 
-                                            <Checkbox
-                                                label="Is must-have"
-                                                checked={crit.isChecked}
-                                                onChange={(e) =>
-                                                    handleCriteriaChange(index, "isChecked", e.target.checked)
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                    checked={!!crit.isChecked}
+                                                    onChange={(e) =>
+                                                        handleCriteriaChange(index, "isChecked", e.target.checked)
+                                                    }
+                                                    color="primary"
+                                                    inputProps={{ "aria-label": "primary checkbox" }}
+                                                    />
                                                 }
-                                                color="primary"
-                                                inputProps={{ "aria-label": "primary checkbox" }}
+                                                label="Is must-have"
                                             />
 
                                             {formData.criteria.length > 1 && (
@@ -573,31 +578,35 @@ const EditProcurementForm = () => {
                                         + Add Criteria
                                     </OutlinedButton>
 
-                                    <Checkbox
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={enableBidEditing}
+                                                onChange={(e) => {
+                                                    const checked = e.target.checked;
+                                                    setEnableBidEditing(checked);
+                                                    if (!checked) {
+                                                        setBidEditDeadline("");
+                                                    }
+                                                }}
+                                                color="primary"
+                                            />
+                                        }
                                         label="Enable Bid Editing"
-                                        checked={enableBidEditing}
-                                        onChange={(e) => {
-                                            const checked = e.target.checked;
-                                            setEnableBidEditing(checked);
-                                            if (checked && formData.deadline) {
-                                              setBidEditDeadline(formData.deadline); // deadline is set to the same value as the main deadline
-                                            } else {
-                                              setBidEditDeadline("");
-                                            }
-                                        }}
                                     />
 
                                     {enableBidEditing && (
                                         <TextField
-                                            label="Deadline for Bid Editing"
-                                            type="datetime-local"
+                                            label="Bid Editing Deadline"
+                                            type="date" 
                                             value={bidEditDeadline}
                                             onChange={(e) => setBidEditDeadline(e.target.value)}
-                                            InputLabelProps={{ shrink: true }}
+                                            fullWidth
                                             required
+                                            sx={{ mt: 2 }}
+                                            InputLabelProps={{ shrink: true }}
                                         />
                                     )}
-
                                     <SecondaryButton type="button" onClick={() => handleClosePreview(id)} startIcon={<CloseIcon />}>
                                         Cancel
                                     </SecondaryButton>
