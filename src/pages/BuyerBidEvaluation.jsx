@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import BidProposalCard from '../components/Cards/BidProposalCard';
 import CustomSelect from '../components/Input/DropdownSelect';
-import EvaluationModal from '../components/Modals/EvaluationModal'; // Update this if you move the file
+import EvaluationModal from '../components/Modals/EvaluationModal';
 import { mockBidProposals } from '../mockData/mockBidProposals';
-import '../styles/BuyerBidAndEvaluation.css';
+import '../styles/BuyerBidEvaluation.css';
 
 const BuyerBidEvaluation = () => {
+  const { id } = useParams();
   const [bidProposals, setBidProposals] = useState([]);
   const [selectedBidId, setSelectedBidId] = useState(null);
   const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
@@ -14,19 +16,19 @@ const BuyerBidEvaluation = () => {
   const [procurementRequest, setProcurementRequest] = useState(null);
 
   useEffect(() => {
-    const procurementId = new URLSearchParams(window.location.search).get('id');
+    console.log("Procurement ID:", id);
     
-    // Mock podaci for test
+    // Mock podaci za test
     setBidProposals(mockBidProposals);
     setProcurementRequest({
-      id: procurementId || '1',
+      id: id || '1',
       title: 'Software Development Services',
       status: 'Active',
       deadline: '2025-05-30',
       budget: '50000',
       description: 'Looking for experienced developers for a 6-month project'
     });
-  }, []);
+  }, [id]);
 
   const handleEvaluateClick = (bidId) => {
     setSelectedBidId(bidId);
@@ -34,7 +36,7 @@ const BuyerBidEvaluation = () => {
   };
 
   const handleAwardBid = (bidId) => {
-    // Would be an API call to award the bid
+    // Later to be an API call to award the bid
     setBidProposals(proposals => 
       proposals.map(bid => ({
         ...bid,

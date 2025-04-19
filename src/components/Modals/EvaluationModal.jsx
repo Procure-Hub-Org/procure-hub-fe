@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PrimaryButton from '../Button/PrimaryButton';
 import SecondaryButton from '../Button/SecondaryButton';
 import CustomTextField from '../Input/TextField';
-import '../../styles/BuyerBidAndEvaluation.css';
+import '../../styles/EvaluationModal.css';
 
 const EvaluationModal = ({ bid, onClose, onSubmit }) => {
   const [scores, setScores] = useState({
