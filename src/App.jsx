@@ -112,7 +112,14 @@ function App() {
           </AdminRoute>
         }
       />
-      <Route path="/buyer/procurement/:id/bids" element={<BuyerBidEvaluation />} />
+      <Route 
+        path="/buyer/procurement/:id/bids" 
+        element={
+          <AuthenticatedRoute>
+            <BuyerBidEvaluation />
+          </AuthenticatedRoute>
+        } 
+      />
     </Routes>
   );
 }
