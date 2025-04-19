@@ -1,0 +1,163 @@
+.bid-proposal-card {
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    background-color: white;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .bid-proposal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+  
+  .bid-proposal-card.awarded {
+    border: 2px solid #52c41a;
+  }
+  
+  .awarded-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background-color: #52c41a;
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  
+  .bid-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .seller-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .seller-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .seller-info h4 {
+    margin: 0;
+    color: #333;
+  }
+  
+  .bid-submission-date {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .bid-details {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .bid-detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .bid-detail-item .label {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .bid-detail-item .value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.125rem;
+  }
+  
+  .bid-proposal {
+    margin-bottom: 1.5rem;
+    color: #444;
+    line-height: 1.5;
+  }
+  
+  .evaluation-results {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+  }
+  
+  .evaluation-results h5 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: #333;
+  }
+  
+  .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .criterion {
+    color: #555;
+  }
+  
+  .score {
+    font-weight: 600;
+    color: #333;
+    background-color: #f0f0f0;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .average-score {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-top: 1px dashed #ddd;
+  }
+  
+  .average-score .score {
+    font-size: 1.125rem;
+    background-color: #f0f9eb;
+    color: #52c41a;
+  }
+  
+  .evaluation-comment {
+    margin-top: 1rem;
+    color: #555;
+  }
+  
+  .evaluation-comment p {
+    margin-top: 0.25rem;
+    font-style: italic;
+    color: #666;
+  }
+  
+  .bid-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .awarded-button {
+    background-color: #52c41a !important;
+    cursor: default !important;
+  }
