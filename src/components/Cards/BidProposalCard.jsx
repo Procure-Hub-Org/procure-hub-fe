@@ -47,28 +47,47 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       </div>
       
       {isEvaluated && (
-        <div className="evaluation-results">
-          <h5>Evaluation Scores</h5>
-          <div className="scores-grid">
-            {Object.entries(evaluation.scores).map(([criterion, score]) => (
-              <div key={criterion} className="score-item">
-                <span className="criterion">{criterion.replace(/([A-Z])/g, ' $1').trim()}:</span>
+      <div className="evaluation-results">
+        <h5>Evaluation Scores</h5>
+        <div className="scores-grid">
+          {Object.entries(evaluation.scores).map(([criterionId, score]) => {
+            const criterionMap = {
+              'quality': 'Quality',
+              'price': 'Price',
+              'delivery': 'Delivery',
+              'expertise': 'Expertise',
+              'communication': 'Communication',
+              // Keep backward compatibility with old data (since first code had these keys)
+              'technicalQuality': 'Technical Quality',
+              'priceFeasibility': 'Price Feasibility',
+              'deliveryTimeline': 'Delivery Timeline',
+              'experience': 'Experience'
+            };
+            
+            const displayName = criterionMap[criterionId] || 
+                              criterionId.charAt(0).toUpperCase() + 
+                              criterionId.slice(1).replace(/([A-Z])/g, ' $1').trim();
+            
+            return (
+              <div key={criterionId} className="score-item">
+                <span className="criterion">{displayName}:</span>
                 <span className="score">{score}</span>
               </div>
-            ))}
-          </div>
-          <div className="average-score">
-            <span className="label">Average Score:</span>
-            <span className="score">{evaluation.averageScore}</span>
-          </div>
-          {evaluation.comment && (
-            <div className="evaluation-comment">
-              <span className="label">Comment:</span>
-              <p>{evaluation.comment}</p>
-            </div>
-          )}
+            );
+          })}
         </div>
-      )}
+        <div className="average-score">
+          <span className="label">Average Score:</span>
+          <span className="score">{evaluation.averageScore}</span>
+        </div>
+        {evaluation.comment && (
+          <div className="evaluation-comment">
+            <span className="label">Comment:</span>
+            <p>{evaluation.comment}</p>
+          </div>
+        )}
+      </div>
+    )}
       
       <div className="bid-actions">
         {!isEvaluated ? (
