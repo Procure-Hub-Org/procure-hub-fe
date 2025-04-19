@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout/Layout';
 import BidProposalCard from '../components/Cards/BidProposalCard';
 import CustomSelect from '../components/Input/DropdownSelect';
-import PrimaryButton from '../components/Button/PrimaryButton';
-import EvaluationModal from '../components/Modals/EvaluationModal';
-import '../styles/BuyerBidEvaluation.css';
-import { mockBidProposals } from '../mockData/mockBidProposals'; // Temporary mock data
+import EvaluationModal from '../components/Modals/EvaluationModal'; // Update this if you move the file
+import { mockBidProposals } from '../mockData/mockBidProposals';
+import '../styles/BuyerBidAndEvaluation.css';
 
 const BuyerBidEvaluation = () => {
   const [bidProposals, setBidProposals] = useState([]);
@@ -14,12 +13,10 @@ const BuyerBidEvaluation = () => {
   const [sortOption, setSortOption] = useState('default');
   const [procurementRequest, setProcurementRequest] = useState(null);
 
-  // This would be replaced with a real API call
   useEffect(() => {
-    // Assuming we get the procurement ID from URL params
     const procurementId = new URLSearchParams(window.location.search).get('id');
     
-    // Mock data loading - would be replaced with API calls
+    // Mock podaci for test
     setBidProposals(mockBidProposals);
     setProcurementRequest({
       id: procurementId || '1',
@@ -47,7 +44,7 @@ const BuyerBidEvaluation = () => {
   };
 
   const handleEvaluationSubmit = (evaluationData) => {
-    // Calculate average score
+    // Average score calc
     const scores = Object.values(evaluationData.scores);
     const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     
@@ -87,7 +84,7 @@ const BuyerBidEvaluation = () => {
     } else if (sortOption === 'oldest') {
       return [...bids].sort((a, b) => new Date(a.submissionDate) - new Date(b.submissionDate));
     } else {
-      // Default - newest first
+      // Sortiranje - default = newest first
       return [...bids].sort((a, b) => new Date(b.submissionDate) - new Date(a.submissionDate));
     }
   };
