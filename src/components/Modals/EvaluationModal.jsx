@@ -4,33 +4,34 @@ import SecondaryButton from '../Button/SecondaryButton';
 import CustomTextField from '../Input/TextField';
 import '../../styles/EvaluationModal.css';
 
-const EvaluationModal = ({ bid, onClose, onSubmit }) => {
-  const [scores, setScores] = useState({
-    technicalQuality: 0,
-    priceFeasibility: 0,
-    deliveryTimeline: 0,
-    experience: 0,
-    communication: 0
+const EvaluationModal = ({ bid, onClose, onSubmit, criteria }) => {
+  // Initialize scores based on the criteria prop
+  const [scores, setScores] = useState(() => {
+    const initialScores = {};
+    criteria.forEach(criterion => {
+      initialScores[criterion.id] = 0;
+    });
+    return initialScores;
   });
   
   const [comment, setComment] = useState('');
   const [errors, setErrors] = useState({});
 
-  const handleScoreChange = (criterion, value) => {
+  const handleScoreChange = (criterionId, value) => {
     const numValue = parseInt(value, 10);
     
     // Validate score is between 1-5
     if (numValue >= 1 && numValue <= 5) {
       setScores(prev => ({
         ...prev,
-        [criterion]: numValue
+        [criterionId]: numValue
       }));
       
       // Clear error for this field if it exists
-      if (errors[criterion]) {
+      if (errors[criterionId]) {
         setErrors(prev => {
           const newErrors = {...prev};
-          delete newErrors[criterion];
+          delete newErrors[criterionId];
           return newErrors;
         });
       }
@@ -38,12 +39,12 @@ const EvaluationModal = ({ bid, onClose, onSubmit }) => {
       // Allow empty value while typing
       setScores(prev => ({
         ...prev,
-        [criterion]: ''
+        [criterionId]: ''
       }));
     } else {
       setScores(prev => ({
         ...prev,
-        [criterion]: prev[criterion]
+        [criterionId]: prev[criterionId]
       }));
     }
   };
@@ -52,9 +53,9 @@ const EvaluationModal = ({ bid, onClose, onSubmit }) => {
     const newErrors = {};
     
     // Check each score is provided and between 1-5
-    Object.entries(scores).forEach(([criterion, score]) => {
+    Object.entries(scores).forEach(([criterionId, score]) => {
       if (!score || score < 1 || score > 5) {
-        newErrors[criterion] = 'Score must be between 1-5';
+        newErrors[criterionId] = 'Score must be between 1-5';
       }
     });
     
@@ -103,21 +104,19 @@ const EvaluationModal = ({ bid, onClose, onSubmit }) => {
               <p className="score-instruction">Rate each category from 1 (poor) to 5 (excellent)</p>
               
               <div className="score-grid">
-                {Object.keys(scores).map(criterion => (
-                  <div key={criterion} className="score-input-group">
-                    <label htmlFor={criterion}>
-                      {criterion.replace(/([A-Z])/g, ' $1').trim()}:
-                    </label>
+                {criteria.map(criterion => (
+                  <div key={criterion.id} className="score-input-group">
+                    <label htmlFor={criterion.id}>{criterion.name}:</label>
                     <input
                       type="number"
-                      id={criterion}
+                      id={criterion.id}
                       min="1"
                       max="5"
-                      value={scores[criterion]}
-                      onChange={(e) => handleScoreChange(criterion, e.target.value)}
-                      className={errors[criterion] ? 'error' : ''}
+                      value={scores[criterion.id]}
+                      onChange={(e) => handleScoreChange(criterion.id, e.target.value)}
+                      className={errors[criterion.id] ? 'error' : ''}
                     />
-                    {errors[criterion] && <span className="error-message">{errors[criterion]}</span>}
+                    {errors[criterion.id] && <span className="error-message">{errors[criterion.id]}</span>}
                   </div>
                 ))}
               </div>
