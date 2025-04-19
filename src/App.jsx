@@ -16,6 +16,7 @@ import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
 import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
+import BuyerBidEvaluation from './pages/BuyerBidEvaluation';
 
 function App() {
   return (
@@ -111,6 +112,7 @@ function App() {
           </AdminRoute>
         }
       />
+      <Route path="/buyer/procurement/:id/bids" element={<BuyerBidEvaluation />} />
     </Routes>
   );
 }
