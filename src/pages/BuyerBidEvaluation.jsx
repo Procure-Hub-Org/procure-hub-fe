@@ -7,6 +7,14 @@ import EvaluationModal from '../components/Modals/EvaluationModal';
 import { mockBidProposals } from '../mockData/mockBidProposals';
 import '../styles/BuyerBidEvaluation.css';
 
+const generalCriteria = [
+  { id: 'quality', name: 'Quality' },
+  { id: 'price', name: 'Price' },
+  { id: 'delivery', name: 'Delivery' },
+  { id: 'expertise', name: 'Expertise' },
+  { id: 'communication', name: 'Communication' }
+];
+
 const BuyerBidEvaluation = () => {
   const { id } = useParams();
   const [bidProposals, setBidProposals] = useState([]);
@@ -96,30 +104,7 @@ const BuyerBidEvaluation = () => {
   return (
     <Layout>
       <div className="buyer-bid-evaluation-container">
-        <div className="procurement-details-section">
-          {procurementRequest && (
-            <div className="procurement-details">
-              <h2>{procurementRequest.title}</h2>
-              <div className="procurement-info">
-                <div className="detail-item">
-                  <span className="label">Status:</span>
-                  <span className={`status ${procurementRequest.status.toLowerCase()}`}>
-                    {procurementRequest.status}
-                  </span>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Deadline:</span>
-                  <span>{new Date(procurementRequest.deadline).toLocaleDateString()}</span>
-                </div>
-                <div className="detail-item">
-                  <span className="label">Budget:</span>
-                  <span>${procurementRequest.budget}</span>
-                </div>
-              </div>
-              <p className="description">{procurementRequest.description}</p>
-            </div>
-          )}
-        </div>
+        
 
         <div className="bids-section">
           <div className="bids-header">
@@ -163,6 +148,7 @@ const BuyerBidEvaluation = () => {
         <EvaluationModal
           bidId={selectedBidId}
           bid={bidProposals.find(bid => bid.id === selectedBidId)}
+          criteria={generalCriteria}
           onClose={() => setIsEvaluationModalOpen(false)}
           onSubmit={handleEvaluationSubmit}
         />
