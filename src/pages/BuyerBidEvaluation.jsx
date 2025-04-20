@@ -83,7 +83,6 @@ const BuyerBidEvaluation = () => {
         // Transform API data to match the expected format
         const transformedBids = data.bids.map(bid => {
           try {
-            // Log the finalScore for debugging
             console.log(`Bid from ${bid.seller?.company_name}:`, {
               hasEvaluations: Boolean(bid.evaluations?.length),
               finalScore: bid.finalScore,
@@ -189,23 +188,17 @@ const BuyerBidEvaluation = () => {
 
   const handleEvaluationSubmit = async (evaluationData) => {
     try {
-      // Calculate average score
-      const scores = Object.values(evaluationData.scores);
-      const avgScore = scores.reduce((sum, score) => sum + Number(score), 0) / scores.length;
-      
-      // Prepare payload
+      // Prepare payload - this should match what your evaluateBid function expects
       const evaluationPayload = {
-        bidId: selectedBidId,
-        procurementRequestId: id,
+        bidId: selectedBidId, // This needs to be the actual procurement_bid_id from your data
         scores: evaluationData.scores,
-        comment: evaluationData.comment,
-        averageScore: avgScore.toFixed(1)
+        comment: evaluationData.comment
       };
       
-      // Submit evaluation
-      await bidService.evaluateBid(evaluationPayload);
+      // Submit evaluation and get response with final_score
+      const response = await bidService.evaluateBid(evaluationPayload);
       
-      // Update local state
+      // Update UI after successful API call using the returned final_score
       setBidProposals(prevBids => 
         prevBids.map(bid => {
           if (bid.id === selectedBidId) {
@@ -214,7 +207,8 @@ const BuyerBidEvaluation = () => {
               evaluation: {
                 scores: evaluationData.scores,
                 comment: evaluationData.comment,
-                averageScore: avgScore.toFixed(1),
+                // Use the final_score returned from the backend
+                averageScore: response.final_score.toString(),
                 evaluationDate: new Date().toISOString()
               },
               isEvaluated: true
@@ -227,7 +221,8 @@ const BuyerBidEvaluation = () => {
       // Close modal
       setIsEvaluationModalOpen(false);
     } catch (err) {
-      console.error('Error submitting evaluation:', err);
+      console.error("Error submitting evaluation:", err);
+      // Show error notification if available in your UI
     }
   };
   
