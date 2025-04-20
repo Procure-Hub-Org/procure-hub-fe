@@ -3,6 +3,16 @@ import PrimaryButton from '../Button/PrimaryButton';
 import SecondaryButton from '../Button/SecondaryButton';
 import '../../styles/BidProposalCard.css';
 
+// {bidProposals.map(bid => (
+//   <BidProposalCard
+//     key={bid.id}
+//     bid={bid}
+//     onEvaluate={() => handleEvaluateClick(bid.id)}
+//     onAward={() => handleAwardBid(bid.id)}
+//     isAwardDisabled={awardedBidId !== null && awardedBidId !== bid.id}
+//   />
+// ))}
+
 const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
   const { 
     sellerName, 

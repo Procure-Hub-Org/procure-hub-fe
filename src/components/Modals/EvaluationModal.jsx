@@ -2,26 +2,42 @@ import React, { useState } from 'react';
 import '../../styles/EvaluationModal.css';
 
 const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
+  // Initialize scores with each criterion ID as the key
   const [scores, setScores] = useState(() => {
-    // Initialize all criteria with score 0
     const initialScores = {};
     criteria.forEach(criterion => {
+      // Initialize with zero or a default value
       initialScores[criterion.id] = 0;
     });
     return initialScores;
   });
   
   const [comment, setComment] = useState('');
-
-  const handleScoreChange = (criterionId, value) => {
+  
+  const handleScoreChange = (criterionId, score) => {
     setScores(prev => ({
       ...prev,
-      [criterionId]: value
+      [criterionId]: score
     }));
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Log what we're submitting for debugging
+    console.log('Submitting scores:', scores);
+    
+    // Check if all criteria have been scored
+    const allCriteriaScored = criteria.every(criterion => 
+      scores[criterion.id] > 0
+    );
+    
+    if (!allCriteriaScored) {
+      alert('Please score all criteria before submitting.');
+      return;
+    }
+    
+    // Submit the data
     onSubmit({
       scores,
       comment
@@ -43,13 +59,19 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
                   value={scores[criterion.id]} 
                   onChange={(e) => handleScoreChange(criterion.id, parseInt(e.target.value))}
                   required
+                  className="score-select"
                 >
                   <option value="0">Select Score</option>
-                  <option value="1">1 - Poor</option>
-                  <option value="2">2 - Fair</option>
-                  <option value="3">3 - Good</option>
-                  <option value="4">4 - Very Good</option>
-                  <option value="5">5 - Excellent</option>
+                  <option value="1">1 - Very Poor</option>
+                  <option value="2">2 - Poor</option>
+                  <option value="3">3 - Below Average</option>
+                  <option value="4">4 - Slightly Below Average</option>
+                  <option value="5">5 - Average</option>
+                  <option value="6">6 - Slightly Above Average</option>
+                  <option value="7">7 - Above Average</option>
+                  <option value="8">8 - Good</option>
+                  <option value="9">9 - Very Good</option>
+                  <option value="10">10 - Excellent</option>
                 </select>
               </div>
             ))}
