@@ -8,11 +8,10 @@ import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
 
 const generalCriteria = [
-  { id: 'quality', name: 'Quality' },
-  { id: 'price', name: 'Price' },
-  { id: 'delivery', name: 'Delivery' },
-  { id: 'expertise', name: 'Expertise' },
-  { id: 'communication', name: 'Communication' }
+  { id: 15, name: 'Quality' },
+  { id: 16, name: 'Price' },
+  { id: 17, name: 'Delivery' },
+  { id: 18, name: 'Expertise' }
 ];
 
 const BuyerBidEvaluation = () => {
@@ -27,6 +26,7 @@ const BuyerBidEvaluation = () => {
   const [sortOption, setSortOption] = useState('default');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [awardedBidId, setAwardedBidId] = useState(null);
 
   // Helper function
   const transformEvaluationScores = (evaluations) => {
@@ -81,16 +81,16 @@ const BuyerBidEvaluation = () => {
         }
         
         // Transform API data to match the expected format
-        const transformedBids = data.bids.map(bid => {
+        const transformedBids = data.bids.map((bid, index) => {
           try {
-            console.log(`Bid from ${bid.seller?.company_name}:`, {
-              hasEvaluations: Boolean(bid.evaluations?.length),
-              finalScore: bid.finalScore,
-              evaluationStatus: bid.evaluationStatus
-            });
+            const bidId = bid.id || index + 1; // Fallback to index+1 if no ID provided
+    
+            console.log(`Bid from ${bid.seller?.company_name} has ID:`, bidId);
+    
             
             return {
-              id: bid.seller?.email || 'unknown',
+              id: bidId, 
+              sellerEmail: bid.seller?.email || 'unknown',
               sellerName: bid.seller?.company_name || 'Unknown Seller',
               sellerLogo: 'https://via.placeholder.com/40',
               price: bid.price?.toString() || '0',
@@ -188,42 +188,72 @@ const BuyerBidEvaluation = () => {
 
   const handleEvaluationSubmit = async (evaluationData) => {
     try {
-      // Prepare payload - this should match what your evaluateBid function expects
+      // Show loading state if you have one
+      setLoading(true);
+      
+      // Prepare the payload for the API
       const evaluationPayload = {
-        bidId: selectedBidId, // This needs to be the actual procurement_bid_id from your data
+        bidId: selectedBidId,
         scores: evaluationData.scores,
         comment: evaluationData.comment
       };
       
-      // Submit evaluation and get response with final_score
+      console.log('Submitting evaluation for bid:', selectedBidId);
+      console.log('Evaluation payload:', evaluationPayload);
+      
+      // Call the API
       const response = await bidService.evaluateBid(evaluationPayload);
       
-      // Update UI after successful API call using the returned final_score
+      console.log('Evaluation API response:', response);
+      
+      // Update the bid in the state with the returned score
       setBidProposals(prevBids => 
         prevBids.map(bid => {
           if (bid.id === selectedBidId) {
             return {
               ...bid,
+              isEvaluated: true,
               evaluation: {
                 scores: evaluationData.scores,
                 comment: evaluationData.comment,
-                // Use the final_score returned from the backend
+                // Use the final_score from the backend response
                 averageScore: response.final_score.toString(),
                 evaluationDate: new Date().toISOString()
-              },
-              isEvaluated: true
+              }
             };
           }
           return bid;
         })
       );
       
-      // Close modal
+      // Show success message if you have a notification system
+      // notificationService.success('Evaluation submitted successfully!');
+      
+      // Close the modal
       setIsEvaluationModalOpen(false);
-    } catch (err) {
-      console.error("Error submitting evaluation:", err);
-      // Show error notification if available in your UI
-    }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error in handleEvaluationSubmit:', error);
+    
+    // Log more details about the axios error
+    if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+        console.error('Error response headers:', error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Error request:', error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error message:', error.message);
+      }
+      
+      // Show a more detailed error message
+      alert(`Failed to submit evaluation: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+    
+     }
   };
   
   // Sorting logic
