@@ -1,31 +1,21 @@
-import React, { use, useEffect, useState } from 'react';
-import {useNavigate, useParams} from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../components/Layout/Layout.jsx";
-import {Box, Card, CardContent, Chip, Container, Typography} from "@mui/material";
+import { Box, Card, CardContent, Chip, Container, Typography } from "@mui/material";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
-import {isAuthenticated, isAdmin} from "../utils/auth.jsx";
+import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
 import axios from "axios";
-import {useTheme} from "@mui/material/styles";
 import PrimaryButton from "../components/Button/PrimaryButton.jsx";
-
 
 const AdminProcurementPreview = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [bids, setBids] = useState([]);
     const { id } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 2;  // Number of bids per page
-
-    // Mock data for bids
-    const bids = [
-        { id: 1, seller: "Seller 1", price: "1000 BAM", timeline: "30 days", proposalText: "Proposal for procurement request 1", submitted_at: "2025-04-10 12:30" },
-        { id: 2,seller: "Seller 2", price: "1200 BAM", timeline: "25 days", proposalText: "Proposal for procurement request 2", submitted_at: "2025-04-12 14:15" },
-        { id: 3,seller: "Seller 3", price: "950 BAM", timeline: "35 days", proposalText: "Proposal for procurement request 3", submitted_at: "2025-04-14 10:00" },
-        { id: 4,seller: "Seller 4", price: "1100 BAM", timeline: "28 days", proposalText: "Proposal for procurement request 4", submitted_at: "2025-04-15 08:00" },
-        { id: 5,seller: "Seller 5", price: "1050 BAM", timeline: "32 days", proposalText: "Proposal for procurement request 5", submitted_at: "2025-04-17 13:00" },
-        { id: 6,seller: "Seller 6", price: "980 BAM", timeline: "40 days", proposalText: "Proposal for procurement request 6", submitted_at: "2025-04-20 09:30" }
-    ];
 
     useEffect(() => {
         if (!isAdmin()) {
@@ -37,6 +27,8 @@ const AdminProcurementPreview = () => {
             return;
         }
 
+        setLoading(true);
+        // Fetch procurement request data
         axios.get(`${import.meta.env.VITE_API_URL}/api/procurement-request/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
         })
@@ -48,7 +40,21 @@ const AdminProcurementPreview = () => {
                 console.error(`Error fetching request with id=${id}:`, error);
             });
 
-    }, [token, id]);
+        // Fetch all bids for the requestId
+        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurement-bids/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => {
+                console.log("Fetched all bid data for request:", response.data);
+                setBids(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching bid data:", error);
+                setBids({ notFound: true });
+                setLoading(false);
+            });
+    }, [id]);
 
     const handleClose = () => {
         console.log('Close preview');
@@ -71,7 +77,7 @@ const AdminProcurementPreview = () => {
         }
     };
 
-    if (!data) {
+    if (loading || !data) {
         return (
             <Layout>
                 <Container maxWidth="md">
@@ -170,7 +176,7 @@ const AdminProcurementPreview = () => {
                                         borderRadius: 2,
                                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                     }}
-                                    onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${bid.id}`)} // Kad se klikne na red
+                                    onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${index + 1}`)} // Kad se klikne na red
                                 >
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
                                         Seller: {bid.seller}
@@ -182,15 +188,13 @@ const AdminProcurementPreview = () => {
                                         <strong>Timeline:</strong> {bid.timeline}
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
-                                        <strong>Proposal:</strong> {bid.proposal}
+                                        <strong>Proposal:</strong> {bid.proposalText}
                                     </Typography>
                                     <Typography variant="body2">
                                         <strong>Submitted At:</strong> {bid.submitted_at}
                                     </Typography>
-
                                 </Box>
                             ))}
-
                             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                                 <PrimaryButton
                                     onClick={handlePreviousPage}
