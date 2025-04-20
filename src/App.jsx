@@ -18,6 +18,7 @@ import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
 import AdminProcurementDashboard from "./pages/AdminProcurementRequests.jsx";
 import AdminProcurementPreview from "./pages/AdminProcurementPreview.jsx";
+import BidLogs from "./pages/BidLogs.jsx";
 
 function App() {
   return (
@@ -120,6 +121,13 @@ function App() {
               <AdminProcurementPreview />
           </AdminRoute>
         }
+      />
+      <Route
+          path="/admin-procurement-bids/:id"
+          element={
+          <AdminRoute>
+              <BidLogs/>
+          </AdminRoute>}
       />
       <Route
         path="/create-user"
