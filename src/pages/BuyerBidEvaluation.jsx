@@ -83,6 +83,13 @@ const BuyerBidEvaluation = () => {
         // Transform API data to match the expected format
         const transformedBids = data.bids.map(bid => {
           try {
+            // Log the finalScore for debugging
+            console.log(`Bid from ${bid.seller?.company_name}:`, {
+              hasEvaluations: Boolean(bid.evaluations?.length),
+              finalScore: bid.finalScore,
+              evaluationStatus: bid.evaluationStatus
+            });
+            
             return {
               id: bid.seller?.email || 'unknown',
               sellerName: bid.seller?.company_name || 'Unknown Seller',
@@ -94,12 +101,12 @@ const BuyerBidEvaluation = () => {
               isEvaluated: bid.evaluations && bid.evaluations.length > 0,
               evaluation: bid.evaluations && bid.evaluations.length > 0 ? {
                 scores: transformEvaluationScores(bid.evaluations),
-                comment: "Evaluation from backend", 
-                // Use finalScore from backend if available, otherwise calculate
-                averageScore: bid.finalScore || calculateAverageScore(bid.evaluations),
+                comment: bid.evaluationStatus || "Evaluation from backend", 
+                // Use finalScore directly from backend - if null, display "Pending"
+                averageScore: bid.finalScore !== null ? bid.finalScore : "Pending",
                 evaluationDate: new Date().toISOString()
               } : null,
-              isAwarded: false
+              isAwarded: false // Assuming this comes from elsewhere or is determined later
             };
           } catch (e) {
             console.error('Error transforming bid:', e, bid);
