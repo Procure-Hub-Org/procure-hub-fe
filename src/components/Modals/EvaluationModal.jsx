@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import '../../styles/EvaluationModal.css';
+import PrimaryButton from '../Button/PrimaryButton';
+import SecondaryButton from '../Button/SecondaryButton';
+
 
 const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
   // Initialize scores with each criterion ID as the key
@@ -88,12 +91,12 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
           </div>
           
           <div className="modal-actions">
-            <button type="button" className="cancel-btn" onClick={onClose}>
+            <SecondaryButton type="button" onClick={onClose}>
               Cancel
-            </button>
-            <button type="submit" className="submit-btn">
+            </SecondaryButton>
+            <PrimaryButton type="submit">
               Submit Evaluation
-            </button>
+            </PrimaryButton>
           </div>
         </form>
       </div>
