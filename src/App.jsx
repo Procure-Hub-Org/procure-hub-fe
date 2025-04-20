@@ -123,7 +123,7 @@ function App() {
         }
       />
       <Route
-          path="/admin-procurement-bids/:id"
+          path="/admin-procurement-requests/:requestId/bid/:bidId"
           element={
           <AdminRoute>
               <BidLogs/>

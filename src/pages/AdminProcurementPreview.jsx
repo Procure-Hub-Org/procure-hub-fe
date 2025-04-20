@@ -170,7 +170,7 @@ const AdminProcurementPreview = () => {
                                         borderRadius: 2,
                                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                     }}
-                                    onClick={() => navigate(`/admin-procurement-bids/${bid.id}`)} // Kad se klikne na red
+                                    onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${bid.id}`)} // Kad se klikne na red
                                 >
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
                                         Seller: {bid.seller}
