@@ -129,7 +129,7 @@ const BuyerDashboardRequests = () => {
                             <tr key={request.id} className="tr">
                             <td className="td">{request.title}</td>
                             <td className="td">{request.description}</td>
-                            <td className="td">{request.procurementCategory}</td>
+                            <td className="td">{request.procurementCategory.name}</td>
                             <td className="td">{request.status}</td>
                             <td className="td">
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
