@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import PrimaryButton from '../Button/PrimaryButton';
-import SecondaryButton from '../Button/SecondaryButton';
-import CustomTextField from '../Input/TextField';
 import '../../styles/EvaluationModal.css';
 
-const EvaluationModal = ({ bid, onClose, onSubmit, criteria }) => {
-  // Initialize scores based on the criteria prop
+const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
   const [scores, setScores] = useState(() => {
+    // Initialize all criteria with score 0
     const initialScores = {};
     criteria.forEach(criterion => {
       initialScores[criterion.id] = 0;
@@ -15,129 +12,68 @@ const EvaluationModal = ({ bid, onClose, onSubmit, criteria }) => {
   });
   
   const [comment, setComment] = useState('');
-  const [errors, setErrors] = useState({});
 
   const handleScoreChange = (criterionId, value) => {
-    const numValue = parseInt(value, 10);
-    
-    // Validate score is between 1-5
-    if (numValue >= 1 && numValue <= 5) {
-      setScores(prev => ({
-        ...prev,
-        [criterionId]: numValue
-      }));
-      
-      // Clear error for this field if it exists
-      if (errors[criterionId]) {
-        setErrors(prev => {
-          const newErrors = {...prev};
-          delete newErrors[criterionId];
-          return newErrors;
-        });
-      }
-    } else if (value === '') {
-      // Allow empty value while typing
-      setScores(prev => ({
-        ...prev,
-        [criterionId]: ''
-      }));
-    } else {
-      setScores(prev => ({
-        ...prev,
-        [criterionId]: prev[criterionId]
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    // Check each score is provided and between 1-5
-    Object.entries(scores).forEach(([criterionId, score]) => {
-      if (!score || score < 1 || score > 5) {
-        newErrors[criterionId] = 'Score must be between 1-5';
-      }
-    });
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setScores(prev => ({
+      ...prev,
+      [criterionId]: value
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      onSubmit({
-        scores,
-        comment,
-        evaluationDate: new Date().toISOString()
-      });
-    }
+    onSubmit({
+      scores,
+      comment
+    });
   };
 
   return (
-    <div className="evaluation-modal-overlay">
+    <div className="modal-overlay">
       <div className="evaluation-modal">
-        <div className="modal-header">
-          <h3>Evaluate Bid Proposal</h3>
-          <button className="close-button" onClick={onClose}>×</button>
-        </div>
+        <h2>Evaluate Bid Proposal</h2>
+        <h3>{bid.sellerName}</h3>
         
-        <div className="modal-content">
-          <div className="bid-summary">
-            <h4>{bid.sellerName}'s Proposal</h4>
-            <div className="summary-details">
-              <div className="summary-item">
-                <span className="label">Price:</span>
-                <span>${bid.price}</span>
+        <form onSubmit={handleSubmit}>
+          <div className="criteria-list">
+            {criteria.map(criterion => (
+              <div key={criterion.id} className="criterion-item">
+                <label>{criterion.name}</label>
+                <select 
+                  value={scores[criterion.id]} 
+                  onChange={(e) => handleScoreChange(criterion.id, parseInt(e.target.value))}
+                  required
+                >
+                  <option value="0">Select Score</option>
+                  <option value="1">1 - Poor</option>
+                  <option value="2">2 - Fair</option>
+                  <option value="3">3 - Good</option>
+                  <option value="4">4 - Very Good</option>
+                  <option value="5">5 - Excellent</option>
+                </select>
               </div>
-              <div className="summary-item">
-                <span className="label">Delivery:</span>
-                <span>{bid.deliveryTime} days</span>
-              </div>
-            </div>
+            ))}
           </div>
           
-          <form onSubmit={handleSubmit} className="evaluation-form">
-            <div className="score-section">
-              <h4>Evaluation Criteria</h4>
-              <p className="score-instruction">Rate each category from 1 (poor) to 5 (excellent)</p>
-              
-              <div className="score-grid">
-                {criteria.map(criterion => (
-                  <div key={criterion.id} className="score-input-group">
-                    <label htmlFor={criterion.id}>{criterion.name}:</label>
-                    <input
-                      type="number"
-                      id={criterion.id}
-                      min="1"
-                      max="5"
-                      value={scores[criterion.id]}
-                      onChange={(e) => handleScoreChange(criterion.id, e.target.value)}
-                      className={errors[criterion.id] ? 'error' : ''}
-                    />
-                    {errors[criterion.id] && <span className="error-message">{errors[criterion.id]}</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="comment-section">
-              <CustomTextField
-                label="Additional Comments (Optional)"
-                multiline
-                rows={4}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-            </div>
-            
-            <div className="modal-actions">
-              <SecondaryButton type="button" onClick={onClose}>Cancel</SecondaryButton>
-              <PrimaryButton type="submit">Submit Evaluation</PrimaryButton>
-            </div>
-          </form>
-        </div>
+          <div className="comment-section">
+            <label>Additional Comments (Optional)</label>
+            <textarea 
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Enter any additional feedback..."
+              rows={4}
+            />
+          </div>
+          
+          <div className="modal-actions">
+            <button type="button" className="cancel-btn" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="submit-btn">
+              Submit Evaluation
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

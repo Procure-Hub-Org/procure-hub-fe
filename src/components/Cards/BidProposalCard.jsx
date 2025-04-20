@@ -4,15 +4,14 @@ import SecondaryButton from '../Button/SecondaryButton';
 import '../../styles/BidProposalCard.css';
 
 const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
-  const {
-    id,
-    sellerName,
-    sellerLogo,
-    price,
-    deliveryTime,
-    proposalDescription,
-    submissionDate,
-    isEvaluated,
+  const { 
+    sellerName, 
+    sellerLogo, 
+    price, 
+    deliveryTime, 
+    proposalDescription, 
+    submissionDate, 
+    isEvaluated, 
     evaluation,
     isAwarded
   } = bid;
@@ -90,7 +89,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     )}
       
       <div className="bid-actions">
-        {!isEvaluated ? (
+        {!isEvaluated || evaluation?.averageScore === "Pending" ? (
           <PrimaryButton onClick={onEvaluate}>Evaluate</PrimaryButton>
         ) : (
           <SecondaryButton 
