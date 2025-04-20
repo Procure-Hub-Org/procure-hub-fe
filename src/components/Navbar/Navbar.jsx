@@ -76,6 +76,9 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/seller-favorites")}>
               Favorites
             </BasicButton>
+            <BasicButton onClick={() => navigate("/seller-bids")}>
+              My Bids
+            </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
             </BasicButton>

@@ -16,7 +16,7 @@ import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
 import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
-
+import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
 function App() {
   return (
     <Routes>
@@ -91,6 +91,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <SellerFavorites />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route 
+        path="/seller-bids"
+        element={
+          <AuthenticatedRoute>
+            <SellerBidsDashboard />
           </AuthenticatedRoute>
         }
       />
