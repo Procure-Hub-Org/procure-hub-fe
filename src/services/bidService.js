@@ -28,30 +28,58 @@ const getBidProposals = async (procurementRequestId) => {
   }
 };
 
-// Also update these endpoints
 const evaluateBid = async (evaluationData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post(`${API_BASE_URL}/api/evaluate-bid`, evaluationData, {
+    
+    // Transform the data format as needed
+    const transformedData = Object.entries(evaluationData.scores).map(([criterionId, score]) => {
+      return {
+        procurement_bid_id: evaluationData.bidId,
+        evaluation_criteria_id: parseInt(criterionId),
+        score: parseInt(score)
+      };
+    });
+    
+    console.log('API URL being used:', `${API_BASE_URL}/api/evaluate-bid`);
+    console.log('Transformed data being sent:', transformedData);
+    
+    const response = await axios.post(`${API_BASE_URL}/api/evaluate-bid`, transformedData, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
+    
     return response.data;
   } catch (error) {
-    console.error('Error evaluating bid:', error);
+    console.error('Error evaluating bid in service:', error);
+    // Re-throw the error so it can be caught in the component
     throw error;
   }
 };
 
-const awardBid = async (bidId) => {
+const awardBid = async (bidId, procurementRequestId) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post(`${API_BASE_URL}/api/award-bid/${bidId}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    
+    console.log(`Awarding bid ${bidId} for procurement request ${procurementRequestId}`);
+    
+    const response = await axios.post(
+      `${API_BASE_URL}/api/award-bid`, 
+      { 
+        procurement_bid_id: bidId,
+        procurement_request_id: procurementRequestId
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
+    
+    console.log('Award response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error awarding bid:', error);
