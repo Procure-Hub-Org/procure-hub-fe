@@ -28,13 +28,16 @@ import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 import { DateTimeField } from "@mui/x-date-pickers";
 import { Check } from "lucide-react";
+import { set } from "date-fns";
 
 // import { useTheme } from "@mui/system";
 
 const EditProcurementForm = () => {
     const { id } = useParams(); // Preuzimanje `id` iz parametara rute
     const [categories, setCategories] = useState([]);
+    const [loadingCategories, setLoadingCategories] = useState(true);
     const [criterias, setCriteriaTypes] = useState([]);
+    const [loadingCriterias, setLoadingCriterias] = useState(true);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedCriteria, setSelectedCriteria] = useState("");
     const [enableBidEditing, setEnableBidEditing] = useState(false);
@@ -78,18 +81,57 @@ const EditProcurementForm = () => {
             }
             return;
         }
-        if (procurementData) {
+        if (procurementData && !loadingCategories && !loadingCriterias) {
             console.log("Recieved data:", procurementData);
+
             setFormData({
-                ...procurementData,
+                ...formData,
+                title: procurementData.title,
+                description: procurementData.description,
+                location: procurementData.location,
+                budget_min: Number(procurementData.budget_min),
+                budget_max: Number(procurementData.budget_max),
                 deadline: formatDate(procurementData.deadline),
-                bid_edit_deadline: formatDate(procurementData.bid_edit_deadline),
+                category: procurementData.category_id,
+                status: procurementData.status,
+                items: procurementData.items,
+                requirements: procurementData.requirements,
+
             });
-            setSelectedCategory(procurementData.category_id); 
+
+            setSelectedCategory(procurementData.category_id);
+
+            //evaluationCriteria mapping
+            const mappedCriteria = procurementData.evaluationCriteria.map(criteria => ({
+                //name: criteria.criteria_type_id,
+                criteria_type_id: criteria.criteria_type_id,
+                weight: criteria.weight,
+                is_must_have: criteria.is_must_have,
+            }));
+
+            // setting evaluationCriteria in formData
+            setFormData(prevState => ({
+                ...prevState,
+                evaluationCriteria: mappedCriteria,
+            }));
+            //setSelectedCriteria(mappedCriteria);
+            console.log("Mapped evaluation criteria:", mappedCriteria);
+            //console.log("Crieria added to the formData:", formData.evaluationCriteria);
+
+            // setting bid_edit_deadline in formData
+            setEnableBidEditing(procurementData.bid_edit_deadline !== null);
+            setBidEditDeadline(procurementData.bid_edit_deadline ? formatDate(procurementData.bid_edit_deadline) : "");
+           
+            setFormData(prevState => ({
+                ...prevState,
+                bidEditDeadline: procurementData.bid_edit_deadline,
+            }));
+
+            //setSelectedCriteria(procurementData.evaluationCriteria.map(criteria => criteria.criteria_type_id));
         }
         fetchCategories(); // Fetch categories on component mount
         fetchCriteriaTypes(); // Fetch criterias on component mount
-    }, [token, procurementData]);
+    }, [token, procurementData, loadingCategories, loadingCriterias]);
 
     const fetchCategories = async () => {
         try {
@@ -97,6 +139,7 @@ const EditProcurementForm = () => {
                 `${import.meta.env.VITE_API_URL}/api/procurement-categories`
             );
             setCategories(response.data.data);
+            setLoadingCategories(false);
             console.log("Fetched categories:", response.data.data);
         } catch (error) {
             console.error("Failed to fetch categories:", error);
@@ -109,6 +152,7 @@ const EditProcurementForm = () => {
                 `${import.meta.env.VITE_API_URL}/api/procurement-criterias`
             );
             setCriteriaTypes(response.data.data);
+            setLoadingCriterias(false);
             console.log("Fetched criterias:", response.data.data);
         } catch (error) {
             console.error("Failed to fetch criteria:", error);
@@ -135,7 +179,8 @@ const EditProcurementForm = () => {
     const handleCriteriaChange = (index, field, value) => {
         const updated = [...formData.evaluationCriteria];
         updated[index][field] = value;
-        setFormData((prev) => ({ ...prev, evaluationCriteria: updated }));
+        //setFormData((prev) => ({ ...prev, evaluationCriteria: updated }));
+        setFormData({ ...formData, evaluationCriteria: updated });
     };
 
     const addItem = () => {
@@ -196,10 +241,10 @@ const EditProcurementForm = () => {
     
         const uniqueIds = new Set();
         for (const crit of formData.evaluationCriteria) {
-            if (uniqueIds.has(crit.name)) {
-                return { valid: false, message: `Criteria '${crit.name}' is added more than once.` };
+            if (uniqueIds.has(crit.criteria_type_id)) {
+                return { valid: false, message: `Criteria '${getCriteriaName(crit.criteria_type_id)}' is added more than once.` };
             }
-            uniqueIds.add(crit.name);
+            uniqueIds.add(crit.criteria_type_id);
         }
     
         // Bid editing deadline validation
@@ -242,17 +287,20 @@ const EditProcurementForm = () => {
             items: formData.items,
             requirements: formData.requirements,
             criteria: formData.evaluationCriteria.map(crit => ({
-                ...crit,
-                name: getCriteriaName(crit.name),
+                //...crit,
+                name: getCriteriaName(crit.criteria_type_id),
+                weight: crit.weight,
+                is_must_have: crit.is_must_have,
             })),
-            bid_edit_deadline: new Date(bidEditDeadline) || null,
+            bid_edit_deadline: enableBidEditing ? new Date(bidEditDeadline) : null,
         };
           
+        console.log("Submit category:", requestData.category);
     
         console.log("Sending request data from submit:", requestData);
           
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
+            const response = await axios.patch(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -283,7 +331,7 @@ const EditProcurementForm = () => {
         e.preventDefault();
         console.log("Submitted form as a draft:", formData);
         //console.log("Selected category:", selectedCategory);
-        console.log("Selected criteria:", selectedCriteria);
+        //console.log("Selected criteria:", selectedCriteria);
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
@@ -303,18 +351,20 @@ const EditProcurementForm = () => {
             items: formData.items,
             requirements: formData.requirements,
             criteria: formData.evaluationCriteria.map(crit => ({
-                ...crit,
-                name: getCriteriaName(crit.name),
+                //...crit,
+                name: getCriteriaName(crit.criteria_type_id),
+                weight: crit.weight,
+                is_must_have: crit.is_must_have,
             })),
-            bid_edit_deadline: new Date(bidEditDeadline) || null,
+            bid_edit_deadline: enableBidEditing ? new Date(bidEditDeadline) : null,
         };
           
-    
+        console.log("Draft category:", requestData.category);
         console.log("Sending request data for draft:", requestData);
         console.log("formData to send:", formData);
           
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
+            const response = await axios.patch(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
                 {
                 headers: {
                     "Content-Type": "application/json",
@@ -423,18 +473,20 @@ const EditProcurementForm = () => {
                                         required
                                         sx={{ mb: 2 }}
                                     />
-                                    <CustomSelect
-                                        label="Category"
-                                        name="category"
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
-                                        options={[
-                                            ...categories.map((c) => ({
-                                                label: c.name,
-                                                value: c.id,
-                                            })),
-                                        ]}
-                                    />
+                                    {!loadingCategories && (
+                                        <CustomSelect
+                                            label="Category"
+                                            name="category"
+                                            value={selectedCategory}
+                                            onChange={(e) => setSelectedCategory(e.target.value)}
+                                            options={[
+                                                ...categories.map((c) => ({
+                                                    label: c.name,
+                                                    value: c.id,
+                                                })),
+                                            ]}
+                                        />
+                                    )}
 
                                     <Typography variant="subtitle1" sx={{ mt: 3 }}>
                                         Items
@@ -533,13 +585,14 @@ const EditProcurementForm = () => {
                                     <Typography variant="subtitle1" sx={{ mt: 3 }}>
                                         Criteria
                                     </Typography>
-                                    {formData.evaluationCriteria.map((crit, index) => (
+                                    {!loadingCriterias && formData.evaluationCriteria.map((crit, index) => (
                                         <Box key={index} sx={{ mb: 2 }}>
                                             <CustomSelect
                                                 label="Criteria Type"
                                                 name={`criteria-${index}`}
-                                                value={crit.name}
-                                                onChange={(e) => handleCriteriaChange(index, "name", e.target.value)}
+                                                //value={crit.name}
+                                                value={crit.criteria_type_id}
+                                                onChange={(e) => handleCriteriaChange(index, /*"name"*/"criteria_type_id", e.target.value)}
                                                 options={criterias.map((c) => ({
                                                     label: c.name,
                                                     value: c.id,
