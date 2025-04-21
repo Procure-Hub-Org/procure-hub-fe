@@ -15,7 +15,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
     return initialScores;
   });
   
-  const [comment, setComment] = useState('');
+  //const [comment, setComment] = useState('');
   
   const handleScoreChange = (criterionId, score) => {
     setScores(prev => ({
@@ -43,7 +43,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
     // Submit the data
     onSubmit({
       scores,
-      comment
+      //comment
     });
   };
 
@@ -80,7 +80,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
             ))}
           </div>
           
-          <div className="comment-section">
+          {/*<div className="comment-section">
             <label>Additional Comments (Optional)</label>
             <textarea 
               value={comment}
@@ -88,7 +88,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
               placeholder="Enter any additional feedback..."
               rows={4}
             />
-          </div>
+          </div>*/}
           
           <div className="modal-actions">
             <SecondaryButton type="button" onClick={onClose}>

@@ -107,12 +107,12 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
           <span className="label">Average Score:</span>
           <span className="score">{evaluation.averageScore}</span>
         </div>
-        {evaluation.comment && (
+        {/*evaluation.comment && (
           <div className="evaluation-comment">
             <span className="label">Comment:</span>
             <p>{evaluation.comment}</p>
           </div>
-        )}
+        )*/}
       </div>
     )}
       
