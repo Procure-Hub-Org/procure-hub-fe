@@ -15,46 +15,6 @@ import axios from 'axios';
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
 
 
-
-const dummyRequests = [
-  {
-    id: 1,
-    title: "Office Chairs",
-    description: "Need ergonomic office chairs",
-    category: "Furniture",
-    status: "active",
-    deadline: "2025-05-01",
-    bids: 3,
-    logs: 5,
-    buyerEmail: "john@example.com",
-    flagged: true,
-  },
-  {
-    id: 2,
-    title: "Laptops for IT",
-    description: "15 laptops with SSD",
-    category: "Electronics",
-    status: "closed",
-    deadline: "2025-04-15",
-    bids: 10,
-    logs: 7,
-    buyerEmail: "anna@example.com",
-    flagged: false,
-  },
-  {
-    id: 3,
-    title: "Cleaning Service",
-    description: "Monthly cleaning contract",
-    category: "Services",
-    status: "awarded",
-    deadline: "2025-04-20",
-    bids: 5,
-    logs: 8,
-    buyerEmail: "lisa@example.com",
-    flagged: true,
-  },
-];
-
 const statusOptions = [
   { value: "", label: "All" },
   { value: "active", label: "Active" },
@@ -250,7 +210,7 @@ useEffect(() => {
 
   return (
     <Layout>
-      <div className="dashboard-container" style={{ display: "flex" }}>
+      <div className="admin-procurement-requests" style={{ display: "flex" }}>
         
       <div
             className={`sidebar ${sidebarOpen ? "open" : "closed"}`}

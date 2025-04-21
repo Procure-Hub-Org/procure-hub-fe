@@ -1,5 +1,5 @@
 /* Admin.css */
-.dashboard-container {
+.admin-procurement-requests{
     display: flex;
     flex-direction: row; /* Promeni na 'row' da bi sidebar i tabla bili u istom redu */
     align-items: flex-start; /* Poravnaj elemente na početak */
