@@ -51,30 +51,43 @@ const AdminProcurementDashboard = () => {
 
 
   useEffect(() => {
-        if (!isAdmin()) {
-            if (!isAuthenticated()) {
-                window.location.href = "/login";
-            } else {
-                window.location.href = "/";
-            }
-            return;
+    const fetchData = async () => {
+      if (!isAdmin()) {
+        if (!isAuthenticated()) {
+          window.location.href = "/login";
+        } else {
+          window.location.href = "/";
         }
-
-        setLoading(true);
+        return;
+      }
   
-    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurements-requests`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((response) => {
+      setLoading(true);
+  
+      try {
+        const token = localStorage.getItem("token");
+  
+        // Prvo pozovi update svih alertova
+        await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/alerts/update`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
+        // Nakon toga dobavi sve procurement requestove
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurements-requests`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+  
         console.log("Fetched all procurement requests:", response.data);
-        setRequests(response.data);  // Use setRequests here
+        setRequests(response.data);
+      } catch (error) {
+        console.error("Greška:", error.response ? error.response.data : error.message);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching procurement requests:", error.response ? error.response.data : error.message);
-        setLoading(false);
-      });
+      }
+    };
+  
+    fetchData();
   }, []);
+  
   
   
 
@@ -319,6 +332,8 @@ useEffect(() => {
 
         <div className="panel" style={{ flex: 1, backgroundColor: theme.palette.background.default }}>
           <h3 style={{ color: theme.palette.text.primary }}>Procurement Requests</h3>
+          <p style={{ color: theme.palette.text.secondary, marginTop: -10 }}>
+          Click on a table row to open a detailed preview of the request.</p>
           <table className="table">
             <thead>
               <tr>
