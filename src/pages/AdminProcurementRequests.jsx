@@ -11,6 +11,9 @@ import { Eye, Flag, ChevronLeft, ChevronRight } from "lucide-react";
 import "../styles/Admin.css";
 import "../styles/AdminProcurementRequests.css";
 import {useNavigate, useParams} from "react-router-dom";
+import axios from 'axios';
+import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
+
 
 
 const dummyRequests = [
@@ -62,7 +65,10 @@ const statusOptions = [
 
 
 const AdminProcurementDashboard = () => {
-    const [requests, setRequests] = useState(dummyRequests);
+    {/*const [requests, setRequests] = useState(dummyRequests); */}
+    const [requests, setRequests] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("");
     const [emailSearch, setEmailSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -77,15 +83,44 @@ const AdminProcurementDashboard = () => {
     const [dateError, setDateError] = useState("");
     const [bidsError, setBidsError] = useState("");
     const [logsError, setLogsError] = useState("");
- 
+    const [freezeClicked, setFreezeClicked] = useState({});
+    const token = localStorage.getItem("token");
     const theme = useTheme();
 
   const navigate = useNavigate();
 
 
+  useEffect(() => {
+        if (!isAdmin()) {
+            if (!isAuthenticated()) {
+                window.location.href = "/login";
+            } else {
+                window.location.href = "/";
+            }
+            return;
+        }
+
+        setLoading(true);
+  
+    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurements-requests`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((response) => {
+        console.log("Fetched all procurement requests:", response.data);
+        setRequests(response.data);  // Use setRequests here
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching procurement requests:", error.response ? error.response.data : error.message);
+        setLoading(false);
+      });
+  }, []);
+  
+  
+
   const filteredRequests = requests
     .filter((req) => 
-      req.buyerEmail.toLowerCase().includes(emailSearch.toLowerCase())
+      req.buyeremail.includes(emailSearch.toLowerCase())
     )
     .filter((req) => 
       statusFilter ? req.status === statusFilter : true
@@ -134,8 +169,44 @@ const AdminProcurementDashboard = () => {
   const handlePageChange = (page) => setCurrentPage(page);
 
   const handleFreeze = (id) => {
-    //mijenjanje statusa u frozen
+    // Find the request by ID
+    const requestToFreeze = requests.find((req) => req.id === id);
+    
+    // Check if the request status is 'active' or 'closed'
+    if (requestToFreeze && (requestToFreeze.status === "active" || requestToFreeze.status === "closed")) {
+      setFreezeClicked((prev) => ({
+        ...prev,
+        [id]: true, // Mark the request as frozen
+      }));
+  
+      // API call to update status to 'frozen'
+      axios
+        .put(
+          `${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
+          { status: "frozen" },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then((response) => {
+          // Update the request status in the state
+          setRequests((prevRequests) =>
+            prevRequests.map((req) =>
+              req.id === id ? { ...req, status: "frozen" } : req
+            )
+          );
+          alert("Procurement request status updated to Frozen!");
+        })
+        .catch((error) => {
+          console.error("Error freezing procurement request:", error);
+          console.error("Error details:", error.response?.data);  // Log the full error response from the server
+          alert(error.response?.data?.message || "Failed to update procurement status.");
+        });
+        
+    } else {
+      // If status is not 'active' or 'closed', show a message or alert
+      alert("Only 'Active' or 'Closed' requests can be frozen.");
+    }
   };
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen); // toggle sidebar visibility
@@ -303,7 +374,7 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {currentRequests.map((req) => (
+              {filteredRequests.map((req) => (
                 <tr
                   key={req.id}
                   className="tr"
@@ -314,18 +385,28 @@ useEffect(() => {
                   <td className="td">{req.description}</td>
                   <td className="td td-center">{req.category}</td>
                   <td className="td td-center">{req.status}</td>
-                  <td className="td td-center">{req.deadline}</td>
+                  <td>{new Date(req.deadline).toLocaleDateString()}</td>
                   <td className="td td-center">{req.bids}</td>
                   <td className="td td-center">{req.logs}</td>
-                  <td className="td td-center">{req.buyerEmail}</td>
+                  <td className="td td-center">{req.buyeremail}</td>
 
                   <td className="td">
                     {req.flagged && <Flag color="red" size={20} />}
                   </td>
                   <td className="td">
-                    <PrimaryButton onClick={() => handleFreeze(req.id)}>
-                      Freeze
-                    </PrimaryButton>
+                    <PrimaryButton
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent row click from triggering
+                    handleFreeze(req.id); // Handle freeze logic
+                  }}
+                  disabled={freezeClicked[req.id]} // Disable if clicked
+                  style={{
+                    backgroundColor: freezeClicked[req.id] ? theme.palette.primary.light : '', // Change color to gray if clicked
+                    cursor: freezeClicked[req.id] ? 'not-allowed' : 'pointer', // Disable cursor if clicked
+                  }}
+                >
+                  Freeze
+                </PrimaryButton>
                   </td>
                 </tr>
               ))}
