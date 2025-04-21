@@ -65,11 +65,12 @@ const awardBid = async (bidId, procurementRequestId) => {
     
     console.log(`Awarding bid ${bidId} for procurement request ${procurementRequestId}`);
     
-    const response = await axios.post(
-      `${API_BASE_URL}/api/award-bid`, 
+    // Use the correct endpoint and HTTP method
+    const response = await axios.put(
+      `${API_BASE_URL}/api/procurement/${procurementRequestId}/status`, 
       { 
-        procurement_bid_id: bidId,
-        procurement_request_id: procurementRequestId
+        status: 'awarded',
+        awarded_bid_id: bidId // Include the winning bid ID
       },
       {
         headers: {

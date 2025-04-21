@@ -167,8 +167,8 @@ const BuyerBidEvaluation = () => {
     try {
       setLoading(true);
       
-      // Award the bid via API
-      await bidService.awardBid(bidId);
+      // Pass both the bidId and procurement request id
+      await bidService.awardBid(bidId, id); // 'id' is from useParams()
       
       // Update local state
       setBidProposals(prevBids => 
