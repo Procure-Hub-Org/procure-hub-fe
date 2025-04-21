@@ -32,7 +32,6 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       
       <div className="bid-header">
         <div className="seller-info">
-          {sellerLogo && <img src={sellerLogo} alt={`${sellerName} logo`} className="seller-logo" />}
           <h4>{sellerName}</h4>
         </div>
         <div className="bid-submission-date">
@@ -59,31 +58,50 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       <div className="evaluation-results">
         <h5>Evaluation Scores</h5>
         <div className="scores-grid">
-          {Object.entries(evaluation.scores).map(([criterionId, score]) => {
-            const criterionMap = {
-              'quality': 'Quality',
-              'price': 'Price',
-              'delivery': 'Delivery',
-              'expertise': 'Expertise',
-              'communication': 'Communication',
+      {  /*  {Object.entries(evaluation.scores).map(([id, scoreItem]) => {
+           // const criterionMap = {
+             // 'quality': 'Quality',
+              //'price': 'Price',
+              //'delivery': 'Delivery',
+              //'expertise': 'Expertise',
+              //'communication': 'Communication',
               // Keep backward compatibility with old data (since first code had these keys)
-              'technicalQuality': 'Technical Quality',
-              'priceFeasibility': 'Price Feasibility',
-              'deliveryTimeline': 'Delivery Timeline',
-              'experience': 'Experience'
-            };
+             // 'technicalQuality': 'Technical Quality',
+             // 'priceFeasibility': 'Price Feasibility',
+             // 'deliveryTimeline': 'Delivery Timeline',
+             // 'experience': 'Experience'
+           // };
             
-            const displayName = criterionMap[criterionId] || 
-                              criterionId.charAt(0).toUpperCase() + 
-                              criterionId.slice(1).replace(/([A-Z])/g, ' $1').trim();
+           // const displayName = criterionMap[criterionId] || 
+                         //     criterionId.charAt(0).toUpperCase() + 
+                          //    criterionId.slice(1).replace(/([A-Z])/g, ' $1').trim();
             
             return (
-              <div key={criterionId} className="score-item">
-                <span className="criterion">{displayName}:</span>
-                <span className="score">{score}</span>
+              <div key={evaluation.criteriaId} className="score-item">
+                <span className="criterion">{scoreItem.name}:</span>
+                <span className="score">{scoreItem.score}</span>
               </div>
             );
-          })}
+          })} */}
+{Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
+  evaluation.scores.map((scoreItem, index) => (
+    <div key={index} className="score-item">
+      <div className="score-item-row">
+        <span className="criterion">
+          <strong>{scoreItem.criteriaName}:</strong>
+        </span>
+        <span className="score">Score: {scoreItem.score}</span>
+        <span className="weight">Weight: {scoreItem.weight}</span>
+      </div>
+    </div>
+  ))
+) : (
+  <p>No evaluations available</p> // Fallback poruka ako nema evaluacija
+)}
+
+
+
+
         </div>
         <div className="average-score">
           <span className="label">Average Score:</span>

@@ -319,3 +319,27 @@
     background-color: #52c41a !important;
     cursor: default !important;
   }
+
+  .score-item {
+    margin-bottom: 10px; /* Razmak između svakog kriterija */
+  }
+  
+  .score-item-row {
+    display: flex;
+    justify-content: space-between; /* Poravnava elemente u redu */
+    align-items: center; /* Poravnava elemente po visini */
+  }
+  
+  .criterion {
+    font-weight: bold; /* Naziv kriterija je podebljan */
+    flex: 1; /* Ovdje se može dodati fleksibilnost za širinu */
+  }
+  
+  .score, .weight {
+    margin-left: 10px; /* Razmak između score i weight */
+  }
+  
+  .score-item-row span {
+    margin-right: 15px; /* Razmak između svakog od elemenata u redu */
+  }
+  

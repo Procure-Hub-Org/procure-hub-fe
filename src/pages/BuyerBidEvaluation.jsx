@@ -7,12 +7,7 @@ import EvaluationModal from '../components/Modals/EvaluationModal';
 import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
 
-const generalCriteria = [
-  { id: 15, name: 'Quality' },
-  { id: 16, name: 'Price' },
-  { id: 17, name: 'Delivery' },
-  { id: 18, name: 'Expertise' }
-];
+
 
 const BuyerBidEvaluation = () => {
   // Get URL parameters
@@ -28,18 +23,38 @@ const BuyerBidEvaluation = () => {
   const [error, setError] = useState(null);
   const [awardedBidId, setAwardedBidId] = useState(null);
 
+  const [newCriteria, setNewCriteria] = useState([]);
+
+  const fetchBidCriteria = async (bidId) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/bids/${bidId}/criteria`);
+      if (!response.ok) throw new Error('Failed to fetch evaluation criteria');
+      const data = await response.json();
+
+      // Return only criteriaId and criteriaName
+      return data.criteria.map((item) => ({
+        id: item.criteriaId,
+        name: item.criteriaName
+      }));
+    } catch (error) {
+      console.error('Error fetching bid criteria:', error);
+      return [];
+    }
+  };
+
+
   // Helper function
   const transformEvaluationScores = (evaluations) => {
-    // Create a mapping from your general criteria
-    const scoreMap = {};
+  // Create a mapping from your general criteria
+   const scoreMap = {};
     
     // Map the evaluations to your general criteria format
-    generalCriteria.forEach((criterion, index) => {
+  generalCriteria.forEach((criterion, index) => {
       const evaluation = evaluations[index];
       scoreMap[criterion.id] = evaluation ? evaluation.score : 0;
     });
     
-    return scoreMap;
+  return scoreMap;
   };
   
   const calculateAverageScore = (evaluations) => {
@@ -74,7 +89,7 @@ const BuyerBidEvaluation = () => {
         
         // Check if the response has the expected structure
         if (!data || !data.bids) {
-          console.error('Unexpected API response format:', data);
+         // console.error('Unexpected API response format:', data);
           setError('Unexpected API response format');
           setLoading(false);
           return;
@@ -84,10 +99,11 @@ const BuyerBidEvaluation = () => {
         const transformedBids = data.bids.map((bid, index) => {
           try {
             const bidId = bid.id || index + 1; // Fallback to index+1 if no ID provided
-    
-            console.log(`Bid from ${bid.seller?.company_name} has ID:`, bidId);
-    
-            
+
+            fetchBidCriteria(bidId).then((criteria) => {
+              // Set new criteria state for the current bid
+              setNewCriteria(criteria);
+            });
             return {
               id: bidId, 
               sellerEmail: bid.seller?.email || 'unknown',
@@ -99,9 +115,12 @@ const BuyerBidEvaluation = () => {
               submissionDate: bid.submittedAt || new Date().toISOString(),
               isEvaluated: bid.evaluations && bid.evaluations.length > 0,
               evaluation: bid.evaluations && bid.evaluations.length > 0 ? {
-                scores: transformEvaluationScores(bid.evaluations),
+                scores: bid.evaluations.map((evaluation) => ({
+                  criteriaName: evaluation.criteriaName,
+                  score: evaluation.score,
+                  weight: evaluation.weight
+                })),
                 comment: bid.evaluationStatus || "Evaluation from backend", 
-                // Use finalScore directly from backend - if null, display "Pending"
                 averageScore: bid.finalScore !== null ? bid.finalScore : "Pending",
                 evaluationDate: new Date().toISOString()
               } : null,
@@ -348,11 +367,12 @@ const BuyerBidEvaluation = () => {
         </div>
       </div>
 
+
       {isEvaluationModalOpen && selectedBidId && (
         <EvaluationModal
           bidId={selectedBidId}
           bid={bidProposals.find(bid => bid.id === selectedBidId)}
-          criteria={generalCriteria}
+          criteria={newCriteria}
           onClose={() => setIsEvaluationModalOpen(false)}
           onSubmit={handleEvaluationSubmit}
         />
