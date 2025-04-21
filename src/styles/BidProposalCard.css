@@ -1,4 +1,138 @@
+/* Glavna kartica */
 .bid-proposal-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* Badge za Awarded */
+/*.awarded-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #3fb83f;
+  color: white;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}*/
+
+/* Header dio */
+.bid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.seller-info h4 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.bid-submission-date {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Detalji ponude */
+.bid-details {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.bid-detail-item .label {
+  font-weight: bold;
+  margin-right: 0.25rem;
+}
+
+.bid-proposal {
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Evaluacija sekcija */
+.evaluation-results {
+  background-color: #f9f9f9;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.evaluation-results h5 {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+/* Grid raspored ocjena */
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.score-item {
+  background-color: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.score-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.criterion {
+  color: #333;
+}
+
+.score, .weight {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Prosječna ocjena */
+.average-score {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #3fb83f;
+  margin-bottom: 0.5rem;
+}
+
+.evaluation-comment {
+  background: #f1f1f1;
+  border-left: 4px solid #3fb83f;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* Akcije */
+.bid-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.awarded-button {
+  background-color: #3fb83f !important;
+  color: white !important;
+}
+
+
+/*CSS koji je bio prije popravki*/
+/*.bid-proposal-card {
     position: relative;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -10,7 +144,7 @@
   .bid-proposal-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
+  }*/
   
   .bid-proposal-card.awarded {
     border: 2px solid #52c41a;
@@ -28,7 +162,7 @@
     font-weight: 600;
   }
   
-  .bid-header {
+  /*.bid-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -254,12 +388,12 @@
   
   .submit-btn:hover {
     background-color: #40a9ff;
-  }
+  }*/
   
   /* For pending score styling */
-  .pending-score {
+  /*.pending-score {
     color: #f59e0b; /* Amber/yellow color for pending status */
-    font-style: italic;
+    /*font-style: italic;
     font-weight: 600;
     background-color: #fffbe6;
     padding: 0.15rem 0.5rem;
@@ -322,24 +456,24 @@
 
   .score-item {
     margin-bottom: 10px; /* Razmak između svakog kriterija */
-  }
+  /*}
   
   .score-item-row {
     display: flex;
     justify-content: space-between; /* Poravnava elemente u redu */
-    align-items: center; /* Poravnava elemente po visini */
-  }
+    /*align-items: center; /* Poravnava elemente po visini */
+  /*}
   
   .criterion {
     font-weight: bold; /* Naziv kriterija je podebljan */
-    flex: 1; /* Ovdje se može dodati fleksibilnost za širinu */
-  }
+    /*flex: 1; /* Ovdje se može dodati fleksibilnost za širinu */
+  /*}
   
   .score, .weight {
     margin-left: 10px; /* Razmak između score i weight */
-  }
+  /*}
   
   .score-item-row span {
     margin-right: 15px; /* Razmak između svakog od elemenata u redu */
-  }
+  /*}
   
