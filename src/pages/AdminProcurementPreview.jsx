@@ -17,33 +17,6 @@ const AdminProcurementPreview = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 2;  // Number of bids per page
 
-    //mock kriterji dok ne skontam gdje je ruta koja ih vraca :)
-    const kriterijiMock = {
-        evaluationCriteria: [
-            {
-                criteriaType: {
-                    name: "Price"
-                },
-                weight: 50,
-                is_must_have: true
-            },
-            {
-                criteriaType: {
-                    name: "Delivery Time"
-                },
-                weight: 30,
-                is_must_have: false
-            },
-            {
-                criteriaType: {
-                    name: "Warranty"
-                },
-                weight: 20,
-                is_must_have: false
-            }
-        ]
-    };
-
     useEffect(() => {
         if (!isAdmin()) {
             if (!isAuthenticated()) {
@@ -86,6 +59,16 @@ const AdminProcurementPreview = () => {
     const handleClose = () => {
         console.log('Close preview');
         navigate('/admin-procurement-requests');
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        const hh = String(date.getHours()).padStart(2, '0');
+        const min =String(date.getMinutes()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd} at ${hh}:${min}`;
     };
 
     const indexOfLastBid = currentPage * itemsPerPage;
@@ -145,10 +128,12 @@ const AdminProcurementPreview = () => {
                                 <Typography variant="h3" gutterBottom>{data.title}</Typography>
                                 <Typography variant="body1" gutterBottom><strong>Description:</strong> {data.description}</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Location:</strong> {data.location}</Typography>
-                                <Typography sx={{ mb: 1 }}><strong>Deadline:</strong> {data.deadline}</Typography>
+                                <Typography sx={{ mb: 1 }}><strong>Deadline:</strong> {data.deadline? `${formatDate(data.deadline)}` : "No deadline"}</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} BAM</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Category:</strong> {data.procurementCategory.name}</Typography>
-
+                                <Typography sx={{ mb: 1 }}>
+                                    <strong>Enable bid proposals editing : </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
+                                </Typography>
                                 <Box sx={{ mt: 3 }}>
                                     <Typography variant="h5" fontWeight={"bolder"}>Items</Typography>
                                     {data.items.map((item, index) => (
@@ -185,10 +170,11 @@ const AdminProcurementPreview = () => {
                                         </Box>
                                     ))}
                                 </Box>
-                                {kriterijiMock.evaluationCriteria.length > 0 && (
+                                {/* Ovo je dio koji se odnosi na kriteriji, radi kada ima controller na be */}
+                                {data.evaluationCriteria.length > 0 && (
                                 <Box sx={{ mt: 3}}>
                                     <Typography variant="h5" fontWeight={"bolder"}>Criteria</Typography>
-                                    {kriterijiMock.evaluationCriteria.map((crit, index) => (
+                                    {data.evaluationCriteria.map((crit, index) => (
                                         <Box key={index} sx={{
                                             mb: 2,
                                             p: 2,
@@ -241,7 +227,7 @@ const AdminProcurementPreview = () => {
                                         <strong>Proposal:</strong> {bid.proposalText}
                                     </Typography>
                                     <Typography variant="body2">
-                                        <strong>Submitted At:</strong> {bid.submitted_at}
+                                        <strong>Submitted At:</strong> {bid.submitted_at? `${formatDate(bid.submitted_at)}` : "Unknown"}
                                     </Typography>
                                 </Box>
                             ))}
