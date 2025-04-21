@@ -62,7 +62,7 @@ const EditProcurementForm = () => {
         status: procurementData.status,
         items: procurementData.items,
         requirements: procurementData.requirements,
-        criteria: procurementData.criteria,
+        evaluationCriteria: procurementData.evaluationCriteria,
         bid_edit_deadline: procurementData.bid_edit_deadline,
     });
 
@@ -83,6 +83,7 @@ const EditProcurementForm = () => {
             setFormData({
                 ...procurementData,
                 deadline: formatDate(procurementData.deadline),
+                bid_edit_deadline: formatDate(procurementData.bid_edit_deadline),
             });
             setSelectedCategory(procurementData.category_id); 
         }
@@ -132,9 +133,9 @@ const EditProcurementForm = () => {
     };
 
     const handleCriteriaChange = (index, field, value) => {
-        const updated = [...formData.criteria];
+        const updated = [...formData.evaluationCriteria];
         updated[index][field] = value;
-        setFormData((prev) => ({ ...prev, criteria: updated }));
+        setFormData((prev) => ({ ...prev, evaluationCriteria: updated }));
     };
 
     const addItem = () => {
@@ -154,7 +155,7 @@ const EditProcurementForm = () => {
     const addCriteria = () => {
         setFormData((prev) => ({
             ...prev,
-            criteria: [...prev.criteria, { type: "", weight: 0 }],
+            evaluationCriteria: [...prev.evaluationCriteria, { name: "", weight: 0 }],
         }));
     };
 
@@ -171,9 +172,9 @@ const EditProcurementForm = () => {
     };
 
     const removeCriteria = (index) => {
-        const updated = [...formData.criteria];
+        const updated = [...formData.evaluationCriteria];
         updated.splice(index, 1);
-        setFormData((prev) => ({ ...prev, criteria: updated }));
+        setFormData((prev) => ({ ...prev, evaluationCriteria: updated }));
     };
 
     const getCategoryName = (id) => {
@@ -181,19 +182,24 @@ const EditProcurementForm = () => {
         return category ? category.name : "Unknown Category";
     };
 
+    const getCriteriaName = (id) => {
+        const criteria = criterias.find((cri) => cri.id === id);   
+        return criteria.name || "Unknown Category";
+    };
+
     const validateFormData = (formData, enableBidEditing, bidEditDeadline) => {
         // Criteria validation
-        const totalWeight = formData.criteria.reduce((sum, crit) => sum + Number(crit.weight), 0);
+        const totalWeight = formData.evaluationCriteria.reduce((sum, crit) => sum + Number(crit.weight), 0);
         if (totalWeight !== 100) {
             return { valid: false, message: "Sum of criteria weights must be 100%." };
         }
     
         const uniqueIds = new Set();
-        for (const crit of formData.criteria) {
-            if (uniqueIds.has(crit.id)) {
+        for (const crit of formData.evaluationCriteria) {
+            if (uniqueIds.has(crit.name)) {
                 return { valid: false, message: `Criteria '${crit.name}' is added more than once.` };
             }
-            uniqueIds.add(crit.id);
+            uniqueIds.add(crit.name);
         }
     
         // Bid editing deadline validation
@@ -235,12 +241,15 @@ const EditProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
-            criteria: formData.criteria,
-            bid_edit_deadline: formData.bid_edit_deadline ? bidEditDeadline : null,
+            criteria: formData.evaluationCriteria.map(crit => ({
+                ...crit,
+                name: getCriteriaName(crit.name),
+            })),
+            bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
           
     
-        console.log("Sending request data:", requestData);
+        console.log("Sending request data from submit:", requestData);
           
         try {
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/update`, requestData,
@@ -272,8 +281,8 @@ const EditProcurementForm = () => {
 
     const handleSaveDraft = async (e) => {
         e.preventDefault();
-        console.log("Submitted form:", formData);
-        console.log("Selected category:", selectedCategory);
+        console.log("Submitted form as a draft:", formData);
+        //console.log("Selected category:", selectedCategory);
         console.log("Selected criteria:", selectedCriteria);
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
@@ -293,12 +302,15 @@ const EditProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
-            criteria: formData.criteria,
-            bid_edit_deadline: formData.bid_edit_deadline ? bidEditDeadline : null,
+            criteria: formData.evaluationCriteria.map(crit => ({
+                ...crit,
+                name: getCriteriaName(crit.name),
+            })),
+            bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
           
     
-        console.log("Sending request data:", requestData);
+        console.log("Sending request data for draft:", requestData);
         console.log("formData to send:", formData);
           
         try {
@@ -521,19 +533,17 @@ const EditProcurementForm = () => {
                                     <Typography variant="subtitle1" sx={{ mt: 3 }}>
                                         Criteria
                                     </Typography>
-                                    {formData.criteria.map((crit, index) => (
+                                    {formData.evaluationCriteria.map((crit, index) => (
                                         <Box key={index} sx={{ mb: 2 }}>
                                             <CustomSelect
                                                 label="Criteria Type"
-                                                name="criteria"
-                                                value={selectedCriteria}
-                                                onChange={(e) => setSelectedCriteria(e.target.value)}
-                                                options={[
-                                                    ...criterias.map((c) => ({
-                                                        label: c.name,
-                                                        value: c.id,
-                                                    })),
-                                                ]}
+                                                name={`criteria-${index}`}
+                                                value={crit.name}
+                                                onChange={(e) => handleCriteriaChange(index, "name", e.target.value)}
+                                                options={criterias.map((c) => ({
+                                                    label: c.name,
+                                                    value: c.id,
+                                                }))}
                                             />
                                             
                                             <TextField
@@ -549,18 +559,18 @@ const EditProcurementForm = () => {
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
-                                                    checked={!!crit.isChecked}
-                                                    onChange={(e) =>
-                                                        handleCriteriaChange(index, "isChecked", e.target.checked)
-                                                    }
-                                                    color="primary"
-                                                    inputProps={{ "aria-label": "primary checkbox" }}
+                                                        checked={!!crit.is_must_have}
+                                                        onChange={(e) =>
+                                                            handleCriteriaChange(index, "is_must_have", e.target.checked)
+                                                        }
+                                                        color="primary"
+                                                        inputProps={{ "aria-label": "primary checkbox" }}
                                                     />
                                                 }
                                                 label="Is must-have"
                                             />
 
-                                            {formData.criteria.length > 1 && (
+                                            {formData.evaluationCriteria.length > 1 && (
                                                 <SecondaryButton
                                                     onClick={() => removeCriteria(index)}
                                                     fullWidth
