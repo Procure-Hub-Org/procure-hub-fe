@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import BidProposalCard from '../components/Cards/BidProposalCard';
@@ -183,7 +184,7 @@ const BuyerBidEvaluation = () => {
     setIsEvaluationModalOpen(true);
   };
 
-  const handleAwardBid = async (bidId) => {
+  /*const handleAwardBid = async (bidId) => {
     try {
       setLoading(true);
       
@@ -204,7 +205,41 @@ const BuyerBidEvaluation = () => {
       setError(err.response?.data?.message || 'Failed to award bid');
       setLoading(false);
     }
+  };*/
+
+  const handleAwardBid = async (bidId) => {
+    try {
+      setLoading(true);
+  
+      const token = localStorage.getItem('token');
+  
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
+        { id, status: 'awarded' },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log('Procurement status updated:', response.data);
+  
+      // Localy signal which bid was awarded
+      setBidProposals(prevBids =>
+        prevBids.map(bid => ({
+          ...bid,
+          isAwarded: bid.id === bidId,
+        }))
+      );
+  
+      setLoading(false);
+    } catch (err) {
+      console.error('Error awarding bid:', err);
+      setError(err.response?.data?.message || 'Failed to award bid');
+      setLoading(false);
+    }
   };
+  
 
   const handleEvaluationSubmit = async (evaluationData) => {
     try {
@@ -376,7 +411,7 @@ const BuyerBidEvaluation = () => {
           bid={bidProposals.find(bid => bid.id === selectedBidId)}
           criteria={newCriteria}
           onClose={() => setIsEvaluationModalOpen(false)}
-          onSubmit={handleEvaluationSubmit}
+          onSubmit={() => handleEvaluationSubmit()}
         />
       )}
     </Layout>
