@@ -120,13 +120,14 @@
   .error-container p {
     color: #ff4d4f;
     margin-bottom: 1rem;
+    font-size: 1.2rem;
   }
   
-  .error-container button {
+  /*.error-container button {
     padding: 0.5rem 1rem;
     background-color: #1890ff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
+  }*/

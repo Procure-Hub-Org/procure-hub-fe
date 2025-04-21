@@ -6,6 +6,7 @@ import CustomSelect from '../components/Input/DropdownSelect';
 import EvaluationModal from '../components/Modals/EvaluationModal';
 import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
+import PrimaryButton from '../components/Button/PrimaryButton';
 
 
 
@@ -318,9 +319,10 @@ const BuyerBidEvaluation = () => {
       <Layout>
         <div className="error-container">
           <p className="error-message">{error}</p>
-          <button className="retry-button" onClick={() => window.location.reload()}>
+          {/*<button className="retry-button" onClick={() => window.location.reload()}>
             Retry
-          </button>
+          </button>*/}
+          <PrimaryButton label="Retry"  onClick={() => window.location.reload()}> Retry </PrimaryButton> 
         </div>
       </Layout>
     );
