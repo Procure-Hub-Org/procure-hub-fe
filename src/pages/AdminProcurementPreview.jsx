@@ -17,6 +17,33 @@ const AdminProcurementPreview = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 2;  // Number of bids per page
 
+    //mock kriterji dok ne skontam gdje je ruta koja ih vraca :)
+    const kriterijiMock = {
+        evaluationCriteria: [
+            {
+                criteriaType: {
+                    name: "Price"
+                },
+                weight: 50,
+                is_must_have: true
+            },
+            {
+                criteriaType: {
+                    name: "Delivery Time"
+                },
+                weight: 30,
+                is_must_have: false
+            },
+            {
+                criteriaType: {
+                    name: "Warranty"
+                },
+                weight: 20,
+                is_must_have: false
+            }
+        ]
+    };
+
     useEffect(() => {
         if (!isAdmin()) {
             if (!isAuthenticated()) {
@@ -158,6 +185,29 @@ const AdminProcurementPreview = () => {
                                         </Box>
                                     ))}
                                 </Box>
+                                {kriterijiMock.evaluationCriteria.length > 0 && (
+                                <Box sx={{ mt: 3}}>
+                                    <Typography variant="h5" fontWeight={"bolder"}>Criteria</Typography>
+                                    {kriterijiMock.evaluationCriteria.map((crit, index) => (
+                                        <Box key={index} sx={{
+                                            mb: 2,
+                                            p: 2,
+                                            border: '1px solid #ccc',
+                                            borderRadius: 2,
+                                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                        }}>
+                                            <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                                {crit.criteriaType.name}
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ mb: 1 }}>
+                                                Weight: <strong> {crit.weight}% </strong>
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                Is must have: <strong> {crit.is_must_have ? "Yes" : "No"}  </strong>
+                                            </Typography>
+                                        </Box>
+                                    ))}
+                                </Box>)}
                             </CardContent>
                         </Card>
                     </Box>
