@@ -138,6 +138,7 @@ function BuyerBidEvaluation() {
             // Close the modal
             setIsEvaluationModalOpen(false);
             setLoading(false);
+            window.location.reload(); // Reload the page to reflect changes
         } catch (error) {
             console.error('Error in handleEvaluationSubmit:', error);
 

@@ -119,8 +119,7 @@
   
   .error-container p {
     color: #ff4d4f;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
   }
   
   /*.error-container button {
