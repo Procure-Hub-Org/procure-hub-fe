@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/system';
 
-const SecondaryButton = ({ children, onClick }) => {
+const SecondaryButton = ({ children, onClick, ...props }) => {
   const theme = useTheme();
 
   return (
@@ -21,6 +21,7 @@ const SecondaryButton = ({ children, onClick }) => {
           backgroundColor: theme.palette.secondary.light,
         },
       }}
+      {...props} // pass all props to the button
       onClick={onClick}
     >
       {children}

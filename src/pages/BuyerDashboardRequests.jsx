@@ -4,6 +4,7 @@ import "../styles/Buyer.css";
 import axios from 'axios';
 import PrimaryButton from '../components/Button/PrimaryButton';
 import BasicButton from '../components/Button/BasicButton';
+import SecondaryButton from '../components/Button/SecondaryButton';
 import Layout from '../components/Layout/Layout';
 import { isAuthenticated, isBuyer } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
@@ -70,6 +71,7 @@ const BuyerDashboardRequests = () => {
         { status: 'draft', label: 'Draft' },
         { status: 'closed', label: 'Closed'},
         { status: 'awarded', label: 'Awarded'},
+        { status: 'frozen', label: 'Frozen', isSecondary: true },
     ];
 
     //Loading requests from backend
@@ -80,15 +82,26 @@ const BuyerDashboardRequests = () => {
 
             <div className="parent-button-container">
                 <div className="status-buttons-container">
-                    {statusButton.map(({ status, label }) => (
-                    <PrimaryButton
-                        key={status}
-                        onClick={() => toggleActiveStatus(status)}
-                        disabled={activeStatus === status}
-                        className={activeStatus === status ? 'bg-blue-700 cursor-not-allowed opacity-60' : ''}
-                    >
-                        {label}
-                    </PrimaryButton>
+                    {statusButton.map(({ status, label, isSecondary }) => (
+                        isSecondary ? (
+                            <SecondaryButton
+                                key={status}
+                                onClick={() => toggleActiveStatus(status)}
+                                disabled={activeStatus === status}
+                                className={activeStatus === status ? 'bg-blue-700 cursor-not-allowed opacity-60' : ''}
+                            >
+                                {label}
+                            </SecondaryButton> 
+                        ):(
+                            <PrimaryButton
+                                key={status}
+                                onClick={() => toggleActiveStatus(status)}
+                                disabled={activeStatus === status}
+                                className={activeStatus === status ? 'bg-blue-700 cursor-not-allowed opacity-60' : ''}
+                            >
+                                {label}
+                            </PrimaryButton>
+                        )
                     ))}
                 </div>
 
@@ -116,7 +129,7 @@ const BuyerDashboardRequests = () => {
                             <tr key={request.id} className="tr">
                             <td className="td">{request.title}</td>
                             <td className="td">{request.description}</td>
-                            <td className="td">{request.procurementCategory}</td>
+                            <td className="td">{request.procurementCategory.name}</td>
                             <td className="td">{request.status}</td>
                             <td className="td">
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
