@@ -18,7 +18,9 @@ import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
 import BuyerBidEvaluation from './pages/BuyerBidEvaluation.jsx';
 import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
-
+import SellerBidForm from "./pages/SellerBidForm.jsx";
+import BidProposalPreview from "./pages/BidProposalPreview.jsx";
+import EditBidProposalSeller from "./pages/EditBidProposalSeller.jsx";
 function App() {
   return (
     <Routes>
@@ -128,6 +130,30 @@ function App() {
             <BuyerBidEvaluation />
           </AuthenticatedRoute>
         } 
+      />
+      <Route
+        path="/new-bid/:requestId"
+        element={
+          <AuthenticatedRoute>
+          <SellerBidForm />
+        </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/preview-bid/:id"
+        element={
+          <AuthenticatedRoute>
+          <BidProposalPreview />
+        </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/edit-bid/:id"
+        element={
+          <AuthenticatedRoute>
+          <EditBidProposalSeller />
+        </AuthenticatedRoute>
+        }
       />
     </Routes>
   );
