@@ -16,7 +16,7 @@ import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
 import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
-import BuyerBidEvaluation from './pages/BuyerBidEvaluation';
+import BuyerBidEvaluation from './pages/BuyerBidEvaluation.jsx';
 
 function App() {
   return (

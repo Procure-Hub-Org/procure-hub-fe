@@ -35,8 +35,9 @@ const evaluateBid = async (evaluationData) => {
     // Transform the data format as needed
     const transformedData = Object.entries(evaluationData.scores).map(([criterionId, score]) => {
       return {
+        procurement_request_id: parseInt(evaluationData.procurementRequestId),
         procurement_bid_id: evaluationData.bidId,
-        evaluation_criteria_id: parseInt(criterionId),
+        criteria_type_id: parseInt(criterionId),
         score: parseInt(score)
       };
     });

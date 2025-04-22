@@ -22,6 +22,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
       ...prev,
       [criterionId]: score
     }));
+    console.log('Score changed:', criterionId, score);
   };
   
   const handleSubmit = (e) => {
@@ -41,10 +42,7 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
     }
     
     // Submit the data
-    onSubmit({
-      scores,
-      //comment
-    });
+    onSubmit(scores);
   };
 
   return (
