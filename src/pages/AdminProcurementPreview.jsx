@@ -137,7 +137,7 @@ const AdminProcurementPreview = () => {
                                 <Typography variant="body1" gutterBottom><strong>Description:</strong> {data.description}</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Location:</strong> {data.location}</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Deadline:</strong> {data.deadline? `${formatDate(data.deadline)}` : "No deadline"}</Typography>
-                                <Typography sx={{ mb: 1 }}><strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} BAM</Typography>
+                                <Typography sx={{ mb: 1 }}><strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} $</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Category:</strong> {data.procurementCategory.name}</Typography>
                                 <Typography sx={{ mb: 1 }}>
                                     <strong>Enable bid proposals editing : </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
@@ -256,7 +256,7 @@ const AdminProcurementPreview = () => {
                                         Seller: {bid.seller}
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
-                                        <strong>Price:</strong> {bid.price} BAM
+                                        <strong>Price:</strong> {bid.price} $
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
                                         <strong>Timeline:</strong> {bid.timeline}
