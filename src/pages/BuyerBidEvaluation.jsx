@@ -161,6 +161,39 @@ function BuyerBidEvaluation() {
         }
     };
 
+    const handleAwardBid = async (bidId) => {
+        try {
+            setLoading(true);
+
+            const token = localStorage.getItem('token');
+
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
+                { id, status: 'awarded' },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('Procurement status updated:', response.data);
+
+            // Localy signal which bid was awarded
+            setBidProposals(prevBids =>
+                prevBids.map(bid => ({
+                    ...bid,
+                    isAwarded: bid.id === bidId,
+                }))
+            );
+
+            setLoading(false);
+        } catch (err) {
+            console.error('Error awarding bid:', err);
+            setError(err.response?.data?.message || 'Failed to award bid');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         async function fetchBidData() {
             if (!id) return;
@@ -258,7 +291,7 @@ function BuyerBidEvaluation() {
 
     }, [id]);
 
-    
+
 
     return (
         <Layout>
