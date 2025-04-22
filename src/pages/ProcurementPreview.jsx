@@ -16,6 +16,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import SendIcon from '@mui/icons-material/Send';
+import {Eye} from 'lucide-react';
 import axios from 'axios';
 
 const PreviewProcurement = () => {
@@ -60,6 +61,11 @@ const PreviewProcurement = () => {
         navigate('/buyer-procurement-requests')
     };
 
+    const goToBids = () => {
+        console.log('Go to bids');
+        navigate(`/buyer/procurement/${id}/bids`)
+    };
+
     const handleState = (status) => {
         axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${data.id}/status`, 
             { id: data.id, status: status}, 
@@ -74,6 +80,14 @@ const PreviewProcurement = () => {
             });
             console.log('Close request');
     }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    };
 
     if (!data) {
         return (
@@ -100,7 +114,15 @@ const PreviewProcurement = () => {
                             {/* Status Chip */}
                             <Chip
                                 label={data.status.toUpperCase()}
-                                color={data.status === "draft" ? "warning" : "success"}
+                                color={
+                                    {
+                                        draft: 'warning',    
+                                        active: 'success',   
+                                        frozen: 'error',     
+                                        closed: 'info',      
+                                        awarded: 'success',  
+                                    }[data.status] || 'default'
+                                }
                                 sx={{ mb: 1 }}
                             />
                             
@@ -128,13 +150,17 @@ const PreviewProcurement = () => {
                                     <strong>Location:</strong> {data.location}
                                 </Typography>
                                 <Typography sx={{ mb: 1 }}>
-                                    <strong>Deadline:</strong> {data.deadline}
+                                    <strong>Deadline:</strong> {formatDate(data.deadline)}
                                 </Typography>
                                 <Typography sx={{ mb: 1 }}>
-                                    <strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} BAM
+                                    <strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} $
                                 </Typography>
                                 <Typography sx={{ mb: 1 }}>
                                     <strong>Category:</strong> {data.procurementCategory.name}
+                                </Typography>
+
+                                <Typography sx={{ mb: 1 }}>
+                                    <strong>Enable bid proposals editing : </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
                                 </Typography>
     
                                 <Box sx={{ mt: 3 }}>
@@ -148,13 +174,13 @@ const PreviewProcurement = () => {
                                             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                         }}>
                                             <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
-                                                {item.title}
+                                                <strong>{item.title}</strong>
                                             </Typography>
                                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                                {item.description}
+                                                Description: <strong> {item.description} </strong>
                                             </Typography>
                                             <Typography variant="body2">
-                                                <strong>Quantity: </strong> {item.quantity}
+                                                Quantity: <strong>{item.quantity}</strong> 
                                             </Typography>
                                         </Box>
                                     ))}
@@ -174,11 +200,53 @@ const PreviewProcurement = () => {
                                                 Requirement type: <strong>{req.type}</strong>
                                             </Typography>
                                             <Typography variant="body2" sx={{ mb: 1 }}>
-                                                {req.description}
+                                                Description: <strong>{req.description} </strong>
                                             </Typography>
                                         </Box>
                                     ))}
                                 </Box>
+
+                                {data.evaluationCriteria.length > 0 && (
+                                    <Box sx={{ mt: 3 }}>
+                                        <Typography variant="h5" fontWeight={"bolder"}>Criteria</Typography>
+                                        {data.evaluationCriteria.map((crit, index) => (
+                                            <Box key={index} sx={{
+                                                mb: 2,
+                                                p: 2,
+                                                border: '1px solid #ccc',
+                                                borderRadius: 2,
+                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                            }}>
+                                                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                                    {crit.criteriaType.name}
+                                                </Typography>
+                                                <Typography variant="body2" sx={{ mb: 1 }}>
+                                                    Weight: <strong> {crit.weight}% </strong>
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    Is must have: <strong> {crit.is_must_have ? "Yes" : "No"}  </strong>
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                )}
+
+                                {data.status === "frozen" && (
+                                    <Typography
+                                        sx={{
+                                        mb: 1,
+                                        color: 'red',
+                                        textAlign: 'center',
+                                        fontWeight: 'bold'
+                                        }}
+                                    >
+                                        This request has been frozen because it does not align with the Business Guidelines. 
+                                        Contact the system Administrator for more information.
+                                    </Typography>
+                                        
+                                )}
+
+                                
     
                                 <Box sx={{ mt: 4, display: "flex", gap: 2 }}>
                                     {data.status === "draft" && (
@@ -193,7 +261,7 @@ const PreviewProcurement = () => {
                                         </Box>
                                         
                                     )}
-                                    {data.status === "active" && (
+                                    {/*{data.status === "active" && (
                                         <Box sx={{ display: "flex", gap: 2 }}>
                                             <PrimaryButton onClick={() => handleState("closed")} startIcon={<CloseIcon />}>
                                                 Close Request
@@ -204,8 +272,17 @@ const PreviewProcurement = () => {
                                             </PrimaryButton>
                                         </Box>
                                         
+                                    )}*/}
+                                    {(data.status === "closed" || data.status === "awarded")  && (
+                                        <Box sx={{ display: "flex", gap: 2 }}>
+                                            <PrimaryButton onClick={() => goToBids()}>
+                                                <Eye size={25} style={{ paddingRight: '8px' }}/>
+                                                <span>View bid proposals</span>
+                                            </PrimaryButton>
+                                        </Box>
+                                        
                                     )}
-                                    <SecondaryButton onClick={handleClose}>
+                                    <SecondaryButton onClick={() => handleClose()} startIcon={<CloseIcon />}>
                                         Close Preview
                                     </SecondaryButton>
                                 </Box>

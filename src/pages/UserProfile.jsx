@@ -431,9 +431,7 @@ function UserProfile() {
                         maxWidth: { xs: 350, md: 250 },
                       }}
                       alt="Profile picture."
-                      src={`${import.meta.env.VITE_API_URL}/${
-                        userData.profile_picture
-                      }`}
+                      src={`${userData.profile_picture_url}`}
                     />
                   )}
                   <PrimaryButton
@@ -464,9 +462,7 @@ function UserProfile() {
                         maxWidth: { xs: 350, md: 250 },
                       }}
                       alt="Company logo."
-                      src={`${import.meta.env.VITE_API_URL}/${
-                        userData.company_logo
-                      }`}
+                      src={`${userData.company_logo_url}`}
                     />
                   )}
                   <PrimaryButton

@@ -14,7 +14,7 @@ const OutlinedButton = ({ children, onClick, color = "primary" }) => {
         fontWeight: theme.typography.button.fontWeight,
         fontSize: theme.typography.button.fontSize,
         textTransform: 'none',
-        padding: '12px 18px',
+        padding: '6px 14px',
         borderRadius: '4px',
         borderColor: color === 'primary' ? theme.palette.primary.main : theme.palette.secondary.main,
         '&:hover': {

@@ -19,6 +19,8 @@ import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
 import AdminProcurementDashboard from "./pages/AdminProcurementRequests.jsx";
 import AdminProcurementPreview from "./pages/AdminProcurementPreview.jsx";
 import BidLogs from "./pages/BidLogs.jsx";
+import BuyerBidEvaluation from './pages/BuyerBidEvaluation.jsx';
+import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
 
 function App() {
   return (
@@ -97,6 +99,14 @@ function App() {
           </AuthenticatedRoute>
         }
       />
+      <Route 
+        path="/seller-bids"
+        element={
+          <AuthenticatedRoute>
+            <SellerBidsDashboard />
+          </AuthenticatedRoute>
+        }
+      />
       <Route path="/preview" element={<PreviewComponent />} />
       <Route
         path="/admin"
@@ -136,6 +146,14 @@ function App() {
             <CreateUserPage />
           </AdminRoute>
         }
+      />
+      <Route 
+        path="/buyer/procurement/:id/bids" 
+        element={
+          <AuthenticatedRoute>
+            <BuyerBidEvaluation />
+          </AuthenticatedRoute>
+        } 
       />
     </Routes>
   );
