@@ -74,7 +74,7 @@ const BidForm = () => {
                 price: formData.price,
                 timeline: formData.timeline,
                 proposal_text: formData.proposal_text,
-                // submitted: false, //dummy data
+                submitted: false, 
         };
           
     
@@ -118,8 +118,10 @@ const BidForm = () => {
             price: formData.price,
             timeline: formData.timeline,
             proposal_text: formData.proposal_text,
+            submitted: false,
+
+
             ///////////////////////////////////////////////ovo ispod je dummy 
-            
                 // procurement_request_id: 1, 
                 // price: formData.price,
                 // timeline: formData.timeline,

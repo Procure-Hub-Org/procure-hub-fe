@@ -56,7 +56,7 @@ const BidPreview = () => {
         }
       );
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         alert("Bid submitted successfully!");
         navigate("/seller-bids");
       } else {
