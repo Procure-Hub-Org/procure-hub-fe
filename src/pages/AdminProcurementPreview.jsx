@@ -214,6 +214,14 @@ const AdminProcurementPreview = () => {
                                     }}
                                     onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${index + 1}`)} // Kad se klikne na red
                                 >
+                                    <Box sx={{ position: 'relative', mb: 2 }}>
+                                        <Chip
+                                            label={`Score: ${bid.score !== null ? bid.score : 'N/A'}`}
+                                            color="primary"
+                                            size="medium"
+                                            sx={{ position: 'absolute', top: 0, right: 0 }}
+                                        />
+                                    </Box>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
                                         Seller: {bid.seller}
                                     </Typography>
