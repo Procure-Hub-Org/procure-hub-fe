@@ -131,7 +131,7 @@ const PreviewProcurement = () => {
                                     <strong>Deadline:</strong> {data.deadline}
                                 </Typography>
                                 <Typography sx={{ mb: 1 }}>
-                                    <strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} BAM
+                                    <strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} $
                                 </Typography>
                                 <Typography sx={{ mb: 1 }}>
                                     <strong>Category:</strong> {data.procurementCategory.name}
