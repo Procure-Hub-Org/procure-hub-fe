@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -7,6 +8,7 @@ import {
   Chip,
   Divider,
 } from "@mui/material";
+import axios from "axios";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import dayjs from "dayjs";
 import BidDocumentUploader from "../Uploaders/BidDocumentUploader";
@@ -14,6 +16,7 @@ import PrimaryButton from "../Button/PrimaryButton";
 import OutlinedButton from "../Button/OutlinedButton";
 
 const SellerBidCard = ({ bid }) => {
+  const navigate = useNavigate();
   const submitted = bid.submitted_at !== null;
   const deadline = bid.procurementRequest.bid_edit_deadline;
   const now = dayjs();
@@ -26,6 +29,52 @@ const SellerBidCard = ({ bid }) => {
 
   const editable = isEditable();
   const deadlinePassed = now.isAfter(dayjs(deadline));
+
+  const handleEdit = () => {
+    if(editable){
+      navigate(`/edit-bid/${bid.id}`, {
+        state: {
+          formData: {
+            price: bid.price,
+            timeline: bid.timeline,
+            proposal_text: bid.proposal_text,
+          },
+        },
+     });
+    }else{
+      alert("Bid can not be edited!");
+    }
+  };
+
+  const handleSubmit = async () => {
+    const formData = {
+        price: bid.price,
+        timeline: bid.timeline,
+        proposal_text: bid.proposal_text,
+    }
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/bid/${bid.id}/submit`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 201 || response.status === 200) {
+        alert("Bid submitted successfully!");
+        navigate("/seller-bids");
+      } else {
+        alert("Bid submission failed.");
+      }
+    } catch (error) {
+      console.error("Submit error:", error);
+      alert("An error occurred while submitting the bid.");
+    }
+  };
 
   return (
     <Card
@@ -159,8 +208,8 @@ const SellerBidCard = ({ bid }) => {
               size="small"
               sx={{ fontWeight: 500 }}
             />
-            <OutlinedButton>Edit</OutlinedButton>
-            <PrimaryButton>Submit</PrimaryButton>
+            <OutlinedButton onClick={handleEdit}> Edit </OutlinedButton>
+            <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
           </Box>
         )}
 
