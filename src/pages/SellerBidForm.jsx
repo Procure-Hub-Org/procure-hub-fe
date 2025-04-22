@@ -26,7 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 // import { useTheme } from "@mui/system";
 
 const BidForm = () => {
-    const { id } = useParams(); 
+    const { requestId } = useParams(); 
     const token = localStorage.getItem("token");
 
     const [formData, setFormData] = useState({
@@ -70,7 +70,7 @@ const BidForm = () => {
         console.log("Submitted form:", formData);
 
         const requestData = {
-            // procurement_request_id: 1, //dummy data
+                procurement_request_id: requestId,
                 price: formData.price,
                 timeline: formData.timeline,
                 proposal_text: formData.proposal_text,
@@ -115,6 +115,7 @@ const BidForm = () => {
         
 
         const requestData = {
+            procurement_request_id: requestId,
             price: formData.price,
             timeline: formData.timeline,
             proposal_text: formData.proposal_text,

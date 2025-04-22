@@ -2,12 +2,15 @@ import React from "react";
 import PrimaryButton from "../Button/PrimaryButton";
 import dayjs from "dayjs";
 import { toggleFollowRequest } from "../../utils/favorites";
+import { useNavigate } from 'react-router-dom';
 
 const ProcurementRequestCard = ({
   request,
   followedRequests,
   setFollowedRequests,
 }) => {
+  const navigate = useNavigate();
+
   const handleFollowClick = async (requestId) => {
     const isFollowed = followedRequests[requestId] || false;
 
@@ -21,6 +24,7 @@ const ProcurementRequestCard = ({
 
   const handleCreateBidProposalClick = async (requestId) => {
     console.log("kliknuo da createa bid proposal na requestu id: " + requestId);
+    navigate(`/new-bid/${requestId}`);
   };
 
   return (

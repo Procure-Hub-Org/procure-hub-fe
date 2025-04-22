@@ -123,7 +123,7 @@ function App() {
         }
       />
       <Route
-        path="/new-bid"
+        path="/new-bid/:requestId"
         element={
           <AuthenticatedRoute>
           <SellerBidForm />
