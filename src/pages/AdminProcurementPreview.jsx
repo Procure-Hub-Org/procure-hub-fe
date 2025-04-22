@@ -13,9 +13,10 @@ const AdminProcurementPreview = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [bids, setBids] = useState([]);
+    const [alerts, setAlerts] = useState([]);
     const { id } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 2;  // Number of bids per page
+    const itemsPerPage = 2;
 
     useEffect(() => {
         if (!isAdmin()) {
@@ -28,32 +29,39 @@ const AdminProcurementPreview = () => {
         }
 
         setLoading(true);
-        // Fetch procurement request data
-        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement-request/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then((response) => {
-                setData(response.data);
-                console.log("Fetched request data:", response.data);
-            })
-            .catch((error) => {
-                console.error(`Error fetching request with id=${id}:`, error);
-            });
 
-        // Fetch all bids for the requestId
-        axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurement-bids/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then((response) => {
-                console.log("Fetched all bid data for request:", response.data);
-                setBids(response.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching bid data:", error);
+        const fetchData = async () => {
+            try {
+                // Fetch procurement request data
+                const requestRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/procurement-request/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setData(requestRes.data);
+                console.log("Fetched request data:", requestRes.data);
+
+                // Fetch bids
+                const bidsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/procurement-bids/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setBids(bidsRes.data);
+                console.log("Fetched all bid data for request:", bidsRes.data);
+
+                // Fetch alerts
+                const alertsRes = await axios.get(`${import.meta.env.VITE_API_URL}/api/admin/alerts/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setAlerts(alertsRes.data);
+                console.log("Fetched alerts:", alertsRes.data);
+
+            } catch (error) {
+                console.error("Error during data fetch:", error);
                 setBids({ notFound: true });
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchData();
     }, [id]);
 
     const handleClose = () => {
@@ -194,6 +202,28 @@ const AdminProcurementPreview = () => {
                                         </Box>
                                     ))}
                                 </Box>)}
+                                {alerts.length > 0 && (
+                                    <Box sx={{ mt: 3 }}>
+                                        <Typography variant="h5" fontWeight={"bolder"}>Alerts</Typography>
+                                        {alerts.map((alert, idx) => (
+                                            <Box key={idx} sx={{
+                                                mb: 2,
+                                                p: 2,
+                                                border: '1px solid #f44336',
+                                                borderRadius: 2,
+                                                boxShadow: '0 1px 3px rgba(244, 67, 54, 0.2)',
+                                                backgroundColor: '#ffebee',
+                                            }}>
+                                                <Typography variant="body1" sx={{ fontWeight: 'bold'}}>
+                                                    {alert.alert}
+                                                </Typography>
+                                                <Typography variant="body2">
+                                                    Created: {formatDate(alert.created_at)}
+                                                </Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                )}
                             </CardContent>
                         </Card>
                     </Box>
