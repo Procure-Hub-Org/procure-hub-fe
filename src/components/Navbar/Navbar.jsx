@@ -44,11 +44,15 @@ const Navbar = () => {
         )}
         {loggedIn && adminUser && (
           <Box sx={{ display: "flex", justifyContent: "end", gap: 2 }}>
-            <BasicButton onClick={() => navigate("/profile")}>
-              Profile
+            <BasicButton
+              onClick={() => navigate("/admin-procurement-requests")}>
+              Procurement Requests
             </BasicButton>
             <BasicButton onClick={() => navigate("/admin")}>
-              Dashboard
+              Users
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/profile")}>
+              Profile
             </BasicButton>
             <BasicButton onClick={onClickLogout}>Logout</BasicButton>
           </Box>
