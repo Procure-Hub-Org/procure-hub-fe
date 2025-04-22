@@ -16,6 +16,7 @@ import BuyerProcurementForm from "./pages/BuyerProcurementForm.jsx";
 import ProcurementPreview from "./pages/ProcurementPreview.jsx";
 import SellerFavorites from "./pages/SellerFavorites.jsx";
 import EditProcurementForm from "./pages/EditProcurementRequestBuyer.jsx";
+import BuyerBidEvaluation from './pages/BuyerBidEvaluation.jsx';
 import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
 import SellerBidForm from "./pages/SellerBidForm.jsx";
 import BidProposalPreview from "./pages/BidProposalPreview.jsx";
@@ -121,6 +122,14 @@ function App() {
             <CreateUserPage />
           </AdminRoute>
         }
+      />
+      <Route 
+        path="/buyer/procurement/:id/bids" 
+        element={
+          <AuthenticatedRoute>
+            <BuyerBidEvaluation />
+          </AuthenticatedRoute>
+        } 
       />
       <Route
         path="/new-bid/:requestId"
