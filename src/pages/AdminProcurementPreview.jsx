@@ -17,6 +17,7 @@ const AdminProcurementPreview = () => {
     const { id } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 2;
+    let x = 2*(currentPage - 1) + 1;
 
     useEffect(() => {
         if (!isAdmin()) {
@@ -242,7 +243,7 @@ const AdminProcurementPreview = () => {
                                         borderRadius: 2,
                                         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                                     }}
-                                    onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${index + 1}`)} // Kad se klikne na red
+                                    onClick={() => navigate(`/admin-procurement-requests/${id}/bid/${index + x}`)} // Kad se klikne na red
                                 >
                                     <Box sx={{ position: 'relative', mb: 2 }}>
                                         <Chip
