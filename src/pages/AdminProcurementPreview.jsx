@@ -263,7 +263,7 @@ const AdminProcurementPreview = () => {
                                         <strong>Timeline:</strong> {bid.timeline}
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1 }}>
-                                        <strong>Proposal:</strong> {bid.proposalText}
+                                        <strong>Proposal:</strong> {bid.proposal}
                                     </Typography>
                                     <Typography variant="body2">
                                         <strong>Submitted At:</strong> {bid.submitted_at? `${formatDate(bid.submitted_at)}` : "Unknown"}
