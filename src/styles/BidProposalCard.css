@@ -38,7 +38,9 @@
   
   .seller-info {
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Dodaj ovo */
+    align-items: flex-start; /* Dodaj ovo da budu poravnati lijevo */
+    /*align-items: center;*/
     gap: 0.75rem;
   }
   
@@ -49,9 +51,10 @@
     object-fit: cover;
   }
   
-  .seller-info h4 {
+  .seller-info h4, h6 {
     margin: 0;
     color: #333;
+    display: block;
   }
   
   .bid-submission-date {

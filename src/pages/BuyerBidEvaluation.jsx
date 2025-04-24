@@ -223,7 +223,8 @@ function BuyerBidEvaluation() {
                         return {
                             id: bidId,
                             sellerEmail: bid.seller?.email || 'unknown',
-                            sellerName: bid.seller?.company_name || 'Unknown Seller',
+                            sellerName: `${bid.seller?.first_name || 'Unknown'} ${bid.seller?.last_name || 'Seller'}`,
+                            sellerCompany: bid.seller?.company_name || 'Unknown Company',
                             sellerLogo: 'https://via.placeholder.com/40',
                             price: bid.price?.toString() || '0',
                             deliveryTime: parseTimelineString(bid.timeline || '0 days'),

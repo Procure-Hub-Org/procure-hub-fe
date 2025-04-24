@@ -31,10 +31,12 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     <div className={`bid-proposal-card ${isAwarded ? 'awarded' : ''}`}>
       {isAwarded && <div className="awarded-badge">Awarded</div>}
       
-      <div className="bid-header">
+      <div className="bid-header">   
         <div className="seller-info">
-          <h4>{sellerName}</h4>
+          <h4>{sellerCompany}</h4> 
+          <h6>{sellerName}</h6>
         </div>
+             
         <div className="bid-submission-date">
           Submitted: {new Date(submissionDate).toLocaleDateString()}
         </div>
@@ -42,14 +44,10 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       
       <div className="bid-details">
         <div className="bid-detail-item">
-          <span className="label">Seller name:</span>
-          <span className="value">{sellerName}</span>
           <span className="label">Price:</span>
           <span className="value">${price}</span>
         </div>
         <div className="bid-detail-item">
-          <span className="label">Company:</span>
-          <span className="value">{sellerCompany}</span>
           <span className="label">Delivery Time:</span>
           <span className="value">{deliveryTime} days</span>
         </div>
