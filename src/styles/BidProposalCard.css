@@ -38,7 +38,9 @@
   
   .seller-info {
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Dodaj ovo */
+    align-items: flex-start; /* Dodaj ovo da budu poravnati lijevo */
+    /*align-items: center;*/
     gap: 0.75rem;
   }
   
@@ -49,9 +51,10 @@
     object-fit: cover;
   }
   
-  .seller-info h4 {
+  .seller-info h4, h6 {
     margin: 0;
     color: #333;
+    display: block;
   }
   
   .bid-submission-date {
@@ -132,13 +135,53 @@
     color: #333;
   }
   
-  .scores-grid {
+  /*.scores-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 0.75rem;
     margin-bottom: 1rem;
-  }
-  
+  }*/
+
+  /* Grid raspored ocjena */
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.score-item {
+  background-color: #fff;
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.score-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+}
+
+.criterion {
+  color: #333;
+}
+
+.score, .weight {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Prosječna ocjena */
+.average-score {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #3fb83f;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
 
   .modal-overlay {
     position: fixed;
@@ -267,36 +310,37 @@
     border-radius: 4px;
   }
   
-  .score-item {
+  /*.score-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+  }*/
   
-  .criterion {
+  /*.criterion {
     color: #555;
-  }
+  }*/
   
-  .score {
+  /*.score {
     font-weight: 600;
     color: #333;
     background-color: #f0f0f0;
     padding: 0.15rem 0.5rem;
     border-radius: 4px;
-  }
+  }*/
   
-  .average-score {
+  /*.average-score {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 0;
     border-top: 1px dashed #ddd;
-  }
+  }*/
   
   .average-score .score {
     font-size: 1.125rem;
     background-color: #f0f9eb;
     color: #52c41a;
+    align-items: right;
   }
   
   .evaluation-comment {
@@ -321,24 +365,24 @@
     cursor: default !important;
   }
 
-  .score-item {
+  /*.score-item {
     margin-bottom: 10px; /* Razmak između svakog kriterija */
-  }
-  
-  .score-item-row {
+  /*}*/
+
+  /*.score-item-row {
     display: flex;
     justify-content: space-between; /* Poravnava elemente u redu */
     /*align-items: center; /* Poravnava elemente po visini */
-  }
+  /*}*/
   
-  .criterion {
+  /*.criterion {
     font-weight: bold; /* Naziv kriterija je podebljan */
     /*flex: 1; /* Ovdje se može dodati fleksibilnost za širinu */
-  }
+  /*}*/
   
-  .score, .weight {
+  /*.score, .weight {
     margin-left: 10px; /* Razmak između score i weight */
-  }
+  /*}*/
   
   .score-item-row span {
     margin-right: 15px; /* Razmak između svakog od elemenata u redu */

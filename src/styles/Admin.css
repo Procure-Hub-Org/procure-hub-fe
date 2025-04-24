@@ -13,8 +13,14 @@
   .button-container {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     margin-bottom: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 30px;
   }
   
   .panel {
@@ -34,14 +40,14 @@
     border-collapse: collapse;
   }
   
-  .th {
+  .table th {
     border-bottom: 2px solid #ddd;
     padding: 10px;
     background-color: #f4f4f4;
     text-align: center;
   }
   
-  .td {
+  .table td {
     border-bottom: 1px solid #ddd;
     padding: 10px;
     text-align: center;

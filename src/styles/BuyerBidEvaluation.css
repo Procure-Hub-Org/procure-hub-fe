@@ -80,6 +80,7 @@
   .bids-header h3 {
     margin: 0;
     color: #333;
+    margin-right: 1rem;
   }
   
   .bids-sorting {

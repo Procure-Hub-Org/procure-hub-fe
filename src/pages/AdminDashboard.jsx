@@ -131,9 +131,17 @@ const AdminDashboard = () => {
     <Layout>
       <div className="dashboard-container">
         <div className="button-container">
-          <PrimaryButton onClick={() => navigate("/create-user")}>
-            Create User
-          </PrimaryButton>
+          <div className="title">
+            <h3 style={{ color: theme.palette.text.primary }}>Users</h3>
+          </div>
+          
+          <div>
+            <PrimaryButton onClick={() => navigate("/create-user")}>
+              Create User
+            </PrimaryButton>
+          </div>
+          
+            
         </div>
         <div className="panel">
           <table className="table">
