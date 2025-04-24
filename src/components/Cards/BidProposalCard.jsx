@@ -17,6 +17,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
   const { 
     sellerName, 
     sellerLogo, 
+    sellerCompany,
     price, 
     deliveryTime, 
     proposalDescription, 
@@ -41,10 +42,14 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       
       <div className="bid-details">
         <div className="bid-detail-item">
+          <span className="label">Seller name:</span>
+          <span className="value">{sellerName}</span>
           <span className="label">Price:</span>
           <span className="value">${price}</span>
         </div>
         <div className="bid-detail-item">
+          <span className="label">Company:</span>
+          <span className="value">{sellerCompany}</span>
           <span className="label">Delivery Time:</span>
           <span className="value">{deliveryTime} days</span>
         </div>
