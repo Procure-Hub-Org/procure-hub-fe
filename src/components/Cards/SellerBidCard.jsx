@@ -169,7 +169,7 @@ const SellerBidCard = ({ bid }) => {
             <Typography variant="body2" color="text.secondary">
               Delivery Time:
             </Typography>
-            <Typography variant="body1">{bid.timeline} days</Typography>
+            <Typography variant="body1">{bid.timeline}</Typography>
           </Box>
 
           <Box flex="1 1 40%">

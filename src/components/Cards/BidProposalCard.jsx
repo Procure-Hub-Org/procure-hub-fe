@@ -46,7 +46,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
         </div>
         <div className="bid-detail-item">
           <span className="label">Delivery Time:</span>
-          <span className="value">{deliveryTime} days</span>
+          <span className="value">{deliveryTime} {/*days*/}</span>
         </div>
       </div>
       
