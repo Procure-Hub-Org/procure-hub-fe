@@ -1,0 +1,77 @@
+/* Admin.css */
+.admin-procurement-requests{
+    display: flex;
+    flex-direction: row; /* Promeni na 'row' da bi sidebar i tabla bili u istom redu */
+    align-items: flex-start; /* Poravnaj elemente na početak */
+    justify-content: flex-start; /* Nema potrebe za centriranjem */
+    height: 100vh;
+    width: 100vw;
+    background-color: #f8f9fa;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+
+
+  .sidebar {
+    width: 200px;
+    transition: width 0.3s ease;
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  .sidebar.closed {
+    width: 0;
+    padding: 0;
+  }
+  
+  /* Position button relative to dashboard container */
+  .sidebar-toggle {
+    position: absolute;
+    top: 30px;
+    left: 10px; /* Distance from left edge of dashboard */
+    z-index: 100;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: left 0.3s ease;
+  }
+  
+  /* When sidebar is open, move button */
+  .sidebar.open ~ .sidebar-toggle {
+    left: 210px; /* Width of sidebar + some padding */
+  }
+  
+  .panel {
+    flex: 1; /* Ovaj element treba da zauzme preostali prostor */
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    overflow-y: auto;
+  }
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    padding: 10px;
+  }
+  .table .td-center{
+    text-align: center;
+  }
+  .table td {
+    text-align: left;
+  }
+  
+  .row-container {
+    display: flex;
+  }
+  
+  .left-column-fixed {
+    width: 250px;
+    padding: 20px;
+    background: #f8f8f8;
+  }

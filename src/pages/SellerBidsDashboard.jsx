@@ -39,9 +39,11 @@ const SellerBidsDashboard = () => {
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: "center", mt: 6 }}>
-        <CircularProgress />
-      </Box>
+      <Layout>
+        <Box sx={{ textAlign: "center", mt: 6 }}>
+          <CircularProgress />
+        </Box>
+      </Layout>
     );
   }
 
