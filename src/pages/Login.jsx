@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated } from "../utils/auth";
 import PrimaryButton from "../components/Button/PrimaryButton";
-import CustomInput from "../components/Input/CustomInput";  
+import CustomTextField from "../components/Input/TextField";
 
 const Login = () => {
   const isLoggedIn = isAuthenticated();
@@ -17,12 +17,80 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const validateField = (name, value) => {
+    const rules = validationRules[name];
+    for (let rule of rules) {
+      if (!rule.test(value)) {
+        return rule.message;
+      }
+    }
+    if (!value.trim()) {
+      return `${name.charAt(0).toUpperCase() + name.slice(1)} is required`;
+    }
+    return "";
+  };
+
+  const validationRules = {
+    email: [
+      { test: (value) => !!value, message: "Email name is required" },
+      {
+        test: (value) =>
+          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value),
+        message: "Please enter a valid email",
+      },
+      {
+        test: (value) => value.length <= 50,
+        message: "Email cannot exceed 50 characters",
+      },
+      {
+        test: (value) => /^[a-zA-Z]/.test(value),
+        message: "Email must start with a letter",
+      },
+    ],
+    password: [
+      { test: (value) => !!value, message: "Password is required" },
+      {
+        test: (value) => value.length >= 8,
+        message: "Password must be at least 8 characters long",
+      },
+      {
+        test: (value) => /[A-Z]/.test(value),
+        message: "Password must contain at least one uppercase letter",
+      },
+      {
+        test: (value) => /\d/.test(value),
+        message: "Password must contain at least one number",
+      },
+      {
+        test: (value) => /[\W_]/.test(value),
+        message: "Password must contain at least one special character",
+      },
+    ],
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setError("Enter email and password.");
+    const newErrors = {
+      email: validateField("email", email),
+      password: validateField("password", password),
+    };
+
+    setErrors(newErrors);
+
+    if (newErrors.email || newErrors.password) {
       return;
     }
 
@@ -43,7 +111,7 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
         localStorage.setItem("id", data.user.id);
-        //console.log(data.token)
+
         if (data.user.role === "admin") {
           navigate("/admin");
         } else {
@@ -69,20 +137,26 @@ const Login = () => {
       <div className="login-container">
         <div className="login-box">
           {error && <p className="error">{error}</p>}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Email"
+          <form onSubmit={handleSubmit} noValidate>
+            <CustomTextField
+              label="Email"
+              name="email"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              onBlur={handleBlur}
+              error={!!errors.email}
+              helperText={errors.email}
             />
-            <input
+            <CustomTextField
+              label="Password"
+              name="password"
               type="password"
-              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              onBlur={handleBlur}
+              error={!!errors.password}
+              helperText={errors.password}
             />
             <PrimaryButton type="submit">Login</PrimaryButton>
           </form>

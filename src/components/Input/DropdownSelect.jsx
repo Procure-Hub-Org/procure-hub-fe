@@ -2,13 +2,13 @@ import React from 'react';
 import { Select, MenuItem, InputLabel, FormControl, FormHelperText } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-const CustomSelect = ({ label, value, onChange, options, helperText, ...props }) => {
+const CustomSelect = ({ label, value, onChange, options, helperText, error, ...props }) => {
   const theme = useTheme();
 
   return (
-    <FormControl fullWidth margin="normal" variant="outlined">
+    <FormControl fullWidth margin="normal" variant="outlined" error={error}>
       {/* InputLabel */}
-      <InputLabel style={{ color: theme.palette.text.primary }}>
+      <InputLabel style={{ color: theme.palette.text.primary }} error={error}>
         {label}
       </InputLabel>
 

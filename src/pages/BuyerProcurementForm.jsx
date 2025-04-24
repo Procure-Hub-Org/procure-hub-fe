@@ -38,6 +38,11 @@ const ProcurementForm = () => {
     const [enableBidEditing, setEnableBidEditing] = useState(false);
     const [bidEditDeadline, setBidEditDeadline] = useState("");
     const token = localStorage.getItem("token");
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [errors, setErrors] = useState({});
+    const [touchedFields, setTouchedFields] = useState({});
+
+
 
     const [formData, setFormData] = useState({
         title: "",
@@ -95,7 +100,9 @@ const ProcurementForm = () => {
     };
 
     const handleChange = (e) => {
+
         const { name, value } = e.target;
+        setFieldErrors((prev) => ({ ...prev, [name]: "" }));
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -157,12 +164,12 @@ const ProcurementForm = () => {
     };
 
     const getCategoryName = (id) => {
-        const category = categories.find((cat) => cat.id === id);   
+        const category = categories.find((cat) => cat.id === id);
         return category ? category.name : "Unknown Category";
     };
 
     const getCriteriaName = (id) => {
-        const criteria = criterias.find((cri) => cri.id === id);   
+        const criteria = criterias.find((cri) => cri.id === id);
         return criteria.name || "Unknown Category";
     };
 
@@ -172,7 +179,7 @@ const ProcurementForm = () => {
         if (totalWeight !== 100) {
             return { valid: false, message: "Sum of criteria weights must be 100%." };
         }
-    
+
         const uniqueIds = new Set();
         for (const crit of formData.evaluationCriteria) {
             if (uniqueIds.has(crit.name)) {
@@ -180,21 +187,21 @@ const ProcurementForm = () => {
             }
             uniqueIds.add(crit.name);
         }
-    
+
         // Bid editing deadline validation
         if (enableBidEditing) {
             if (!bidEditDeadline) {
                 return { valid: false, message: "Set the deadline for bid proposals editing." };
             }
-    
+
             const bidDate = new Date(bidEditDeadline);
             const mainDeadline = new Date(formData.deadline);
-    
+
             if (bidDate >= mainDeadline) {
                 return { valid: false, message: "The bid proposal editing deadline must be before the deadline of procurement request." };
             }
         }
-    
+
         return { valid: true };
     };
 
@@ -205,6 +212,8 @@ const ProcurementForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const isValid = validateForm();
+        if (!isValid) return;
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
@@ -233,20 +242,20 @@ const ProcurementForm = () => {
             })),
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
-          
-    
+
+
         console.log("Sending request data from submit:", requestData);
-          
+
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
-        
+
             if (response.status === 201) {
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
@@ -294,20 +303,20 @@ const ProcurementForm = () => {
             })),
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
-          
-    
+
+
         console.log("Sending request data for draft:", requestData);
-          
+
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
-        
+
             if (response.status === 201) {
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
@@ -324,6 +333,151 @@ const ProcurementForm = () => {
             }
         };
     }
+
+
+
+    const validateField = (name, value) => {
+        const rules = validationRules[name];
+        if (!rules) return "";
+
+        for (let rule of rules) {
+            if (!rule.test(value)) {
+                return rule.message;
+            }
+        }
+
+        return "";
+    };
+
+
+    const validateForm = () => {
+        const errors = {};
+
+        Object.keys(validationRules).forEach((field) => {
+            const value = formData[field];
+            const error = validateField(field, value);
+            if (error) {
+                errors[field] = error;
+            }
+        });
+
+        // Additional validation: budgetMax must be greater than budgetMin
+        const min = parseFloat(formData.budgetMin);
+        const max = parseFloat(formData.budgetMax);
+        if (!isNaN(min) && !isNaN(max) && max < min) {
+            errors.budgetMax = "Maximum budget must be greater than minimum budget";
+        }
+
+        if (Array.isArray(formData.criteria)) {
+            const weightSum = formData.criteria.reduce((sum, crit) => {
+                const num = parseFloat(crit.weight);
+                return sum + (isNaN(num) ? 0 : num);
+            }, 0);
+    
+            if (weightSum !== 100) {
+                // You can display the error globally or per-item.
+                errors.criteria = "The total weight of all criteria must equal 100%";
+            }
+        }
+
+        setFieldErrors(errors);
+        setTouchedFields(
+            Object.keys(validationRules).reduce((acc, key) => {
+                acc[key] = true;
+                return acc;
+            }, {})
+        );
+
+        return Object.keys(errors).length === 0;
+    };
+
+
+
+
+    const validationRules = {
+        title: [
+            { test: (value) => !!value?.trim(), message: "Title is required" },
+            { test: (value) => value.length <= 100, message: "Title must be under 100 characters" },
+        ],
+        description: [
+            { test: (value) => !!value?.trim(), message: "Description is required" },
+        ],
+        location: [
+            { test: (value) => !!value?.trim(), message: "Location is required" },
+        ],
+        deadline: [
+            { test: (value) => !!value, message: "Deadline is required" },
+        ],
+        budgetMin: [
+            { test: (value) => !!value, message: "Minimum budget is required" },
+            { test: (value) => !isNaN(value) && Number(value) >= 0, message: "Minimum budget must be a valid number" },
+        ],
+        budgetMax: [
+            { test: (value) => !!value, message: "Maximum budget is required" },
+            { test: (value) => !isNaN(value) && Number(value) >= 0, message: "Maximum budget must be a valid number" },
+        ],
+        quantity: [
+            { test: (value) =>  Number(value) > 0, message: "Quantity must be a valid number" },
+        ],
+        weight:[
+            { test: (value) =>  Number(value) > 0, message: "Criteria weight must be a valid number" },
+            { test: (value) =>  Number(value) <=100, message: "Criteria weight must be a valid number" },
+        ],
+        category:[
+            { test: (value) => !!value, message: "Category is required" },
+        ],
+        requirementType:[
+            { test: (value) => !!value, message: "Requirement type is required" },
+        ],
+        criteriaType:[
+            { test: (value) => !!value, message: "Criteria type is required" },
+        ]
+    };
+
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+
+        setTouchedFields((prev) => ({
+            ...prev,
+            [name]: true,
+        }));
+
+        const error = validateField(name, value);
+        setFieldErrors((prev) => ({
+            ...prev,
+            [name]: error,
+        }));
+    };
+
+    const handleItemBlur = (index, field, value) => {
+        const error = validateField(field, value);
+
+        setTouchedFields((prev) => ({
+            ...prev,
+            items: {
+                ...(prev.items || []),
+                [index]: {
+                    ...((prev.items && prev.items[index]) || {}),
+                    [field]: true,
+                },
+            },
+        }));
+
+        setFieldErrors((prev) => ({
+            ...prev,
+            items: {
+                ...(prev.items || []),
+                [index]: {
+                    ...((prev.items && prev.items[index]) || {}),
+                    [field]: error,
+                },
+            },
+        }));
+    };
+
+
+
 
     return (
         <Layout>
@@ -344,34 +498,64 @@ const ProcurementForm = () => {
                                 </Typography>
                                 <form onSubmit={handleSubmit}>
                                     <TextField
+                                        fullWidth
                                         label="Title"
                                         name="title"
                                         value={formData.title}
                                         onChange={handleChange}
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.title && !!fieldErrors.title}
+                                        helperText={touchedFields.title ? fieldErrors.title : ""}
                                     />
+
                                     <TextField
+                                        fullWidth
+                                        multiline
+                                        minRows={3}
                                         label="Description"
                                         name="description"
                                         value={formData.description}
                                         onChange={handleChange}
-                                        multiline
-                                        rows={3}
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.description && !!fieldErrors.description}
+                                        helperText={touchedFields.description ? fieldErrors.description : ""}
                                     />
+
                                     <TextField
+                                        fullWidth
                                         label="Location"
                                         name="location"
                                         value={formData.location}
                                         onChange={handleChange}
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.location && !!fieldErrors.location}
+                                        helperText={touchedFields.location ? fieldErrors.location : ""}
                                     />
+
+                                    <TextField
+                                        fullWidth
+                                        type="number"
+                                        label="Budget Minimum"
+                                        name="budgetMin"
+                                        value={formData.budgetMin}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.budgetMin && !!fieldErrors.budgetMin}
+                                        helperText={touchedFields.budgetMin ? fieldErrors.budgetMin : ""}
+                                    />
+
+                                    <TextField
+                                        fullWidth
+                                        type="number"
+                                        label="Budget Maximum"
+                                        name="budgetMax"
+                                        value={formData.budgetMax}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.budgetMax && !!fieldErrors.budgetMax}
+                                        helperText={touchedFields.budgetMax ? fieldErrors.budgetMax : ""}
+                                    />
+
                                     <TextField
                                         label="Deadline"
                                         name="deadline"
@@ -382,32 +566,21 @@ const ProcurementForm = () => {
                                         InputLabelProps={{ shrink: true }}
                                         required
                                         sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.deadline && !!fieldErrors.deadline}
+                                        helperText={touchedFields.deadline ? fieldErrors.deadline : ""}
                                     />
-                                    <TextField
-                                        label="Budget Min"
-                                        name="budgetMin"
-                                        type="number"
-                                        value={formData.budgetMin}
-                                        onChange={handleChange}
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
-                                    />
-                                    <TextField
-                                        label="Budget Max"
-                                        name="budgetMax"
-                                        type="number"
-                                        value={formData.budgetMax}
-                                        onChange={handleChange}
-                                        fullWidth
-                                        required
-                                        sx={{ mb: 2 }}
-                                    />
+
+
+
                                     <CustomSelect
                                         label="Category"
                                         name="category"
                                         value={selectedCategory}
                                         onChange={(e) => setSelectedCategory(e.target.value)}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.category && !!fieldErrors.category}
+                                        helperText={touchedFields.category ? fieldErrors.category : ""}
                                         options={[
                                             ...categories.map((c) => ({
                                                 label: c.name,
@@ -430,17 +603,20 @@ const ProcurementForm = () => {
                                                 fullWidth
                                                 required
                                                 sx={{ mb: 1 }}
-                                            />
-                                            <TextField
-                                                label="Item Description"
-                                                value={item.description}
-                                                onChange={(e) =>
-                                                    handleItemChange(index, "description", e.target.value)
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "title", e.target.value)
                                                 }
-                                                fullWidth
-                                                required
-                                                sx={{ mb: 1 }}
+                                                error={
+                                                    touchedFields.items?.[index]?.title &&
+                                                    !!fieldErrors.items?.[index]?.title
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.title
+                                                        ? fieldErrors.items?.[index]?.title
+                                                        : ""
+                                                }
                                             />
+
                                             <TextField
                                                 label="Quantity"
                                                 type="number"
@@ -450,6 +626,18 @@ const ProcurementForm = () => {
                                                 }
                                                 fullWidth
                                                 required
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "quantity", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.quantity &&
+                                                    !!fieldErrors.items?.[index]?.quantity
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.quantity
+                                                        ? fieldErrors.items?.[index]?.quantity
+                                                        : ""
+                                                }
                                             />
                                             {formData.items.length > 1 && (
                                                 <SecondaryButton
@@ -472,17 +660,29 @@ const ProcurementForm = () => {
                                         <Box key={index} sx={{ mb: 2 }}>
                                             <CustomSelect
                                                 label="Requirement Type"
-                                                name ="requirementType"	
+                                                name="requirementType"
                                                 value={req.type}
                                                 onChange={(e) =>
                                                     handleRequirementChange(index, "type", e.target.value)
+                                                }
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "requirementType", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.requirementType &&
+                                                    !!fieldErrors.items?.[index]?.requirementType
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.requirementType
+                                                        ? fieldErrors.items?.[index]?.requirementType
+                                                        : ""
                                                 }
                                                 options={[
                                                     { label: "Legal", value: "Legal" },
                                                     { label: "Technical", value: "Technical" },
                                                 ]}
                                             />
-                                            
+
                                             <TextField
                                                 label="Requirement Description"
                                                 value={req.description}
@@ -491,6 +691,18 @@ const ProcurementForm = () => {
                                                 }
                                                 fullWidth
                                                 required
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "description", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.description &&
+                                                    !!fieldErrors.items?.[index]?.description
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.description
+                                                        ? fieldErrors.items?.[index]?.description
+                                                        : ""
+                                                }
                                             />
                                             {formData.requirements.length > 1 && (
                                                 <SecondaryButton
@@ -520,20 +732,44 @@ const ProcurementForm = () => {
                                                 name={`criteria-${index}`}
                                                 value={crit.name}
                                                 onChange={(e) => handleCriteriaChange(index, "name", e.target.value)}
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "criteriaType", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.criteriaType &&
+                                                    !!fieldErrors.items?.[index]?.criteriaType
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.criteriaType
+                                                        ? fieldErrors.items?.[index]?.criteriaType
+                                                        : ""
+                                                }
                                                 options={criterias.map((c) => ({
                                                     label: c.name,
                                                     value: c.id,
                                                 }))}
                                             />
-                                            
+
                                             <TextField
-                                                label="Criteria Weight (%)"	
+                                                label="Criteria Weight (%)"
                                                 value={crit.weight}
                                                 onChange={(e) =>
                                                     handleCriteriaChange(index, "weight", e.target.value)
                                                 }
                                                 fullWidth
                                                 required
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "weight", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.weight &&
+                                                    !!fieldErrors.items?.[index]?.weight
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.weight
+                                                        ? fieldErrors.items?.[index]?.weight
+                                                        : ""
+                                                }
                                             />
 
                                             <FormControlLabel
@@ -589,7 +825,7 @@ const ProcurementForm = () => {
                                     {enableBidEditing && (
                                         <TextField
                                             label="Bid Editing Deadline"
-                                            type="date" 
+                                            type="date"
                                             value={bidEditDeadline}
                                             onChange={(e) => setBidEditDeadline(e.target.value)}
                                             fullWidth
@@ -598,7 +834,7 @@ const ProcurementForm = () => {
                                             InputLabelProps={{ shrink: true }}
                                         />
                                     )}
-                                    
+
                                     <SecondaryButton type="button" onClick={() => handleCloseForm()} startIcon={<CloseIcon />}>
                                         Cancel
                                     </SecondaryButton>
