@@ -374,7 +374,7 @@ useEffect(() => {
                     e.stopPropagation(); // Prevent row click from triggering
                     handleFreeze(req.id); // Handle freeze logic
                   }}
-                  disabled={freezeClicked[req.id]} // Disable if clicked
+                  disabled={freezeClicked[req.id] || req.status === 'frozen'} // Disable if clicked
                   style={{
                     backgroundColor: freezeClicked[req.id] ? theme.palette.primary.light : '', // Change color to gray if clicked
                     cursor: freezeClicked[req.id] ? 'not-allowed' : 'pointer', // Disable cursor if clicked
