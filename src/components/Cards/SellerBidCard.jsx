@@ -162,7 +162,7 @@ const SellerBidCard = ({ bid }) => {
             <Typography variant="body2" color="text.secondary">
               Price:
             </Typography>
-            <Typography variant="body1">{bid.price} KM</Typography>
+            <Typography variant="body1">{bid.price} $</Typography>
           </Box>
 
           <Box flex="1 1 40%">
