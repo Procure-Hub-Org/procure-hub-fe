@@ -26,6 +26,7 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
+import NotificationToast from "../components/Notifications/NotificationToast";
 
 // import { useTheme } from "@mui/system";
 
@@ -39,8 +40,8 @@ const ProcurementForm = () => {
     const [bidEditDeadline, setBidEditDeadline] = useState("");
     const token = localStorage.getItem("token");
     const [fieldErrors, setFieldErrors] = useState({});
-    const [errors, setErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
+    const [toast, setToast] = useState({ show: false, message: '' });
 
 
 
@@ -212,8 +213,6 @@ const ProcurementForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const isValid = validateForm();
-        if (!isValid) return;
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
@@ -256,8 +255,8 @@ const ProcurementForm = () => {
                 }
             );
 
-            if (response.status === 201) {
-                alert("Request adding Successful!");
+            if (true) {
+                setToast({ show: true, message: 'Request adding Successful!' });
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
@@ -318,7 +317,7 @@ const ProcurementForm = () => {
             );
 
             if (response.status === 201) {
-                alert("Request adding Successful!");
+                setToast({ show: true, message: 'Request saving Successful!' });
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
@@ -335,64 +334,14 @@ const ProcurementForm = () => {
     }
 
 
-
     const validateField = (name, value) => {
         const rules = validationRules[name];
         if (!rules) return "";
-
         for (let rule of rules) {
-            if (!rule.test(value)) {
-                return rule.message;
-            }
+            if (!rule.test(value)) return rule.message;
         }
-
         return "";
     };
-
-
-    const validateForm = () => {
-        const errors = {};
-
-        Object.keys(validationRules).forEach((field) => {
-            const value = formData[field];
-            const error = validateField(field, value);
-            if (error) {
-                errors[field] = error;
-            }
-        });
-
-        // Additional validation: budgetMax must be greater than budgetMin
-        const min = parseFloat(formData.budgetMin);
-        const max = parseFloat(formData.budgetMax);
-        if (!isNaN(min) && !isNaN(max) && max < min) {
-            errors.budgetMax = "Maximum budget must be greater than minimum budget";
-        }
-
-        if (Array.isArray(formData.criteria)) {
-            const weightSum = formData.criteria.reduce((sum, crit) => {
-                const num = parseFloat(crit.weight);
-                return sum + (isNaN(num) ? 0 : num);
-            }, 0);
-    
-            if (weightSum !== 100) {
-                // You can display the error globally or per-item.
-                errors.criteria = "The total weight of all criteria must equal 100%";
-            }
-        }
-
-        setFieldErrors(errors);
-        setTouchedFields(
-            Object.keys(validationRules).reduce((acc, key) => {
-                acc[key] = true;
-                return acc;
-            }, {})
-        );
-
-        return Object.keys(errors).length === 0;
-    };
-
-
-
 
     const validationRules = {
         title: [
@@ -417,65 +366,60 @@ const ProcurementForm = () => {
             { test: (value) => !isNaN(value) && Number(value) >= 0, message: "Maximum budget must be a valid number" },
         ],
         quantity: [
-            { test: (value) =>  Number(value) > 0, message: "Quantity must be a valid number" },
+            { test: (value) => Number(value) > 0, message: "Quantity must be a valid number" },
         ],
-        weight:[
-            { test: (value) =>  Number(value) > 0, message: "Criteria weight must be a valid number" },
-            { test: (value) =>  Number(value) <=100, message: "Criteria weight must be a valid number" },
+        weight: [
+            { test: (value) => Number(value) > 0, message: "Criteria weight must be a valid number" },
+            { test: (value) => Number(value) <= 100, message: "Criteria weight must be a valid number" },
         ],
-        category:[
+        category: [
             { test: (value) => !!value, message: "Category is required" },
         ],
-        requirementType:[
+        requirementType: [
             { test: (value) => !!value, message: "Requirement type is required" },
         ],
-        criteriaType:[
+        criteriaType: [
             { test: (value) => !!value, message: "Criteria type is required" },
-        ]
+        ],
+        itemdescription: [
+            { test: (value) => !!value?.trim(), message: "Description is required" },
+        ],
     };
 
-
+    // Handles blur for simple fields
     const handleBlur = (e) => {
         const { name, value } = e.target;
-
-        setTouchedFields((prev) => ({
-            ...prev,
-            [name]: true,
-        }));
-
+        setTouchedFields(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
-        setFieldErrors((prev) => ({
-            ...prev,
-            [name]: error,
-        }));
+        setFieldErrors(prev => ({ ...prev, [name]: error }));
     };
 
-    const handleItemBlur = (index, field, value) => {
+    // Handles blur for nested item fields like items or criteria
+    const handleItemBlur = (index, field, value, listKey = "items") => {
         const error = validateField(field, value);
 
-        setTouchedFields((prev) => ({
+        setTouchedFields(prev => ({
             ...prev,
-            items: {
-                ...(prev.items || []),
+            [listKey]: {
+                ...(prev[listKey] || []),
                 [index]: {
-                    ...((prev.items && prev.items[index]) || {}),
+                    ...((prev[listKey] && prev[listKey][index]) || {}),
                     [field]: true,
                 },
             },
         }));
 
-        setFieldErrors((prev) => ({
+        setFieldErrors(prev => ({
             ...prev,
-            items: {
-                ...(prev.items || []),
+            [listKey]: {
+                ...(prev[listKey] || []),
                 [index]: {
-                    ...((prev.items && prev.items[index]) || {}),
+                    ...((prev[listKey] && prev[listKey][index]) || {}),
                     [field]: error,
                 },
             },
         }));
     };
-
 
 
 
@@ -504,6 +448,7 @@ const ProcurementForm = () => {
                                         value={formData.title}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        required
                                         error={touchedFields.title && !!fieldErrors.title}
                                         helperText={touchedFields.title ? fieldErrors.title : ""}
                                     />
@@ -517,6 +462,7 @@ const ProcurementForm = () => {
                                         value={formData.description}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        required
                                         error={touchedFields.description && !!fieldErrors.description}
                                         helperText={touchedFields.description ? fieldErrors.description : ""}
                                     />
@@ -528,6 +474,7 @@ const ProcurementForm = () => {
                                         value={formData.location}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        required
                                         error={touchedFields.location && !!fieldErrors.location}
                                         helperText={touchedFields.location ? fieldErrors.location : ""}
                                     />
@@ -540,6 +487,7 @@ const ProcurementForm = () => {
                                         value={formData.budgetMin}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        required
                                         error={touchedFields.budgetMin && !!fieldErrors.budgetMin}
                                         helperText={touchedFields.budgetMin ? fieldErrors.budgetMin : ""}
                                     />
@@ -552,6 +500,7 @@ const ProcurementForm = () => {
                                         value={formData.budgetMax}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
+                                        required
                                         error={touchedFields.budgetMax && !!fieldErrors.budgetMax}
                                         helperText={touchedFields.budgetMax ? fieldErrors.budgetMax : ""}
                                     />
@@ -616,7 +565,28 @@ const ProcurementForm = () => {
                                                         : ""
                                                 }
                                             />
-
+                                            <TextField
+                                                label="Item Description"
+                                                value={item.description}
+                                                onChange={(e) =>
+                                                    handleItemChange(index, "description", e.target.value)
+                                                }
+                                                onBlur={(e) =>
+                                                    handleItemBlur(index, "itemdescription", e.target.value)
+                                                }
+                                                error={
+                                                    touchedFields.items?.[index]?.itemdescription &&
+                                                    !!fieldErrors.items?.[index]?.itemdescription
+                                                }
+                                                helperText={
+                                                    touchedFields.items?.[index]?.itemdescription
+                                                        ? fieldErrors.items?.[index]?.itemdescription
+                                                        : ""
+                                                }
+                                                fullWidth
+                                                required
+                                                sx={{ mb: 1 }}
+                                            />
                                             <TextField
                                                 label="Quantity"
                                                 type="number"
@@ -682,7 +652,6 @@ const ProcurementForm = () => {
                                                     { label: "Technical", value: "Technical" },
                                                 ]}
                                             />
-
                                             <TextField
                                                 label="Requirement Description"
                                                 value={req.description}
@@ -849,6 +818,13 @@ const ProcurementForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
+                        {toast.show && (
+                            <NotificationToast
+                                message={toast.message}
+                                autoHideDuration={3000}
+                                onClose={() => setToast({ ...toast, show: false })}
+                            />
+                        )}
                     </Container>
                 </Box>
             </AppBar>
