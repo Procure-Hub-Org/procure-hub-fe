@@ -227,7 +227,7 @@ function BuyerBidEvaluation() {
                             sellerCompany: bid.seller?.company_name || 'Unknown Company',
                             sellerLogo: 'https://via.placeholder.com/40',
                             price: bid.price?.toString() || '0',
-                            deliveryTime: parseTimelineString(bid.timeline || '0 days'),
+                            deliveryTime: /*parseTimelineString(*/bid.timeline || '0 days'/*)*/,
                             proposalDescription: bid.proposalText || 'No description provided',
                             submissionDate: bid.submittedAt || new Date().toISOString(),
                             isEvaluated: bid.evaluations && bid.evaluations.length > 0,

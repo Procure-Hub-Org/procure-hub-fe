@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useTheme } from '@mui/system';
 
-const OutlinedButton = ({ children, onClick, color = "primary" }) => {
+const OutlinedButton = ({ children, onClick, color = "primary", ...props  }) => {
   const theme = useTheme();
 
   return (
@@ -22,6 +22,7 @@ const OutlinedButton = ({ children, onClick, color = "primary" }) => {
           backgroundColor: color === 'primary' ? theme.palette.primary.light : theme.palette.secondary.light,
         },
       }}
+      {...props}
       onClick={onClick}
     >
       {children}
