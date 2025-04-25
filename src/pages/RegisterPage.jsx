@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
+import NotificationToast from "../components/Notifications/NotificationToast";
 import {
   AppBar,
   Container,
@@ -41,6 +42,7 @@ const RegisterPage = () => {
   const [selectedBuyerType, setSelectedBuyerType] = useState("");
   const [customBuyerType, setCustomBuyerType] = useState("");
   const [errors, setErrors] = useState({});
+  const [toast, setToast] = useState({ show: false, message: '' });
 
   useEffect(() => {
     const fetchBuyerTypes = async () => {
@@ -290,9 +292,12 @@ const RegisterPage = () => {
       );
   
       if (response.status === 201) {
-        alert("Registration Successful!");
+        setToast({ show: true, message: 'Registration Successful!' });
+        //alert("Registration Successful!");
         console.log("Server Response:", response.data);
-        navigate("/login");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       } else {
         alert("Registration failed: " + response.data.message);
       }
@@ -480,6 +485,13 @@ const RegisterPage = () => {
                 </form>
               </CardContent>
             </Card>
+            {toast.show && (
+                            <NotificationToast
+                                message={toast.message}
+                                autoHideDuration={3000}
+                                onClose={() => setToast({ ...toast, show: false })}
+                            />
+                        )}
           </Container>
         </Box>
       </AppBar>

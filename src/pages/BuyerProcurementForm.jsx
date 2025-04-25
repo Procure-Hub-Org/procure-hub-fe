@@ -101,9 +101,7 @@ const ProcurementForm = () => {
     };
 
     const handleChange = (e) => {
-
         const { name, value } = e.target;
-        setFieldErrors((prev) => ({ ...prev, [name]: "" }));
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
@@ -165,12 +163,12 @@ const ProcurementForm = () => {
     };
 
     const getCategoryName = (id) => {
-        const category = categories.find((cat) => cat.id === id);
+        const category = categories.find((cat) => cat.id === id);   
         return category ? category.name : "Unknown Category";
     };
 
     const getCriteriaName = (id) => {
-        const criteria = criterias.find((cri) => cri.id === id);
+        const criteria = criterias.find((cri) => cri.id === id);   
         return criteria.name || "Unknown Category";
     };
 
@@ -180,7 +178,7 @@ const ProcurementForm = () => {
         if (totalWeight !== 100) {
             return { valid: false, message: "Sum of criteria weights must be 100%." };
         }
-
+    
         const uniqueIds = new Set();
         for (const crit of formData.evaluationCriteria) {
             if (uniqueIds.has(crit.name)) {
@@ -188,21 +186,21 @@ const ProcurementForm = () => {
             }
             uniqueIds.add(crit.name);
         }
-
+    
         // Bid editing deadline validation
         if (enableBidEditing) {
             if (!bidEditDeadline) {
                 return { valid: false, message: "Set the deadline for bid proposals editing." };
             }
-
+    
             const bidDate = new Date(bidEditDeadline);
             const mainDeadline = new Date(formData.deadline);
-
+    
             if (bidDate >= mainDeadline) {
                 return { valid: false, message: "The bid proposal editing deadline must be before the deadline of procurement request." };
             }
         }
-
+    
         return { valid: true };
     };
 
@@ -241,22 +239,22 @@ const ProcurementForm = () => {
             })),
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
-
-
+          
+    
         console.log("Sending request data from submit:", requestData);
-
+          
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
             );
-
-            if (true) {
-                setToast({ show: true, message: 'Request adding Successful!' });
+        
+            if (response.status === 201) {
+                setToast({ show: true, message: 'Request saving Successful!' });
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
@@ -302,22 +300,22 @@ const ProcurementForm = () => {
             })),
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
-
-
+          
+    
         console.log("Sending request data for draft:", requestData);
-
+          
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/procurement/create`, requestData,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
             );
-
+        
             if (response.status === 201) {
-                setToast({ show: true, message: 'Request saving Successful!' });
+                setToast({ show: true, message: 'Request adding Successful!' });
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
