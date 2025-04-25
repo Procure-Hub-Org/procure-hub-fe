@@ -26,7 +26,7 @@ import CloseIcon from "@mui/icons-material/Close";
 // import { useTheme } from "@mui/system";
 
 const BidForm = () => {
-    const { requestId } = useParams(); 
+    const { requestId } = useParams();
     const token = localStorage.getItem("token");
 
     const [formData, setFormData] = useState({
@@ -37,6 +37,9 @@ const BidForm = () => {
     });
 
     const navigate = useNavigate();
+    const [fieldErrors, setFieldErrors] = useState({});
+    const [touchedFields, setTouchedFields] = useState({});
+    const [toast, setToast] = useState({ show: false, message: '' });
 
     // Load if id exists
     useEffect(() => {
@@ -48,10 +51,8 @@ const BidForm = () => {
             }
             return;
         }
-        
     }, [token]);
 
-   
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -61,7 +62,7 @@ const BidForm = () => {
 
 
     const handleCloseForm = () => {
-        navigate(`/seller-procurement-requests`); 
+        navigate(`/seller-procurement-requests`);
     };
 
 
@@ -70,29 +71,29 @@ const BidForm = () => {
         console.log("Submitted form:", formData);
 
         const requestData = {
-                procurement_request_id: requestId,
-                price: formData.price,
-                timeline: formData.timeline,
-                proposal_text: formData.proposal_text,
-                submitted: false, 
+            procurement_request_id: requestId,
+            price: formData.price,
+            timeline: formData.timeline,
+            proposal_text: formData.proposal_text,
+            submitted: false,
         };
-          
-    
+
+
         console.log("Sending request data:", requestData);
-        
-          
+
+
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/bid/create`, requestData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
-        
+
             if (response.status === 200 || response.status === 201) {
-               
+                setToast({ show: true, message: 'Request submit Successful!' });
                 console.log("Server Response:", response.data);
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
@@ -112,7 +113,7 @@ const BidForm = () => {
     const handleSaveDraft = async (e) => {
         e.preventDefault();
         console.log("Submitted form:", formData);
-        
+
 
         const requestData = {
             procurement_request_id: requestId,
@@ -123,32 +124,32 @@ const BidForm = () => {
 
 
             ///////////////////////////////////////////////ovo ispod je dummy 
-                // procurement_request_id: 1, 
-                // price: formData.price,
-                // timeline: formData.timeline,
-                // proposal_text: formData.proposal_text,
-                // submitted: false, 
-             
-            
+            // procurement_request_id: 1, 
+            // price: formData.price,
+            // timeline: formData.timeline,
+            // proposal_text: formData.proposal_text,
+            // submitted: false, 
+
+
         };
-          
-    
+
+
         console.log("Sending request data:", requestData);
-          
+
         try {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/bid/create`, requestData,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
             // console.log(response.status);
             if (response.status === 200 || response.status === 201) {
-                alert("Request adding Successful!");
+                setToast({ show: true, message: 'Request saving Successful!' });
                 console.log("Server Response:", response.data);
-                navigate("/seller-bids"); 
+                navigate("/seller-bids");
             } else {
                 alert("Request adding failed: " + response.data.message);
             }
@@ -161,6 +162,38 @@ const BidForm = () => {
             }
         };
     }
+
+
+
+    // Handles blur for simple fields
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouchedFields(prev => ({ ...prev, [name]: true }));
+        const error = validateField(name, value);
+        setFieldErrors(prev => ({ ...prev, [name]: error }));
+    };
+
+    const validateField = (name, value) => {
+        const rules = validationRules[name];
+        if (!rules) return "";
+        for (let rule of rules) {
+            if (!rule.test(value)) return rule.message;
+        }
+        return "";
+    };
+
+    const validationRules = {
+        price: [
+            { test: (value) => !!value, message: "Price is required" },
+            { test: (value) => !isNaN(value) && Number(value) >= 0, message: "Price must be a valid number" },
+        ],
+        timeline: [
+            { test: (value) => !!value?.trim(), message: "Timeline is required" },
+        ],
+        proposal_text: [
+            { test: (value) => !!value?.trim(), message: "Proposal is required" },
+        ],
+    };
 
     return (
         <Layout>
@@ -189,6 +222,9 @@ const BidForm = () => {
                                         fullWidth
                                         required
                                         sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.price && !!fieldErrors.price}
+                                        helperText={touchedFields.price ? fieldErrors.price : ""}
                                     />
                                     <TextField
                                         label="Timeline"
@@ -198,6 +234,9 @@ const BidForm = () => {
                                         fullWidth
                                         required
                                         sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.timeline && !!fieldErrors.timeline}
+                                        helperText={touchedFields.timeline ? fieldErrors.timeline : ""}
                                     />
                                     <TextField
                                         label="Proposal"
@@ -207,9 +246,12 @@ const BidForm = () => {
                                         fullWidth
                                         required
                                         multiline
-                                        minRows={4} 
+                                        minRows={4}
                                         maxRows={12}
                                         sx={{ mb: 2 }}
+                                        onBlur={handleBlur}
+                                        error={touchedFields.proposal_text && !!fieldErrors.proposal_text}
+                                        helperText={touchedFields.proposal_text ? fieldErrors.proposal_text : ""}
                                     />
                                     <SecondaryButton type="button" onClick={() => handleCloseForm()} startIcon={<CloseIcon />}>
                                         Cancel
@@ -225,6 +267,13 @@ const BidForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
+                        {toast.show && (
+                            <NotificationToast
+                                message={toast.message}
+                                autoHideDuration={3000}
+                                onClose={() => setToast({ ...toast, show: false })}
+                            />
+                        )}
                     </Container>
                 </Box>
             </AppBar>
