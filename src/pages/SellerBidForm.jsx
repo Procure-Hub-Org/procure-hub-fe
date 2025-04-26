@@ -18,11 +18,12 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
+import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
+import NotificationErrorToast from "../components/Notifications/NotificationErrorToast";
 
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import NotificationToast from "../components/Notifications/NotificationToast";
 
 // import { useTheme } from "@mui/system";
 
@@ -40,7 +41,15 @@ const BidForm = () => {
     const navigate = useNavigate();
     const [fieldErrors, setFieldErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
-    const [toast, setToast] = useState({ show: false, message: '' });
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    
+    
+    const showToast = (message, type) => {
+        setToast({ show: false, message: '', type: '' }); // Reset first
+        setTimeout(() => {
+          setToast({ show: true, message, type });
+        }, 0); // Set after a tiny delay
+      };
 
     // Load if id exists
     useEffect(() => {
@@ -94,19 +103,22 @@ const BidForm = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                setToast({ show: true, message: 'Request submit Successful!' });
+                showToast('Request submit Successful!','success' );
                 console.log("Server Response:", response.data);
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
-                alert("Request adding failed: " + response.data.message);
+                showToast("Request adding failed: " + response.data.message,'error' );
+                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            showToast("Request adding failed: " + error.response.data.message,'error' );
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                //alert("Request adding failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                showToast("Request adding failed: " + error.message,'error' );
+                //alert("Request adding failed: " + error.message);
             }
         };
     };
@@ -148,18 +160,21 @@ const BidForm = () => {
             );
             // console.log(response.status);
             if (response.status === 200 || response.status === 201) {
-                setToast({ show: true, message: 'Request saving Successful!' });
+                showToast('Request saving Successful!','success' );
                 console.log("Server Response:", response.data);
                 navigate("/seller-bids");
             } else {
-                alert("Request adding failed: " + response.data.message);
+                showToast("Request adding failed: " + response.data.message,'error' );
+                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                showToast("Request adding failed: " + error.response.data.message,'error' );
+                //alert("Request adding failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                showToast("Request adding failed: " + error.message,'error' );
+                //alert("Request adding failed: " + error.message);
             }
         };
     }
@@ -268,8 +283,16 @@ const BidForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
-                        {toast.show && (
-                            <NotificationToast
+                        {toast.show && toast.type === 'success' && (
+                            <NotificationSuccsesToast
+                                message={toast.message}
+                                autoHideDuration={3000}
+                                onClose={() => setToast({ ...toast, show: false })}
+                            />
+                        )}
+
+                        {toast.show && toast.type === 'error' && (
+                            <NotificationErrorToast
                                 message={toast.message}
                                 autoHideDuration={3000}
                                 onClose={() => setToast({ ...toast, show: false })}

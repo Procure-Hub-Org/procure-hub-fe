@@ -14,6 +14,8 @@ import CustomRadioGroup from "./Input/RadioSelect"; // Adjust the import path as
 import Navbar from "./Navbar/Navbar";
 import SideBar from "./SideBar/SideBar";
 import NotificationToast from "./Notifications/NotificationToast";
+import NotificationSuccsesToast from "./Notifications/NotificationSuccsesToast";
+import NotificationErrorToast from "./Notifications/NotificationErrorToast";
 import CustomPagination from "./Pagination/CustomPagination";
 
 //added customized components for preview testing
@@ -109,7 +111,7 @@ const PreviewComponent = () => {
         ]}
       />
       {/* Example of notification toast, shows up in the middle of the screen at the bottom*/}
-      <NotificationToast
+      <NotificationErrorToast
         message="Item added to cart!"
         autoHideDuration={3000}
       />

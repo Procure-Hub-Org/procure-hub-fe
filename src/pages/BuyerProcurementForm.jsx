@@ -22,11 +22,12 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
+import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
+import NotificationErrorToast from "../components/Notifications/NotificationErrorToast";
 // ikonice
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import NotificationToast from "../components/Notifications/NotificationToast";
 
 // import { useTheme } from "@mui/system";
 
@@ -41,9 +42,15 @@ const ProcurementForm = () => {
     const token = localStorage.getItem("token");
     const [fieldErrors, setFieldErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
-    const [toast, setToast] = useState({ show: false, message: '' });
+    const [toast, setToast] = useState({ show: false, message: '', type: '' });
 
 
+    const showToast = (message, type) => {
+        setToast({ show: false, message: '', type: '' }); // Reset first
+        setTimeout(() => {
+          setToast({ show: true, message, type });
+        }, 0); // Set after a tiny delay
+      };
 
     const [formData, setFormData] = useState({
         title: "",
@@ -214,7 +221,8 @@ const ProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
-            alert(validation.message);
+            showToast(validation.message,'error' );
+            //alert(validation.message);
             return;
         }
 
@@ -254,18 +262,21 @@ const ProcurementForm = () => {
             );
         
             if (response.status === 201) {
-                setToast({ show: true, message: 'Request saving Successful!' });
+                showToast('Request saving successful!','success' );
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
-                alert("Request adding failed: " + response.data.message);
+                showToast("Request adding failed: " + response.data.message,'error' );
+                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                showToast("Request adding failed: " + error.response.data.message,'error' );
+                //alert("Request adding failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                showToast("Request adding failed: " + error.message,'error' );
+                //alert("Request adding failed: " + error.message);
             }
         };
     };
@@ -275,7 +286,8 @@ const ProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
-            alert(validation.message);
+            showToast(validation.message,'error' );
+            //alert(validation.message);
             return;
         }
 
@@ -315,18 +327,21 @@ const ProcurementForm = () => {
             );
         
             if (response.status === 201) {
-                setToast({ show: true, message: 'Request adding Successful!' });
+                showToast('Request adding successful!','success' );
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
-                alert("Request adding failed: " + response.data.message);
+                showToast("Request adding failed: " + response.data.message,'error' );
+                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                showToast("Request adding failed: " + error.response.data.message,'error' );
+                //alert("Request adding failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                showToast("Request adding failed: " + error.message,'error' );
+                //alert("Request adding failed: " + error.message);
             }
         };
     }
@@ -816,8 +831,16 @@ const ProcurementForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
-                        {toast.show && (
-                            <NotificationToast
+                        {toast.show && toast.type === 'success' && (
+                            <NotificationSuccsesToast
+                                message={toast.message}
+                                autoHideDuration={3000}
+                                onClose={() => setToast({ ...toast, show: false })}
+                            />
+                        )}
+
+                        {toast.show && toast.type === 'error' && (
+                            <NotificationErrorToast
                                 message={toast.message}
                                 autoHideDuration={3000}
                                 onClose={() => setToast({ ...toast, show: false })}

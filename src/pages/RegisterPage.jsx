@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
-import NotificationToast from "../components/Notifications/NotificationToast";
+import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
 import {
   AppBar,
   Container,
@@ -42,7 +42,15 @@ const RegisterPage = () => {
   const [selectedBuyerType, setSelectedBuyerType] = useState("");
   const [customBuyerType, setCustomBuyerType] = useState("");
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState({ show: false, message: '' });
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+      
+  
+  const showToast = (message, type) => {
+    setToast({ show: false, message: '', type: '' }); // Reset first
+    setTimeout(() => {
+      setToast({ show: true, message, type });
+    }, 0); // Set after a tiny delay
+  };
 
   useEffect(() => {
     const fetchBuyerTypes = async () => {
@@ -261,7 +269,8 @@ const RegisterPage = () => {
         );
         registrationData.buyer_type = customBuyerType;
       } catch (error) {
-        alert("Failed to save custom buyer type");
+        showToast("Failed to save custom buyer type",'error' );
+        //alert("Failed to save custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -292,14 +301,15 @@ const RegisterPage = () => {
       );
   
       if (response.status === 201) {
-        setToast({ show: true, message: 'Registration Successful!' });
+        showToast('Registration Successful!','success' );
         //alert("Registration Successful!");
         console.log("Server Response:", response.data);
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } else {
-        alert("Registration failed: " + response.data.message);
+        showToast("Registration failed: " + response.data.message,'error' );
+        //alert("Registration failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -311,10 +321,12 @@ const RegisterPage = () => {
             email: "Email is already registered. Please use a different email.",
           }));
         } else {
-          alert("An error occurred during registration: " + error.response.data.error);
+          showToast("An error occurred during registration: " + error.response.data.error,'error' );
+          //alert("An error occurred during registration: " + error.response.data.error);
         }
       } else {
-        alert("An error occurred during registration");
+        showToast("An error occurred during registration",'error' );
+        //alert("An error occurred during registration");
       }
     }
   };
@@ -485,13 +497,20 @@ const RegisterPage = () => {
                 </form>
               </CardContent>
             </Card>
-            {toast.show && (
-                            <NotificationToast
-                                message={toast.message}
-                                autoHideDuration={3000}
-                                onClose={() => setToast({ ...toast, show: false })}
-                            />
-                        )}
+            {toast.show && toast.type === 'success' && (
+              <NotificationSuccsesToast
+                  message={toast.message}
+                  autoHideDuration={3000}
+                  onClose={() => setToast({ ...toast, show: false })}
+              />
+            )}
+            {toast.show && toast.type === 'error' && (
+              <NotificationErrorToast
+                  message={toast.message}
+                  autoHideDuration={3000}
+                  onClose={() => setToast({ ...toast, show: false })}
+              />
+            )}
           </Container>
         </Box>
       </AppBar>
