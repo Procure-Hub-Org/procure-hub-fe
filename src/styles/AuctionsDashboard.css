@@ -21,16 +21,26 @@
   .auction-column {
     width: 32%; /* Smanjivanje širine kolona */
     background-color: #ffffff;
-    padding: 10px;
+    padding: 6px;
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow-y: auto;
   }
+
+  .auction-header {
+    display: flex;
+    justify-content: space-between; /* This will space out the headline and button */
+    align-items: center; /* Vertically center the content */
+  }
   
   .auction-column h3 {
-    font-size: 24px; /* Veći font za naslove */
-    margin-bottom: 10px;
+    font-size: 24px; /* Adjust headline font size */
+    margin-bottom: 14px;
+    text-align: left; /* Align headline to the left */
+  }
+  .auction-column button {
+    margin-left: 10px; /* Space between the headline and the button */
   }
   
   .auction-column p {
@@ -79,7 +89,6 @@
   }
   
   .auction-button-wrapper button {
-    min-width: 180px;
     padding: 10px 18px; /* Veće dugme sa više paddinga */
     font-size: 16px; /* Veći font kako bi dugme bilo jasno vidljivo */
     margin-top: 10px;

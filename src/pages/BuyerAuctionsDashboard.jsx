@@ -249,12 +249,16 @@ const BuyerAuctionsDashboard = () => {
               </p>
             </div>
             <div className="auction-columns">
-              <div className="auction-column">
+            <div className="auction-column">
+              <div className="auction-header">
                 <h3>Open</h3>
-                <div className="auction-scroll">
-                  {openAuctions.map(a => renderAuctionCard(a, false, "open"))}
-                </div>
+                <PrimaryButton onClick={() => console.log('Button clicked in Open column')}>New Auction</PrimaryButton>
               </div>
+              <div className="auction-scroll">
+                {openAuctions.map(a => renderAuctionCard(a, false, "open"))}
+              </div>
+              </div>
+
       
               <div className="auction-column">
                 <h3>Active</h3>
