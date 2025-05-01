@@ -71,3 +71,18 @@
     text-align: center;
   }
   
+  .auction-button-wrapper {
+    width: 100%;
+    margin-top: 20px; /* Povećava prostor između ostatka kartice i dugmeta */
+    display: flex;
+    justify-content: center;
+  }
+  
+  .auction-button-wrapper button {
+    min-width: 180px;
+    padding: 10px 18px; /* Veće dugme sa više paddinga */
+    font-size: 16px; /* Veći font kako bi dugme bilo jasno vidljivo */
+    margin-top: 10px;
+    height: 45px; /* Dodavanje visine za dugme */
+  }
+  
