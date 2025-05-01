@@ -68,6 +68,11 @@ const Navbar = () => {
             >
               Procurement Requests
             </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/buyer-auctions")}
+            >
+              Auctions
+            </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
             </BasicButton>
@@ -80,6 +85,9 @@ const Navbar = () => {
               onClick={() => navigate("/seller-procurement-requests")}
             >
               Procurement Requests
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/seller-auctions")}>
+              Auctions
             </BasicButton>
             <BasicButton onClick={() => navigate("/seller-favorites")}>
               Favorites
