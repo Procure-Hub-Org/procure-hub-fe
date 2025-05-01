@@ -36,12 +36,10 @@
   
   .auction-column h3 {
     font-size: 24px; /* Adjust headline font size */
-    margin-bottom: 14px;
+    margin-bottom: 10px;
     text-align: left; /* Align headline to the left */
   }
-  .auction-column button {
-    margin-left: 10px; /* Space between the headline and the button */
-  }
+
   
   .auction-column p {
     font-size: 14px;

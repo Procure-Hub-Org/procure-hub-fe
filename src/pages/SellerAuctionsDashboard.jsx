@@ -211,11 +211,11 @@ const SellerAuctionsDashboard = () => {
       
       
   
-      const renderAuctionCard = (auction, hasWinner) => (
+      const renderAuctionCard = (auction, hasWinner, columnType) => (
         <div className="auction-card" key={auction.id} style={{ backgroundColor: theme.palette.background.paper }}>
           <div style={{ width: '100%' }}>
-          <p><strong>Buyer:</strong> {auction.buyerEmail}</p>
-          <p><strong>Request:</strong> {auction.requestTitle}</p>
+            <p><strong>Buyer:</strong> {auction.buyerEmail}</p>
+            <p><strong>Request:</strong> {auction.requestTitle}</p>
           </div>
           <p><strong>Start:</strong> {new Date(auction.startingTime).toLocaleString()}</p>
           <p><strong>Duration:</strong> {auction.duration} min</p>
@@ -226,6 +226,13 @@ const SellerAuctionsDashboard = () => {
               <p><strong>Winning Bid:</strong> {auction.winningBid}</p>
               <p><strong>Winner:</strong> {auction.winningSeller.name} ({auction.winningSeller.companyName})</p>
             </>
+          )}
+      
+          {/* Monitor button for active auctions */}
+          {columnType === "active" && (
+            <div className="auction-button-wrapper">
+              <PrimaryButton onClick={() => console.log(`Monitoring auction ${auction.id}`)}> Join </PrimaryButton>
+            </div>
           )}
         </div>
       );
@@ -244,21 +251,21 @@ const SellerAuctionsDashboard = () => {
               <div className="auction-column">
                 <h3>Open</h3>
                 <div className="auction-scroll">
-                  {openAuctions.map(a => renderAuctionCard(a, false))}
+                  {openAuctions.map(a => renderAuctionCard(a, false, "open"))}
                 </div>
               </div>
       
               <div className="auction-column">
                 <h3>Active</h3>
                 <div className="auction-scroll">
-                  {activeAuctions.map(a => renderAuctionCard(a, true))}
+                  {activeAuctions.map(a => renderAuctionCard(a, true, "active"))}
                 </div>
               </div>
       
               <div className="auction-column">
                 <h3>Closed</h3>
                 <div className="auction-scroll">
-                  {closedAuctions.map(a => renderAuctionCard(a, true))}
+                  {closedAuctions.map(a => renderAuctionCard(a, true, "closed"))}
                 </div>
               </div>
             </div>
