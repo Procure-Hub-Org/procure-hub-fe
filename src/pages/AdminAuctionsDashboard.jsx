@@ -15,200 +15,215 @@ const AdminAuctionsDashboard = () => {
     const [activeAuctions, setActiveAuctions] = useState([]);
     const [closedAuctions, setClosedAuctions] = useState([]);
   
-    useEffect(() => {
-        const mockData = [
-          // OPEN
-          {
-            id: 1,
-            buyerEmail: "buyer1@example.com",
-            requestTitle: "Office Chairs",
-            startingTime: "2025-06-01T10:00:00Z",
-            endingTime: "2025-06-01T12:00:00Z",
-            duration: 60,
-            minIncrement: 10,
-            lastCallTimer: 30,
-          },
-          {
-            id: 2,
-            buyerEmail: "buyer2@example.com",
-            requestTitle: "Laptop Purchase",
-            startingTime: "2025-06-03T12:00:00Z",
-            endingTime: "2025-06-03T14:00:00Z",
-            duration: 45,
-            minIncrement: 20,
-            lastCallTimer: 60,
-          },
-          {
-            id: 3,
-            buyerEmail: "buyer3@example.com",
-            requestTitle: "Tablets",
-            startingTime: "2025-06-02T14:00:00Z",
-            endingTime: "2025-06-02T16:00:00Z",
-            duration: 90,
-            minIncrement: 15,
-            lastCallTimer: 45,
-          },
-          {
-            id: 4,
-            buyerEmail: "buyer4@example.com",
-            requestTitle: "Projectors",
-            startingTime: "2025-06-05T09:00:00Z",
-            endingTime: "2025-06-05T11:00:00Z",
-            duration: 120,
-            minIncrement: 50,
-            lastCallTimer: 60,
-          },
-      
-          // ACTIVE
-          {
-            id: 5,
-            buyerEmail: "buyer5@example.com",
-            requestTitle: "Office Supplies",
-            startingTime: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-            endingTime: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-            duration: 60,
-            minIncrement: 5,
-            lastCallTimer: 15,
-            winningBid: 300,
-            winningSeller: {
-              name: "Bob",
-              companyName: "SupplyCo",
-            },
-          },
-          {
-            id: 6,
-            buyerEmail: "buyer6@example.com",
-            requestTitle: "Whiteboards",
-            startingTime: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-            endingTime: new Date(Date.now() + 50 * 60 * 1000).toISOString(),
-            duration: 60,
-            minIncrement: 8,
-            lastCallTimer: 30,
-            winningBid: 120,
-            winningSeller: {
-              name: "Linda",
-              companyName: "EduStore",
-            },
-          },
-          {
-            id: 7,
-            buyerEmail: "buyer7@example.com",
-            requestTitle: "Cleaning Services",
-            startingTime: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
-            endingTime: new Date(Date.now() + 40 * 60 * 1000).toISOString(),
-            duration: 90,
-            minIncrement: 12,
-            lastCallTimer: 20,
-            winningBid: 750,
-            winningSeller: {
-              name: "Sara",
-              companyName: "CleanIt",
-            },
-          },
-          {
-            id: 8,
-            buyerEmail: "buyer8@example.com",
-            requestTitle: "Stationery",
-            startingTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-            endingTime: new Date(Date.now() + 90 * 60 * 1000).toISOString(),
-            duration: 100,
-            minIncrement: 6,
-            lastCallTimer: 25,
-            winningBid: 210,
-            winningSeller: {
-              name: "Leo",
-              companyName: "OfficeMax",
-            },
-          },
-      
-          // CLOSED
-          {
-            id: 9,
-            buyerEmail: "buyer9@example.com",
-            requestTitle: "Desks",
-            startingTime: "2025-04-20T08:00:00Z",
-            endingTime: "2025-04-20T10:00:00Z",
-            duration: 120,
-            minIncrement: 20,
-            lastCallTimer: 30,
-            winningBid: 800,
-            winningSeller: {
-              name: "Nina",
-              companyName: "FurniShop",
-            },
-          },
-          {
-            id: 10,
-            buyerEmail: "buyer10@example.com",
-            requestTitle: "Smartboards",
-            startingTime: "2025-04-21T13:00:00Z",
-            endingTime: "2025-04-21T15:00:00Z",
-            duration: 90,
-            minIncrement: 25,
-            lastCallTimer: 60,
-            winningBid: 1600,
-            winningSeller: {
-              name: "Jack",
-              companyName: "SmartTech",
-            },
-          },
-          {
-            id: 11,
-            buyerEmail: "buyer11@example.com",
-            requestTitle: "Monitors",
-            startingTime: "2025-04-22T10:00:00Z",
-            endingTime: "2025-04-22T11:30:00Z",
-            duration: 45,
-            minIncrement: 10,
-            lastCallTimer: 30,
-            winningBid: 500,
-            winningSeller: {
-              name: "Emma",
-              companyName: "VisionTech",
-            },
-          },
-          {
-            id: 12,
-            buyerEmail: "buyer12@example.com",
-            requestTitle: "Webcams",
-            startingTime: "2025-04-23T14:00:00Z",
-            endingTime: "2025-04-23T16:00:00Z",
-            duration: 60,
-            minIncrement: 5,
-            lastCallTimer: 20,
-            winningBid: 320,
-            winningSeller: {
-              name: "Mila",
-              companyName: "CamWorld",
-            },
-          },
-        ];
-      
-        const now = new Date();
-      
-        const open = [];
-        const active = [];
-        const closed = [];
-      
-        mockData.forEach(auction => {
-          const startingTime = new Date(auction.startingTime);
-          const endingTime = new Date(auction.endingTime);
-      
-          if (startingTime > now) {
-            open.push(auction);
-          } else if (startingTime <= now && endingTime >= now) {
-            active.push(auction);
-          } else if (endingTime < now) {
-            closed.push(auction);
-          }
-        });
-      
-        setOpenAuctions(open);
-        setActiveAuctions(active);
-        setClosedAuctions(closed);
-      }, []);
-      
-      
+  const sortOpenAuctions = (auctions) => {
+    return auctions.sort((a, b) => new Date(a.startingTime) - new Date(b.startingTime));
+  };
+  
+  // Sort active auctions by soonest ending time
+  const sortActiveAuctions = (auctions) => {
+    return auctions.sort((a, b) => new Date(a.endingTime) - new Date(b.endingTime));
+  };
+  
+  // Sort closed auctions by most recently ended
+  const sortClosedAuctions = (auctions) => {
+    return auctions.sort((a, b) => new Date(b.endingTime) - new Date(a.endingTime));
+  };
+
+  useEffect(() => {
+    const now = Date.now();
+  
+    const mockData = [
+      // OPEN
+      {
+        id: 1,
+        buyerEmail: "buyer1@example.com",
+        requestTitle: "Office Chairs",
+        startingTime: "2025-06-01T10:00:00Z",
+        endingTime: "2025-06-01T12:00:00Z",
+        duration: 60,
+        minIncrement: 10,
+        lastCallTimer: 30,
+      },
+      {
+        id: 2,
+        buyerEmail: "buyer2@example.com",
+        requestTitle: "Laptop Purchase",
+        startingTime: "2025-06-03T12:00:00Z",
+        endingTime: "2025-06-03T14:00:00Z",
+        duration: 45,
+        minIncrement: 20,
+        lastCallTimer: 60,
+      },
+      {
+        id: 3,
+        buyerEmail: "buyer3@example.com",
+        requestTitle: "Tablets",
+        startingTime: "2025-06-02T14:00:00Z",
+        endingTime: "2025-06-02T16:00:00Z",
+        duration: 90,
+        minIncrement: 15,
+        lastCallTimer: 45,
+      },
+      {
+        id: 4,
+        buyerEmail: "buyer4@example.com",
+        requestTitle: "Projectors",
+        startingTime: "2025-06-05T09:00:00Z",
+        endingTime: "2025-06-05T11:00:00Z",
+        duration: 120,
+        minIncrement: 50,
+        lastCallTimer: 60,
+      },
+  
+      // ACTIVE (⏱️ now dynamic)
+      {
+        id: 5,
+        buyerEmail: "buyer5@example.com",
+        requestTitle: "Office Supplies",
+        startingTime: new Date(now - 30 * 60 * 1000).toISOString(), // started 30 min ago
+        endingTime: new Date(now + 30 * 60 * 1000).toISOString(),   // ends in 30 min
+        duration: 60,
+        minIncrement: 5,
+        lastCallTimer: 15,
+        winningBid: 300,
+        winningSeller: {
+          name: "Bob",
+          companyName: "SupplyCo",
+        },
+      },
+      {
+        id: 6,
+        buyerEmail: "buyer6@example.com",
+        requestTitle: "Whiteboards",
+        startingTime: new Date(now - 10 * 60 * 1000).toISOString(), // started 10 min ago
+        endingTime: new Date(now + 50 * 60 * 1000).toISOString(),   // ends in 50 min
+        duration: 60,
+        minIncrement: 8,
+        lastCallTimer: 30,
+        winningBid: 120,
+        winningSeller: {
+          name: "Linda",
+          companyName: "EduStore",
+        },
+      },
+      {
+        id: 7,
+        buyerEmail: "buyer7@example.com",
+        requestTitle: "Cleaning Services",
+        startingTime: new Date(now - 20 * 60 * 1000).toISOString(), // started 20 min ago
+        endingTime: new Date(now + 40 * 60 * 1000).toISOString(),   // ends in 40 min
+        duration: 90,
+        minIncrement: 12,
+        lastCallTimer: 20,
+        winningBid: 750,
+        winningSeller: {
+          name: "Sara",
+          companyName: "CleanIt",
+        },
+      },
+      {
+        id: 8,
+        buyerEmail: "buyer8@example.com",
+        requestTitle: "Stationery",
+        startingTime: new Date(now - 5 * 60 * 1000).toISOString(),  // started 5 min ago
+        endingTime: new Date(now + 90 * 60 * 1000).toISOString(),   // ends in 90 min
+        duration: 100,
+        minIncrement: 6,
+        lastCallTimer: 25,
+        winningBid: 210,
+        winningSeller: {
+          name: "Leo",
+          companyName: "OfficeMax",
+        },
+      },
+  
+      // CLOSED
+      {
+        id: 9,
+        buyerEmail: "buyer9@example.com",
+        requestTitle: "Desks",
+        startingTime: "2025-04-20T08:00:00Z",
+        endingTime: "2025-04-20T10:00:00Z",
+        duration: 120,
+        minIncrement: 20,
+        lastCallTimer: 30,
+        winningBid: 800,
+        winningSeller: {
+          name: "Nina",
+          companyName: "FurniShop",
+        },
+      },
+      {
+        id: 10,
+        buyerEmail: "buyer10@example.com",
+        requestTitle: "Smartboards",
+        startingTime: "2025-04-21T13:00:00Z",
+        endingTime: "2025-04-21T15:00:00Z",
+        duration: 90,
+        minIncrement: 25,
+        lastCallTimer: 60,
+        winningBid: 1600,
+        winningSeller: {
+          name: "Jack",
+          companyName: "SmartTech",
+        },
+      },
+      {
+        id: 11,
+        buyerEmail: "buyer11@example.com",
+        requestTitle: "Monitors",
+        startingTime: "2025-04-22T10:00:00Z",
+        endingTime: "2025-04-22T11:30:00Z",
+        duration: 45,
+        minIncrement: 10,
+        lastCallTimer: 30,
+        winningBid: 500,
+        winningSeller: {
+          name: "Emma",
+          companyName: "VisionTech",
+        },
+      },
+      {
+        id: 12,
+        buyerEmail: "buyer12@example.com",
+        requestTitle: "Webcams",
+        startingTime: "2025-04-23T14:00:00Z",
+        endingTime: "2025-04-23T16:00:00Z",
+        duration: 60,
+        minIncrement: 5,
+        lastCallTimer: 20,
+        winningBid: 320,
+        winningSeller: {
+          name: "Mila",
+          companyName: "CamWorld",
+        },
+      },
+    ];
+  
+    const nowDate = new Date();
+  
+    const open = [];
+    const active = [];
+    const closed = [];
+  
+    mockData.forEach(auction => {
+      const startingTime = new Date(auction.startingTime);
+      const endingTime = new Date(auction.endingTime);
+  
+      if (startingTime > nowDate) {
+        open.push(auction);
+      } else if (startingTime <= nowDate && endingTime >= nowDate) {
+        active.push(auction);
+      } else if (endingTime < nowDate) {
+        closed.push(auction);
+      }
+    });
+  
+    setOpenAuctions(sortOpenAuctions(open));
+    setActiveAuctions(sortActiveAuctions(active));
+    setClosedAuctions(sortClosedAuctions(closed));
+  }, []);
+             
       
   
       const renderAuctionCard = (auction, hasWinner, columnType) => (
