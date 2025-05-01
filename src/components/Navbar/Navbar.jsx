@@ -48,6 +48,10 @@ const Navbar = () => {
               onClick={() => navigate("/admin-procurement-requests")}>
               Procurement Requests
             </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/admin-auctions")}>
+              Auctions
+            </BasicButton>
             <BasicButton onClick={() => navigate("/admin")}>
               Users
             </BasicButton>

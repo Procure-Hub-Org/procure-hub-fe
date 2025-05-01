@@ -24,6 +24,8 @@ import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
 import SellerBidForm from "./pages/SellerBidForm.jsx";
 import BidProposalPreview from "./pages/BidProposalPreview.jsx";
 import EditBidProposalSeller from "./pages/EditBidProposalSeller.jsx";
+import AdminAuctionsDashboard from "./pages/AdminAuctionsDashboard.jsx";
+
 function App() {
   return (
     <Routes>
@@ -139,6 +141,13 @@ function App() {
           element={
           <AdminRoute>
               <BidLogs/>
+          </AdminRoute>}
+      />
+      <Route
+          path="/admin-auctions"
+          element={
+          <AdminRoute>
+              <AdminAuctionsDashboard/>
           </AdminRoute>}
       />
       <Route
