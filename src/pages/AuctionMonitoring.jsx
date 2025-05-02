@@ -17,10 +17,10 @@ const AuctionMonitoring = () => {
 
     const navigate = useNavigate();
     const {id} = useParams(); // auction ID from URL
-    //console.log("Auction ID:", id);
+
     const [auctionData, setAuctionData] = useState({
         id: 0,
-        title: "",
+        procurement_request_title: "",
         buyer: {
             first_name: "",
             last_name: "",
@@ -28,7 +28,7 @@ const AuctionMonitoring = () => {
         },
         min_increment: 0,
         last_call_timer: 2, // minutes
-        ending_time: new Date().getTime() + 1800000,	 // how will BE send?	
+        ending_time: new Date().getTime() + 1000 * 60 * 60 // default to 1 hour from now,	
     });
 
     const [sellers, setSellers] = useState([]);
@@ -43,6 +43,7 @@ const AuctionMonitoring = () => {
     const socketRef = useRef(null);
     const timerRef = useRef(null);
     const lastCallTimerRef = useRef(null);
+
     const [loading, setLoading] = useState(true);
     const [currentUserBidPosition, setCurrentUserBidPosition] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -51,6 +52,7 @@ const AuctionMonitoring = () => {
     const currentSellerBid = sellers.find(seller => seller.id === userId)?.bidAmount || 0;
 
     const token = localStorage.getItem("token");
+
 
     //fetching auction data and establishing socket connection
     useEffect(() => {
@@ -63,22 +65,20 @@ const AuctionMonitoring = () => {
         const decoded = JSON.parse(atob(token.split('.')[1]));
         const currentUserId = decoded.id;
         setUserId(currentUserId);
-        //console.log("User ID:", currentUserId);
 
         // Fetch initial auction data 
         const fetchAuctionData = async () => {
             try{
                 setLoading(true);
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auction/${id}`, { // replace with actual api
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auction/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                //setAuctionData(response.data);
 
                 const data = response.data;
 
                 setAuctionData({
                     id: data.id,
-                    title: data.title,
+                    procurement_request_title: data.procurement_request_title,
                     buyer: data.buyer ?? { first_name: "", last_name: "", company_name: "" },
                     min_increment: data.min_increment,
                     last_call_timer: data.last_call_timer,
@@ -95,14 +95,7 @@ const AuctionMonitoring = () => {
                     position: bid.auction_placement
                 }));
                 
-                /*setAuctionData(prev => ({
-                    ...prev,
-                    ...response.data,
-                }));*/
-                
                 setSellers(mappedSellers);
-                console.log("Sellers:", mappedSellers);
-                console.log("Auction Data:", auctionData);
                 setLoading(false);
 
             } catch (error) {
@@ -112,30 +105,6 @@ const AuctionMonitoring = () => {
         };
 
         fetchAuctionData();
-
-        /*setTimeout(() => {
-            setAuctionData({
-                id: 1,
-                title: "Office Supplies Procurement",
-                buyer: {
-                    first_name: "John",
-                    last_name: "Doe",
-                    company_name: "Acme Corporation"
-                },
-                min_increment: 50,
-                last_call_timer: 2, // in minutes
-                ending_time: new Date().getTime() + 180000, // 3 minutes from now
-            });
-
-            setSellers([
-                { id: 2, first_name: "Your", last_name: "Name", company_name: "Your Company", bidAmount: 1000, position: 1 },
-                { id: 5678, first_name: "Jane", last_name: "Doe", company_name: "ABC Inc", bidAmount: 950, position: 2 },
-                { id: 9012, first_name: "Bob", last_name: "Johnson", company_name: "XYZ Corp", bidAmount: 900, position: 3 },
-                { id: 3546, first_name: "Alice", last_name: "Brown", company_name: "123 Industries", bidAmount: 850, position: 4 },
-            ]);
-        
-            setLoading(false);
-        }, 1000);*/
 
         //websocket connection
         const socket = io(import.meta.env.VITE_WEBSOCKET_URL);
@@ -170,7 +139,7 @@ const AuctionMonitoring = () => {
         socket.on('auction-time-update', (data) => {
             setAuctionData(prev => ({
               ...prev,
-              ending_time: data.ending_time
+              ending_time: new Date(data.ending_time).getTime()
             }));
         });
       
@@ -194,7 +163,7 @@ const AuctionMonitoring = () => {
             }
         };
 
-    }, [token]);
+    }, [token, auctionData.ending_time]);
 
     //update current user's position in the auction
     useEffect(() => {
@@ -210,7 +179,7 @@ const AuctionMonitoring = () => {
     const startCountdownTimer = () => {
         timerRef.current = setInterval(() => {
             const now = new Date().getTime();
-            const distance = auctionData.ending_time - now;
+            const distance = new Date(auctionData.ending_time).getTime() - now;
             
             //time calculations
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -228,7 +197,7 @@ const AuctionMonitoring = () => {
             if (distance < 0) {
                 clearInterval(timerRef.current);
                 setTimeRemaining({ hours: 0, minutes: 0, seconds: 0 });
-                navigate("/auction-dashboard"); //check if the route is correct
+                navigate("/auction-dashboard"); 
             }
         }, 1000);
     };
@@ -237,7 +206,7 @@ const AuctionMonitoring = () => {
     const startLastCallTimer = () => {
         setIsLastCall(true);
         setLastCallCounter(auctionData.last_call_timer * 60);
-        
+
         lastCallTimerRef.current = setInterval(() => {
         setLastCallCounter((prev) => {
             if (prev <= 1) {
@@ -253,11 +222,6 @@ const AuctionMonitoring = () => {
     const resetLastCallTimer = () => {
         clearInterval(lastCallTimerRef.current);
         startLastCallTimer();
-    };
-
-    // Handle send bid button click
-    const handleSendBid = () => {
-        navigate('/bid-submission', { state: { auctionId: auctionData.id } }); //pop-up should appear
     };
 
     const handleBidSubmit = (amount) => {
@@ -292,12 +256,28 @@ const AuctionMonitoring = () => {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
+    const formatTimeFromSeconds = (time_seconds) => {
+        const hours = Math.floor(time_seconds / 3600);
+        const minutes = Math.floor((time_seconds % 3600) / 60);
+        const seconds = time_seconds % 60;
+    
+        if (hours > 0) {
+            return `${hours.toString().padStart(2, '0')}:${minutes
+                .toString()
+                .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            return `${minutes.toString().padStart(2, '0')}:${seconds
+                .toString()
+                .padStart(2, '0')}`;
+        }
+    };
+
     return (
         <Layout>
             <div className="auction-monitoring-container">
                 <div className="auction-header">
                     <div className="auction-info">
-                        <h1 className="auction-title">{auctionData.title}</h1>
+                        <h1 className="auction-title">{auctionData.procurement_request_title}</h1>
                         <div className="buyer-info">
                             <span className="label">Buyer:</span> {auctionData.buyer.first_name + " " + auctionData.buyer.last_name} ({auctionData.buyer.company_name}) 
                         </div>
@@ -307,7 +287,7 @@ const AuctionMonitoring = () => {
                                 <span className="label">Minimum Increment:</span> ${auctionData.min_increment}
                             </div>
                             <div className="detail-items">
-                                <span className="label">Last Call Timer:</span> {auctionData.last_call_timer} minutes {/*check if seconds/minutes will we sent by BE*/}
+                                <span className="label">Last Call Timer:</span> {auctionData.last_call_timer} minutes
                             </div>
                         </div>
                     </div>
@@ -320,7 +300,8 @@ const AuctionMonitoring = () => {
 
                             {isLastCall && (
                                 <div className="last-call-alert">
-                                    <span>LAST CALL: {lastCallCounter} seconds </span> {/*check if seconds/minutes will we sent by BE*/}
+                                    {/*<span>Last call: {formatTimeFromSeconds(lastCallCounter-1)} </span> */}
+                                    <span>LAST CALL</span>
                                 </div>
                             )}
 
@@ -361,9 +342,8 @@ const AuctionMonitoring = () => {
                 
                                             return (
                                                 <tr key={seller.id} className={rowClass}>
-                                                    {/*<td>{seller.position}</td>*/}
                                                     <td>{rankDisplay}</td>
-                                                    <td>{showFullDetails ? seller.first_name + " " + seller.last_name : (isCurrentUser ? seller.fullName : "****")}</td>
+                                                    <td>{showFullDetails ? seller.first_name + " " + seller.last_name : (isCurrentUser ? seller.first_name + " " + seller.last_name : "****")}</td>
                                                     <td>{showFullDetails ? seller.company_name : (isCurrentUser ? seller.company_name : "****")}</td>
                                                     <td>{ (isAdmin() || isBuyer() || isCurrentUser) ? `$${seller.bidAmount.toLocaleString()}` : "*"}</td>
                                                 </tr>
