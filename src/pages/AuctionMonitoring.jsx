@@ -2,8 +2,6 @@ import React, { use, useEffect, useState, useRef } from 'react';
 import {PlusCircle, ArrowLeft, Clock} from 'lucide-react';
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import "../styles/AuctionMonitoring.css";
 import axios from 'axios';
 import PrimaryButton from '../components/Button/PrimaryButton';
@@ -26,11 +24,11 @@ const AuctionMonitoring = () => {
         buyer: {
             first_name: "",
             last_name: "",
-            company: ""
+            company_name: ""
         },
         min_increment: 0,
-        last_call_timer: 2, // what will BE send - seconds, minutes? - it should be minutes
-        ending_time: new Date().getTime() + 180000,	 // how will BE send?	
+        last_call_timer: 2, // minutes
+        ending_time: new Date().getTime() + 1800000,	 // how will BE send?	
     });
 
     const [sellers, setSellers] = useState([]);
@@ -81,7 +79,7 @@ const AuctionMonitoring = () => {
                 setAuctionData({
                     id: data.id,
                     title: data.title,
-                    buyer: data.buyer,
+                    buyer: data.buyer ?? { first_name: "", last_name: "", company_name: "" },
                     min_increment: data.min_increment,
                     last_call_timer: data.last_call_timer,
                     ending_time: new Date(data.ending_time).getTime()
@@ -92,7 +90,7 @@ const AuctionMonitoring = () => {
                     id: bid.seller.id,
                     first_name: bid.seller.first_name,
                     last_name: bid.seller.last_name,
-                    company: bid.seller.company_name,
+                    company_name: bid.seller.company_name,
                     bidAmount: bid.auction_price,
                     position: bid.auction_placement
                 }));
@@ -103,6 +101,8 @@ const AuctionMonitoring = () => {
                 }));*/
                 
                 setSellers(mappedSellers);
+                console.log("Sellers:", mappedSellers);
+                console.log("Auction Data:", auctionData);
                 setLoading(false);
 
             } catch (error) {
@@ -120,7 +120,7 @@ const AuctionMonitoring = () => {
                 buyer: {
                     first_name: "John",
                     last_name: "Doe",
-                    company: "Acme Corporation"
+                    company_name: "Acme Corporation"
                 },
                 min_increment: 50,
                 last_call_timer: 2, // in minutes
@@ -128,10 +128,10 @@ const AuctionMonitoring = () => {
             });
 
             setSellers([
-                { id: 2, first_name: "Your", last_name: "Name", company: "Your Company", bidAmount: 1000, position: 1 },
-                { id: 5678, first_name: "Jane", last_name: "Doe", company: "ABC Inc", bidAmount: 950, position: 2 },
-                { id: 9012, first_name: "Bob", last_name: "Johnson", company: "XYZ Corp", bidAmount: 900, position: 3 },
-                { id: 3546, first_name: "Alice", last_name: "Brown", company: "123 Industries", bidAmount: 850, position: 4 },
+                { id: 2, first_name: "Your", last_name: "Name", company_name: "Your Company", bidAmount: 1000, position: 1 },
+                { id: 5678, first_name: "Jane", last_name: "Doe", company_name: "ABC Inc", bidAmount: 950, position: 2 },
+                { id: 9012, first_name: "Bob", last_name: "Johnson", company_name: "XYZ Corp", bidAmount: 900, position: 3 },
+                { id: 3546, first_name: "Alice", last_name: "Brown", company_name: "123 Industries", bidAmount: 850, position: 4 },
             ]);
         
             setLoading(false);
@@ -154,7 +154,7 @@ const AuctionMonitoring = () => {
                 id: bid.seller.id,
                 first_name: bid.seller.first_name,
                 last_name: bid.seller.last_name,
-                company: bid.seller.company_name,
+                company_name: bid.seller.company_name,
                 bidAmount: bid.auction_price,
                 position: bid.auction_placement
             }));
@@ -299,7 +299,7 @@ const AuctionMonitoring = () => {
                     <div className="auction-info">
                         <h1 className="auction-title">{auctionData.title}</h1>
                         <div className="buyer-info">
-                            <span className="label">Buyer:</span> {auctionData.buyer.first_name + " " + auctionData.buyer.last_name} ({auctionData.buyer.company}) 
+                            <span className="label">Buyer:</span> {auctionData.buyer.first_name + " " + auctionData.buyer.last_name} ({auctionData.buyer.company_name}) 
                         </div>
 
                         <div className="auction-details">
@@ -364,7 +364,7 @@ const AuctionMonitoring = () => {
                                                     {/*<td>{seller.position}</td>*/}
                                                     <td>{rankDisplay}</td>
                                                     <td>{showFullDetails ? seller.first_name + " " + seller.last_name : (isCurrentUser ? seller.fullName : "****")}</td>
-                                                    <td>{showFullDetails ? seller.company : (isCurrentUser ? seller.company : "****")}</td>
+                                                    <td>{showFullDetails ? seller.company_name : (isCurrentUser ? seller.company_name : "****")}</td>
                                                     <td>{ (isAdmin() || isBuyer() || isCurrentUser) ? `$${seller.bidAmount.toLocaleString()}` : "*"}</td>
                                                 </tr>
                                             );
