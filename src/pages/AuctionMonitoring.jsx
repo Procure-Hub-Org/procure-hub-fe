@@ -28,8 +28,8 @@ const AuctionMonitoring = () => {
             company: ""
         },
         min_increment: 0,
-        last_call_timer: 0, // what will BE send - seconds, minutes? - it should be minutes
-        ending_time: new Date().getTime() + 1800000,	 // how will BE send?	
+        last_call_timer: 2, // what will BE send - seconds, minutes? - it should be minutes
+        ending_time: new Date().getTime() + 180000,	 // how will BE send?	
     });
 
     const [sellers, setSellers] = useState([]);
@@ -70,15 +70,46 @@ const AuctionMonitoring = () => {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/auction/${id}`, { // replace with actual api
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                setAuctionData(response.data);
+                //setAuctionData(response.data);
+
+                const data = response.data;
+
+                setAuctionData({
+                    id: data.id,
+                    title: data.title,
+                    buyer: data.buyer,
+                    min_increment: data.min_increment,
+                    last_call_timer: data.last_call_timer,
+                    ending_time: new Date(data.ending_time).getTime()
+                });
+
+
+                const mappedSellers = response.data.sellers.map(bid => ({
+                    id: bid.seller.id,
+                    first_name: bid.seller.first_name,
+                    last_name: bid.seller.last_name,
+                    company: bid.seller.company_name,
+                    bidAmount: bid.auction_price,
+                    position: bid.auction_placement
+                }));
+                
+                /*setAuctionData(prev => ({
+                    ...prev,
+                    ...response.data,
+                }));*/
+                
+                setSellers(mappedSellers);
                 setLoading(false);
+
             } catch (error) {
                 console.error("Error fetching auction data:", error);
                 setLoading(false);
             }
-        }
+        };
 
-        setTimeout(() => {
+        fetchAuctionData();
+
+        /*setTimeout(() => {
             setAuctionData({
                 id: 1,
                 title: "Office Supplies Procurement",
@@ -88,8 +119,8 @@ const AuctionMonitoring = () => {
                     company: "Acme Corporation"
                 },
                 min_increment: 50,
-                last_call_timer: 10, // in minutes
-                ending_time: new Date().getTime() + 1800000, // 30 minutes from now
+                last_call_timer: 2, // in minutes
+                ending_time: new Date().getTime() + 180000, // 3 minutes from now
             });
 
             setSellers([
@@ -100,7 +131,7 @@ const AuctionMonitoring = () => {
             ]);
         
             setLoading(false);
-        }, 1000);
+        }, 1000);*/
 
         //websocket connection
         const socket = io(import.meta.env.VITE_WEBSOCKET_URL);
@@ -109,11 +140,22 @@ const AuctionMonitoring = () => {
         //listen for updates
         socket.on('connect', () => {
             console.log('WebSocket connected');
-            socket.emit('join-auction', { auctionId: '1' });
+            socket.emit('join-auction', { auctionId: id });
         });
       
         socket.on('auction-update', (data) => {
-            setSellers(data.sellers);
+            //setSellers(data.sellers);
+
+            const mappedSellers = data.sellers.map(bid => ({
+                id: bid.seller.id,
+                first_name: bid.seller.first_name,
+                last_name: bid.seller.last_name,
+                company: bid.seller.company_name,
+                bidAmount: bid.auction_price,
+                position: bid.auction_placement
+            }));
+        
+            setSellers(mappedSellers);
             
             // Reset last call timer if there's a new winning bid within last call period
             if (isLastCall && data.newBid) {
@@ -239,7 +281,7 @@ const AuctionMonitoring = () => {
                     <div className="auction-info">
                         <h1 className="auction-title">{auctionData.title}</h1>
                         <div className="buyer-info">
-                            <span className="label">Buyer:</span> {auctionData.buyer.firs_name} {auctionData.buyer.last_name}, {auctionData.buyer.company}
+                            <span className="label">Buyer:</span> {auctionData.buyer.first_name + " " + auctionData.buyer.last_name} ({auctionData.buyer.company}) 
                         </div>
 
                         <div className="auction-details">
@@ -260,12 +302,14 @@ const AuctionMonitoring = () => {
 
                             {isLastCall && (
                                 <div className="last-call-alert">
-                                    <span>LAST CALL: {lastCallCounter} minutes </span> {/*check if seconds/minutes will we sent by BE*/}
+                                    <span>LAST CALL: {lastCallCounter} seconds </span> {/*check if seconds/minutes will we sent by BE*/}
                                 </div>
                             )}
 
                             <div className="timer-actions">
-                                <PrimaryButton onClick={() => handleSendBid()} startIcon={<SendIcon />}>Send Bid</PrimaryButton>
+                                {isSeller() && (
+                                    <PrimaryButton onClick={() => handleSendBid()} startIcon={<SendIcon />}>Send Bid</PrimaryButton>
+                                )}
                                 <SecondaryButton onClick={() => handleClose()} startIcon={<CloseIcon />}>Close Details</SecondaryButton>
                             </div>
                         </div>
