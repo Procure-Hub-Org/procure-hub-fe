@@ -13,6 +13,7 @@ import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
 import { useNavigate, useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
+import AuctionBidForm from '../components/Modals/AuctionBidForm';
 
 const AuctionMonitoring = () => {
 
@@ -47,6 +48,9 @@ const AuctionMonitoring = () => {
     const [loading, setLoading] = useState(true);
     const [currentUserBidPosition, setCurrentUserBidPosition] = useState(null);
     const [userId, setUserId] = useState(null);
+
+    const [isBidFormOpen, setIsBidFormOpen] = useState(false);
+    const currentSellerBid = sellers.find(seller => seller.id === userId)?.bidAmount || 0;
 
     const token = localStorage.getItem("token");
 
@@ -256,6 +260,20 @@ const AuctionMonitoring = () => {
         navigate('/bid-submission', { state: { auctionId: auctionData.id } }); //pop-up should appear
     };
 
+    const handleBidSubmit = (amount) => {
+        if (socketRef.current) {
+            socketRef.current.emit("placeBid", {
+                id,
+                price: amount,
+                userId,
+            });
+            console.log("Bid submitted:", amount);
+        } else {
+            console.error("Socket not connected.");
+        }
+        setIsBidFormOpen(false);
+    };    
+
     // Handle cancel button click
     const handleClose = () => {
         if (isAdmin()){
@@ -308,7 +326,7 @@ const AuctionMonitoring = () => {
 
                             <div className="timer-actions">
                                 {isSeller() && (
-                                    <PrimaryButton onClick={() => handleSendBid()} startIcon={<SendIcon />}>Send Bid</PrimaryButton>
+                                    <PrimaryButton onClick={() => setIsBidFormOpen(true)} startIcon={<SendIcon />}>Send Bid</PrimaryButton>
                                 )}
                                 <SecondaryButton onClick={() => handleClose()} startIcon={<CloseIcon />}>Close Details</SecondaryButton>
                             </div>
@@ -356,6 +374,17 @@ const AuctionMonitoring = () => {
                         )}
                     </div>
                 </div>
+                
+{/* popup for bid submission */}
+                {isBidFormOpen && ( 
+                    <AuctionBidForm
+                    open={isBidFormOpen}
+                    onClose={() => setIsBidFormOpen(false)}
+                    onSubmit={handleBidSubmit}
+                    currentBid={currentSellerBid}
+                    minimumDecrement={auctionData.min_increment}
+                  />
+                )}
         </Layout>
     );
 };
