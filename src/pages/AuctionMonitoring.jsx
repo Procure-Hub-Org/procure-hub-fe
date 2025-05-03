@@ -113,11 +113,12 @@ const AuctionMonitoring = () => {
         //listen for updates
         socket.on('connect', () => {
             console.log('WebSocket connected');
-            socket.emit('join-auction', { auctionId: id });
+            socket.emit('joinAuctionRoom', { auctionId: id });
         });
       
-        socket.on('auction-update', (data) => {
+        socket.on('auctionData', (data) => {
             //setSellers(data.sellers);
+            console.log('Auction data emitted from server:', data);
 
             const mappedSellers = data.sellers.map(bid => ({
                 id: bid.seller.id,
@@ -136,7 +137,7 @@ const AuctionMonitoring = () => {
             }
         });
 
-        socket.on('auction-time-update', (data) => {
+        socket.on('auctionTimeUpdate', (data) => {
             setAuctionData(prev => ({
               ...prev,
               ending_time: new Date(data.ending_time).getTime()
@@ -227,7 +228,7 @@ const AuctionMonitoring = () => {
     const handleBidSubmit = (amount) => {
         if (socketRef.current) {
             socketRef.current.emit("placeBid", {
-                id,
+                auctionId: id,
                 price: amount,
                 userId,
             });
