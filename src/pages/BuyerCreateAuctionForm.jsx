@@ -15,9 +15,9 @@ const BuyerCreateAuctionForm = () => {
     const [startingTime, setStartingTime] = useState("");
     const [durationHours, setDurationHours] = useState("1");
     const [durationMinutes, setDurationMinutes] = useState("0");
-    const [minIncrement, setMinIncrement] = useState("50");
+    const [minIncrement, setMinIncrement] = useState("");
     const [lastCallTimer, setLastCallTimer] = useState("");
-    const [lowestBid, setLowestBid] = useState(50);
+    const [lowestBid, setLowestBid] = useState("1"); // :)?
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const BuyerCreateAuctionForm = () => {
             return;
         }
 
-        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement-requests/buyer`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/procurement/closed-without-auction`, {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((response) => setRequests(response.data.requests))
@@ -39,12 +39,19 @@ const BuyerCreateAuctionForm = () => {
         const now = new Date();
         const startDateTime = new Date(startingTime);
 
+        // Validations
+        if (!selectedProcurement) {
+            alert("Please select a procurement request.");
+            return;
+        }
+
         if (startDateTime <= now) {
             alert("Starting time must be in the future.");
             return;
         }
 
-        if (parseFloat(minIncrement) < lowestBid) {
+        // Ensure minIncrement is greater than or equal to the lowestBid if lowestBid exists
+        if (lowestBid && parseFloat(minIncrement) < parseFloat(lowestBid)) {
             alert(`Minimum bid increment must be at least $${lowestBid}.`);
             return;
         }
@@ -54,17 +61,32 @@ const BuyerCreateAuctionForm = () => {
             return;
         }
 
+        // Formatting duration as HH:MM
         const formattedDuration = `${String(durationHours).padStart(2, "0")}:${String(durationMinutes).padStart(2, "0")}`;
 
-        console.log("Auction Created:", {
-            selectedProcurement,
-            startingTime,
-            duration: formattedDuration,
-            minIncrement,
-            lastCallTimer,
-        });
+        const payload = {
+            procurement_id: selectedProcurement,  // The ID of the selected procurement request
+            starting_time: startingTime,         // The starting time from input
+            duration: totalDurationMinutes,      // Total duration in minutes
+            min_bid_increment: parseFloat(minIncrement),  // Minimum bid increment
+            last_call_timer: parseInt(lastCallTimer || "0")  // Last call timer in minutes
+        };
 
-        // Here you would send the request to the API
+        console.log(payload);
+
+        // Send the POST request - OVO NAM JOŠ OSTAJE DA POVEŽEMO
+        axios.post(`${import.meta.env.VITE_API_URL}/auction/create`, payload, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+            .then(response => {
+                console.log("Auction Created:", response.data);
+                // Optionally redirect or show a success message
+                navigate("/buyer-procurement-requests");
+            })
+            .catch(error => {
+                console.error("Error creating auction:", error);
+                // Handle error (e.g., show error message)
+            });
     };
 
     return (
@@ -83,7 +105,13 @@ const BuyerCreateAuctionForm = () => {
                                     name="request"
                                     value={selectedProcurement}
                                     onChange={(e) => setSelectedProcurement(e.target.value)}
-                                    options={requests.map(req => ({ label: req.name, value: req.id }))}
+                                    options={[
+                                        { label: "Select a procurement request...", value: "" },
+                                        ...requests.map(req => ({
+                                            label: req.title,   // What user sees
+                                            value: req.id       // What we send
+                                        }))
+                                    ]}
                                 />
 
                                 {/* Starting Time */}
@@ -93,10 +121,13 @@ const BuyerCreateAuctionForm = () => {
                                     value={startingTime}
                                     onChange={(e) => setStartingTime(e.target.value)}
                                     fullWidth
+                                    inputProps={{
+                                        min: new Date().toISOString().slice(0, 16) // Set minimum value to current date/time
+                                    }}
                                 />
 
                                 {/* Duration */}
-                                <Typography sx={{mb:1}}>Duration</Typography>
+                                <Typography sx={{ mb: 1 }}>Duration</Typography>
                                 <Box sx={{ display: "flex", gap: 2 }}>
                                     <TextField
                                         label="Hours"
@@ -145,8 +176,12 @@ const BuyerCreateAuctionForm = () => {
 
                                 {/* Buttons */}
                                 <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}>
-                                    <PrimaryButton onClick={() => navigate("/buyer-procurement-requests")}>Cancel</PrimaryButton>
-                                    <PrimaryButton onClick={handleSubmit}>Create Auction</PrimaryButton>
+                                    <PrimaryButton onClick={() => navigate("/buyer-procurement-requests")}>
+                                        Cancel
+                                    </PrimaryButton>
+                                    <PrimaryButton onClick={handleSubmit}>
+                                        Create Auction
+                                    </PrimaryButton>
                                 </Box>
                             </CardContent>
                         </Card>
