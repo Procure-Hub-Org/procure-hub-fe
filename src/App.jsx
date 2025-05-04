@@ -24,7 +24,9 @@ import SellerBidsDashboard from "./pages/SellerBidsDashboard.jsx";
 import SellerBidForm from "./pages/SellerBidForm.jsx";
 import BidProposalPreview from "./pages/BidProposalPreview.jsx";
 import EditBidProposalSeller from "./pages/EditBidProposalSeller.jsx";
+import BuyerCreateAuctionForm from "./pages/BuyerCreateAuctionForm.jsx";
 import AuctionMonitoringPage from "./pages/AuctionMonitoring.jsx";
+
 
 function App() {
   return (
@@ -61,6 +63,11 @@ function App() {
             <BuyerDashboardRequests />
           </AuthenticatedRoute>
         }
+      />
+      <Route path="/new-auction" element={
+          <AuthenticatedRoute>
+              <BuyerCreateAuctionForm />
+          </AuthenticatedRoute>}
       />
 
       <Route 
