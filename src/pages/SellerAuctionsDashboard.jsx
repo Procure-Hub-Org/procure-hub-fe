@@ -128,7 +128,7 @@ const SellerAuctionsDashboard = () => {
         <strong>Duration:</strong> {auction.duration} min
       </p>
       <p>
-        <strong>Min Increment:</strong> {auction.minIncrement}
+        <strong>Min Increment:</strong> {auction.minIncrement} $
       </p>
       <p>
         <strong>Last Call:</strong> {auction.lastCallTimer} min
@@ -136,7 +136,7 @@ const SellerAuctionsDashboard = () => {
       {hasWinner && auction.winningBid && auction.winningSeller && (
         <>
           <p>
-            <strong>Winning Bid:</strong> {auction.winningBid}
+            <strong>Winning Bid:</strong> {auction.winningBid} $
           </p>
           <p>
             <strong>Winner:</strong> {auction.winningSeller.name} (
@@ -148,7 +148,7 @@ const SellerAuctionsDashboard = () => {
       {columnType === "closed" && (
         <>
           <p>
-            <strong>Last Submitted Bid:</strong> {auction.relevantBid.auction_price}
+            <strong>Last Submitted Bid:</strong> {auction.relevantBid.auction_price} $
           </p>
           <p>
             <strong>Placement:</strong> {auction.relevantBid.auction_placement} 
@@ -160,7 +160,7 @@ const SellerAuctionsDashboard = () => {
       {columnType === "active" && (
         <div className="auction-button-wrapper">
           <PrimaryButton
-            onClick={() => navigate(`/auction-monitoring/:${auction.id}`) }
+            onClick={() => navigate(`/auction-monitoring/${auction.id}`) }
           >
             {" "}
             Join{" "}

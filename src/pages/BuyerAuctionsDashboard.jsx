@@ -121,7 +121,7 @@ const BuyerAuctionsDashboard = () => {
         <strong>Duration:</strong> {auction.duration} min
       </p>
       <p>
-        <strong>Min Increment:</strong> {auction.minIncrement}
+        <strong>Min Increment:</strong> {auction.minIncrement} $
       </p>
       <p>
         <strong>Last Call:</strong> {auction.lastCallTimer} min
@@ -129,7 +129,7 @@ const BuyerAuctionsDashboard = () => {
       {hasWinner && auction.winningBid && auction.winningSeller && (
         <>
           <p>
-            <strong>Winning Bid:</strong> {auction.winningBid}
+            <strong>Winning Bid:</strong> {auction.winningBid} $
           </p>
           <p>
             <strong>Winner:</strong> {auction.winningSeller.name} (
@@ -142,7 +142,7 @@ const BuyerAuctionsDashboard = () => {
       {columnType === "active" && (
         <div className="auction-button-wrapper">
           <PrimaryButton
-            onClick={() => navigate(`/auction-monitoring/:${auction.id}`) }
+            onClick={() => navigate(`/auction-monitoring/${auction.id}`) }
           >
             {" "}
             Monitor{" "}
