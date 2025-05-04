@@ -137,7 +137,7 @@ const AuctionMonitoring = () => {
         });
 
         socket.on('auctionTimeUpdate', (data) => {
-            setIsLastCall(false);
+            //setIsLastCall(false); - "LAST CALL" does not dissapear if ending_time is updated due to winning bid
             setAuctionData(prev => ({
               ...prev,
               ending_time: new Date(data.ending_time).getTime()
@@ -223,8 +223,8 @@ const AuctionMonitoring = () => {
     // Reset last call timer when a new bid comes in
     const resetLastCallTimer = () => {
         clearInterval(lastCallTimerRef.current);
-        //startLastCallTimer();
-        setIsLastCall(false);
+        startLastCallTimer();
+        //setIsLastCall(false);  - "LAST CALL" does not dissapear if ending_time is updated due to winning bid
     };
 
     const handleBidSubmit = (amount) => {
