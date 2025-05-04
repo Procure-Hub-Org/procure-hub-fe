@@ -17,7 +17,10 @@ const BuyerCreateAuctionForm = () => {
     const [durationMinutes, setDurationMinutes] = useState("0");
     const [minIncrement, setMinIncrement] = useState("");
     const [lastCallTimer, setLastCallTimer] = useState("");
+    const [lastCallTimerError, setLastCallTimerError] = useState("");
     const [lowestBid, setLowestBid] = useState("1"); // :)?
+    const [startingTimeError, setStartingTimeError] = useState("");
+
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -39,16 +42,22 @@ const BuyerCreateAuctionForm = () => {
         const now = new Date();
         const startDateTime = new Date(startingTime);
 
-        // Validations
+        let valid = true;
+
+        // Reset errors
+        setStartingTimeError("");
+
         if (!selectedProcurement) {
             alert("Please select a procurement request.");
-            return;
+            valid = false;
         }
 
         if (startDateTime <= now) {
-            alert("Starting time must be in the future.");
-            return;
+            setStartingTimeError("Starting time must be in the future.");
+            valid = false;
         }
+
+        if (!valid) return;
 
         // Ensure minIncrement is greater than or equal to the lowestBid if lowestBid exists
         if (lowestBid && parseFloat(minIncrement) < parseFloat(lowestBid)) {
@@ -75,7 +84,7 @@ const BuyerCreateAuctionForm = () => {
         console.log(payload);
 
         // Send the POST request - OVO NAM JOŠ OSTAJE DA POVEŽEMO
-        axios.post(`${import.meta.env.VITE_API_URL}/auction/create`, payload, {
+        axios.post(`${import.meta.env.VITE_API_URL}/api/auctions`, payload, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(response => {
@@ -115,15 +124,25 @@ const BuyerCreateAuctionForm = () => {
                                 />
 
                                 {/* Starting Time */}
-                                <Typography>Starting time</Typography>
                                 <TextField
                                     type="datetime-local"
                                     value={startingTime}
-                                    onChange={(e) => setStartingTime(e.target.value)}
-                                    fullWidth
-                                    inputProps={{
-                                        min: new Date().toISOString().slice(0, 16) // Set minimum value to current date/time
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        setStartingTime(value);
+
+                                        const now = new Date();
+                                        const selected = new Date(value);
+
+                                        if (selected <= now) {
+                                            setStartingTimeError("Starting time must be in the future.");
+                                        } else {
+                                            setStartingTimeError("");
+                                        }
                                     }}
+                                    fullWidth
+                                    error={!!startingTimeError}
+                                    helperText={startingTimeError}
                                 />
 
                                 {/* Duration */}
@@ -169,9 +188,20 @@ const BuyerCreateAuctionForm = () => {
                                 <TextField
                                     type="number"
                                     value={lastCallTimer}
-                                    onChange={(e) => setLastCallTimer(e.target.value)}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        const maxAllowed = totalDurationMinutes / 2;
+
+                                        if (val > maxAllowed) {
+                                            setLastCallTimerError(`Last call timer can't exceed ${Math.floor(maxAllowed)} minutes.`);
+                                        } else {
+                                            setLastCallTimerError("");
+                                            setLastCallTimer(e.target.value);
+                                        }
+                                    }}
                                     fullWidth
-                                    inputProps={{ min: 0, max: totalDurationMinutes / 2 }}
+                                    error={!!lastCallTimerError}
+                                    helperText={lastCallTimerError}
                                 />
 
                                 {/* Buttons */}
