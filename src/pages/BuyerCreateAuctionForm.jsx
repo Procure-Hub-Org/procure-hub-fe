@@ -125,8 +125,11 @@ const BuyerCreateAuctionForm = () => {
                                 />
 
                                 {/* Starting Time */}
+                                <Typography sx={{ mb: 1 }}>Start date and time</Typography>
                                 <TextField
                                     type="datetime-local"
+                                    placeholder="YYYY-MM-DD hh:mm"
+                                    label="Enter auction start date & time"
                                     value={startingTime}
                                     onChange={(e) => {
                                         const value = e.target.value;
@@ -144,6 +147,9 @@ const BuyerCreateAuctionForm = () => {
                                     fullWidth
                                     error={!!startingTimeError}
                                     helperText={startingTimeError}
+                                    InputLabelProps={{
+                                        shrink: true
+                                    }}
                                 />
 
                                 {/* Duration */}
