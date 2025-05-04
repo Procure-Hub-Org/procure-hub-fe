@@ -90,7 +90,7 @@ const BidPreview = () => {
                   <strong>Price:</strong> {formData.price}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                  <strong>Timeline:</strong> {formData.timeline}
+                  <strong>Delivery Time:</strong> {formData.timeline}
                 </Typography>
                 <Box sx={{ mb: 2 }}>
                     <Typography variant="body1" fontWeight="bold">Proposal:</Typography>
