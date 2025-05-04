@@ -41,7 +41,7 @@ const BuyerCreateAuctionForm = () => {
 
     const handleSubmit = () => {
         const now = new Date();
-        const startDateTime = new Date(startingTime);
+        const localStartDateTime = new Date(startingTime);
 
         let valid = true;
 
@@ -53,7 +53,7 @@ const BuyerCreateAuctionForm = () => {
             valid = false;
         }
 
-        if (startDateTime <= now) {
+        if (localStartDateTime <= now) {
             setStartingTimeError("Starting time must be in the future.");
             valid = false;
         }
@@ -71,12 +71,14 @@ const BuyerCreateAuctionForm = () => {
             return;
         }
 
+        const startUtcISOString = new Date(localStartDateTime).toISOString();
+
         // Formatting duration as HH:MM
         const formattedDuration = `${String(durationHours).padStart(2, "0")}:${String(durationMinutes).padStart(2, "0")}`;
 
         const payload = {
             procurement_id: selectedProcurement,  // The ID of the selected procurement request
-            starting_time: startingTime,         // The starting time from input
+            starting_time: startUtcISOString,         // The starting time from input
             duration: totalDurationMinutes,      // Total duration in minutes
             min_bid_increment: parseFloat(minIncrement),  // Minimum bid increment
             last_call_timer: parseInt(lastCallTimer || "0")  // Last call timer in minutes
