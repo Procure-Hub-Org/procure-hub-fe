@@ -7,6 +7,7 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import { AppBar, Box, Card, CardContent, Container, Typography, TextField } from "@mui/material";
 import TimerIcon from "@mui/icons-material/AvTimer";
+import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 
 const BuyerCreateAuctionForm = () => {
     const navigate = useNavigate();
@@ -89,8 +90,8 @@ const BuyerCreateAuctionForm = () => {
         })
             .then(response => {
                 console.log("Auction Created:", response.data);
-                // Optionally redirect or show a success message
-                navigate("/buyer-procurement-requests");
+                alert("Auction successfully created!");
+                navigate("/auction-dashboard");
             })
             .catch(error => {
                 console.error("Error creating auction:", error);
@@ -206,10 +207,10 @@ const BuyerCreateAuctionForm = () => {
 
                                 {/* Buttons */}
                                 <Box sx={{ mt: 1, display: "flex", justifyContent: "flex-end", gap: 1 }}>
-                                    <PrimaryButton onClick={() => navigate("/buyer-procurement-requests")}>
+                                    <SecondaryButton onClick={() => navigate("/buyer-auctions")}>
                                         Cancel
-                                    </PrimaryButton>
-                                    <PrimaryButton onClick={handleSubmit}>
+                                    </SecondaryButton>
+                                    <PrimaryButton onClick={() => {handleSubmit()}}>
                                         Create Auction
                                     </PrimaryButton>
                                 </Box>
