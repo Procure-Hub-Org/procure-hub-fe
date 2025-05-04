@@ -139,7 +139,7 @@ const BuyerCreateAuctionForm = () => {
                                         const selected = new Date(value);
 
                                         if (selected <= now) {
-                                            setStartingTimeError("Starting time must be in the future.");
+                                            setStartingTimeError("Starting time must be in the future!");
                                         } else {
                                             setStartingTimeError("");
                                         }
