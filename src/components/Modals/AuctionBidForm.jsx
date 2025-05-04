@@ -41,7 +41,7 @@ const AuctionBidForm = ({
       setError("Enter a valid number.");
       return;
     }
-    if (numericBid >= currentBid - minimumDecrement) {
+    if (numericBid > currentBid - minimumDecrement) {
       setError(
         `Bid must be at least $${minimumDecrement} less than the current bid.`
       );

@@ -85,7 +85,6 @@ const AuctionMonitoring = () => {
                     ending_time: new Date(data.ending_time).getTime()
                 });
 
-
                 const mappedSellers = response.data.sellers.map(bid => ({
                     id: bid.seller.id,
                     first_name: bid.seller.first_name,
@@ -138,6 +137,7 @@ const AuctionMonitoring = () => {
         });
 
         socket.on('auctionTimeUpdate', (data) => {
+            setIsLastCall(false);
             setAuctionData(prev => ({
               ...prev,
               ending_time: new Date(data.ending_time).getTime()
@@ -191,14 +191,15 @@ const AuctionMonitoring = () => {
 
             //check if we should enter last call
             if (distance <= auctionData.last_call_timer * 1000 * 60 && !isLastCall) {
+                setIsLastCall(true);
                 startLastCallTimer();
             }
-
+            
             //check if auction ended
             if (distance < 0) {
                 clearInterval(timerRef.current);
                 setTimeRemaining({ hours: 0, minutes: 0, seconds: 0 });
-                navigate("/auction-dashboard"); 
+                handleClose(); 
             }
         }, 1000);
     };
@@ -222,7 +223,8 @@ const AuctionMonitoring = () => {
     // Reset last call timer when a new bid comes in
     const resetLastCallTimer = () => {
         clearInterval(lastCallTimerRef.current);
-        startLastCallTimer();
+        //startLastCallTimer();
+        setIsLastCall(false);
     };
 
     const handleBidSubmit = (amount) => {
