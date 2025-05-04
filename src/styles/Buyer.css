@@ -15,7 +15,7 @@
     margin-bottom: 25px;
   }
   
-  .button-container {
+  .button-container-new-request {
     /*width: 100%;*/
     display: flex;
     justify-content: end;
@@ -29,7 +29,7 @@
     justify-content: start;
   }
 
-  .parent-button-container {
+  .parent-button-container-status-new {
     display: flex;
     justify-content: space-between;
     align-items: start;

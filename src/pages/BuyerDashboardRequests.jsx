@@ -80,7 +80,7 @@ const BuyerDashboardRequests = () => {
         <div className="dashboard-container">
             <h3>Procurement Requests</h3>
 
-            <div className="parent-button-container">
+            <div className="parent-button-container-status-new">
                 <div className="status-buttons-container">
                     {statusButton.map(({ status, label, isSecondary }) => (
                         isSecondary ? (
@@ -105,7 +105,7 @@ const BuyerDashboardRequests = () => {
                     ))}
                 </div>
 
-                <div className="button-container">
+                <div className="button-container-new-request">
                     <PrimaryButton onClick={handleCreateRequest}>
                     <PlusCircle size={25} style={{ paddingRight: '8px' }}/>
                     <span>New Request</span>
