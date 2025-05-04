@@ -165,7 +165,7 @@ const AdminAuctionsDashboard = () => {
         </div>
         <div className="auction-columns">
           <div className="auction-column">
-            <h3>Open</h3>
+            <h3>Scheduled</h3>
             <div className="auction-scroll">
               {openAuctions.map((a) => renderAuctionCard(a, false, "open"))}
             </div>

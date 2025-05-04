@@ -164,7 +164,7 @@ const BuyerAuctionsDashboard = () => {
         <div className="auction-columns">
           <div className="auction-column">
             <div className="auction-header">
-              <h3>Open</h3>
+              <h3>Scheduled</h3>
               <PrimaryButton
                 onClick={() => navigate('/new-auction')}
               >
