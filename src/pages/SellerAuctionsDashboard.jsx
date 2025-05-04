@@ -145,7 +145,7 @@ const SellerAuctionsDashboard = () => {
         </>
       )}
 
-      {columnType === "closed" || columnType === "active" && (
+      {(columnType === "closed" || columnType === "active") && (
         <>
           <p>
             <strong>Last Submitted Bid:</strong> {auction.relevantBid.auction_price}
