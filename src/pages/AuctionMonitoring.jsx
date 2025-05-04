@@ -76,6 +76,10 @@ const AuctionMonitoring = () => {
 
                 const data = response.data;
 
+                if (new Date(data.starting_time).getTime() > new Date().getTime()) {
+                    handleClose(); // Close the auction if it hasn't started yet
+                }
+
                 setAuctionData({
                     id: data.id,
                     procurement_request_title: data.procurement_request_title,
