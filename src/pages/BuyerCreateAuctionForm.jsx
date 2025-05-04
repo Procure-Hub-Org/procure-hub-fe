@@ -91,7 +91,7 @@ const BuyerCreateAuctionForm = () => {
             .then(response => {
                 console.log("Auction Created:", response.data);
                 alert("Auction successfully created!");
-                navigate("/auction-dashboard");
+                navigate("/buyer-auctions");
             })
             .catch(error => {
                 console.error("Error creating auction:", error);
