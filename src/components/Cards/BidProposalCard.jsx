@@ -24,7 +24,9 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     submissionDate, 
     isEvaluated, 
     evaluation,
-    isAwarded
+    isAwarded,
+    auctionHeld,
+    bidAuctionPrice
   } = bid;
 
   return (
@@ -44,12 +46,23 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       
       <div className="bid-details">
         <div className="bid-detail-item">
-          <span className="label">Price:</span>
+          <span className="label">Bid price:</span>
           <span className="value">${price}</span>
         </div>
+
+        {auctionHeld && (
+          <div className="bid-detail-item">
+            <span className="label">Price after auction: </span>
+            <span className="value">${bidAuctionPrice}</span>
+          </div>
+        )}
+        
+      </div>
+
+      <div className="bid-details">
         <div className="bid-detail-item">
-          <span className="label">Delivery Time:</span>
-          <span className="value">{deliveryTime} {/*days*/}</span>
+            <span className="label">Delivery Time:</span>
+            <span className="value">{deliveryTime} {/*days*/}</span>
         </div>
       </div>
       
@@ -61,31 +74,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       <div className="evaluation-results">
         <h5>Evaluation Scores</h5>
         <div className="scores-grid">
-      {  /*  {Object.entries(evaluation.scores).map(([id, scoreItem]) => {
-           // const criterionMap = {
-             // 'quality': 'Quality',
-              //'price': 'Price',
-              //'delivery': 'Delivery',
-              //'expertise': 'Expertise',
-              //'communication': 'Communication',
-              // Keep backward compatibility with old data (since first code had these keys)
-             // 'technicalQuality': 'Technical Quality',
-             // 'priceFeasibility': 'Price Feasibility',
-             // 'deliveryTimeline': 'Delivery Timeline',
-             // 'experience': 'Experience'
-           // };
-            
-           // const displayName = criterionMap[criterionId] || 
-                         //     criterionId.charAt(0).toUpperCase() + 
-                          //    criterionId.slice(1).replace(/([A-Z])/g, ' $1').trim();
-            
-            return (
-              <div key={evaluation.criteriaId} className="score-item">
-                <span className="criterion">{scoreItem.name}:</span>
-                <span className="score">{scoreItem.score}</span>
-              </div>
-            );
-          })} */}
+      
 {Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
   evaluation.scores.map((scoreItem, index) => (
     <div key={index} className="score-item">

@@ -241,7 +241,9 @@ function BuyerBidEvaluation() {
                                 averageScore: bid.finalScore !== null ? bid.finalScore : "Pending",
                                 evaluationDate: new Date().toISOString()
                             } : null,
-                            isAwarded: false // Assuming this comes from elsewhere or is determined later
+                            isAwarded: false, // Assuming this comes from elsewhere or is determined later
+                            auctionHeld: bid?.auctionHeld || false,
+                            bidAuctionPrice: bid.bidAuctionPrice || bid.price?.toString() || '0',
                         };
                     } catch (e) {
                         console.error('Error transforming bid:', e, bid);
@@ -254,7 +256,9 @@ function BuyerBidEvaluation() {
                             proposalDescription: 'There was an error processing this bid data',
                             submissionDate: new Date().toISOString(),
                             isEvaluated: false,
-                            isAwarded: false
+                            isAwarded: false,
+                            auctionHeld: false,
+                            bidAuctionPrice: '0',
                         };
                     }
                 });
