@@ -1,0 +1,34 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /*height: 100vh;*/
+  height: calc(100vh - 64px); /* Adjust height by subtracting Navbar's height */
+  width: 100vw;
+  /*background-color: #14110f;*/
+  background-size: cover;
+  background-position: center;
+  /*color: #e3b34b;*/
+  text-align: center;
+  /*font-family: "Montserrat", sans-serif;*/
+  margin: 0;
+  padding: 0;
+}
+
+.logo {
+  width: 100%;       /* Make the logo take up the full width of the container */
+  height: auto;      /* Maintain aspect ratio */
+  margin: 0 auto 20px; /* Center it horizontally and give bottom margin */
+  display: block;    /* Ensure it's treated as a block element for centering */
+}
+
+
+h1 {
+  font-size: 3rem;
+  margin: 10px 0;
+}
+
+p {
+  font-size: 1.2rem;
+}
