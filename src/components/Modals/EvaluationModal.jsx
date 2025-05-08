@@ -49,7 +49,8 @@ const EvaluationModal = ({ bidId, bid, criteria, onClose, onSubmit }) => {
     <div className="modal-overlay">
       <div className="evaluation-modal">
         <h2>Evaluate Bid Proposal</h2>
-        <h3>{bid.sellerName}</h3>
+        <h3>{bid.sellerCompany} - {bid.sellerName}</h3>
+        {/*<h5>{bid.sellerName}</h5>*/}
         
         <form onSubmit={handleSubmit}>
           <div className="criteria-list">

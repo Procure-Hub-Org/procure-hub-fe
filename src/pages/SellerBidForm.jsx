@@ -243,7 +243,7 @@ const BidForm = () => {
                                         helperText={touchedFields.price ? fieldErrors.price : ""}
                                     />
                                     <TextField
-                                        label="Timeline"
+                                        label="Delivery Time"
                                         name="timeline"
                                         value={formData.timeline}
                                         onChange={handleChange}

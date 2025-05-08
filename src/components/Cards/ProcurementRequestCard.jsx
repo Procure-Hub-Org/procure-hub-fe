@@ -57,7 +57,7 @@ const ProcurementRequestCard = ({
           <div className="detail-item">
             <strong>Budget:</strong>
             <span>
-              {request.budget_min} - {request.budget_max}
+              {request.budget_min} $ - {request.budget_max} $
             </span>
           </div>
           <div className="detail-item">

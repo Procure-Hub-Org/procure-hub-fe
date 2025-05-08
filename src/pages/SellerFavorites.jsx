@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import ProcurementRequestCard from "../components/Cards/ProcurementRequestCard";
 import { fetchFavorites } from "../utils/favorites";
 import Layout from "../components/Layout/Layout";
+import "../styles/SellerDashboardRequests.css";
+
 const SellerFavorites = () => {
   const [favorites, setFavorites] = useState([]);
   const [followedRequests, setFollowedRequests] = useState({});
@@ -24,6 +26,8 @@ const SellerFavorites = () => {
     <Layout>
       <div className="seller-favorites-container">
         <h2 className="mb-4">Favorite Procurement Requests</h2>
+        <div className="requests-list-section">
+        <div className="scrollable-list-container">
         {favorites.length === 0 ? (
           <div className="no-favorites-message">
             <p>You have no favorite procurement requests yet.</p>
@@ -38,6 +42,8 @@ const SellerFavorites = () => {
             />
           ))
         )}
+        </div>
+      </div>
       </div>
     </Layout>
   );

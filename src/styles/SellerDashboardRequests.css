@@ -156,3 +156,8 @@
         margin-top: 0.25rem; /* Add space below title when stacked */
     }
 }
+
+.seller-favorites-container {
+    padding: 2rem;
+    margin-top: 2rem;
+}

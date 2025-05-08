@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -18,20 +18,28 @@ import OutlinedButton from "../Button/OutlinedButton";
 const SellerBidCard = ({ bid }) => {
   const navigate = useNavigate();
   const submitted = bid.submitted_at !== null;
-  const deadline = bid.procurementRequest.bid_edit_deadline;
+  const editDeadline = bid.procurementRequest.bid_edit_deadline;
+  const procurementRequestdeadline = bid.procurementRequest.deadline;
   const now = dayjs();
 
   const isEditable = () => {
     if (submitted) return false;
-    if (!deadline) return true;
-    return now.isBefore(dayjs(deadline));
+    if (!editDeadline) return true;
+    return now.isBefore(dayjs(editDeadline));
   };
 
+  const isDocumentsDeadlinePassed = () => {
+    if (submitted) return false;
+    if (!procurementRequestdeadline) return true;
+    return now.isBefore(dayjs(procurementRequestdeadline));
+  };
+
+  const documentsDeadlinePassed = isDocumentsDeadlinePassed();
   const editable = isEditable();
-  const deadlinePassed = now.isAfter(dayjs(deadline));
+  const deadlinePassed = now.isAfter(dayjs(editDeadline));
 
   const handleEdit = () => {
-    if(editable){
+    if (editable) {
       navigate(`/edit-bid/${bid.id}`, {
         state: {
           formData: {
@@ -40,18 +48,20 @@ const SellerBidCard = ({ bid }) => {
             proposal_text: bid.proposal_text,
           },
         },
-     });
-    }else{
+      });
+    } else {
       alert("Bid can not be edited!");
     }
   };
 
+  
+
   const handleSubmit = async () => {
     const formData = {
-        price: bid.price,
-        timeline: bid.timeline,
-        proposal_text: bid.proposal_text,
-    }
+      price: bid.price,
+      timeline: bid.timeline,
+      proposal_text: bid.proposal_text,
+    };
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_API_URL}/api/bid/${bid.id}/submit`,
@@ -67,6 +77,7 @@ const SellerBidCard = ({ bid }) => {
       if (response.status === 201 || response.status === 200) {
         alert("Bid submitted successfully!");
         navigate("/seller-bids");
+        window.location.reload();
       } else {
         alert("Bid submission failed.");
       }
@@ -151,14 +162,38 @@ const SellerBidCard = ({ bid }) => {
             <Typography variant="body2" color="text.secondary">
               Price:
             </Typography>
-            <Typography variant="body1">{bid.price} KM</Typography>
+            <Typography variant="body1">{bid.price} $</Typography>
           </Box>
 
           <Box flex="1 1 40%">
             <Typography variant="body2" color="text.secondary">
-              Timeline:
+              Delivery Time:
             </Typography>
-            <Typography variant="body1">{bid.timeline} days</Typography>
+            <Typography variant="body1">{bid.timeline}</Typography>
+          </Box>
+
+          <Box flex="1 1 40%">
+            <Typography variant="body2" color="text.secondary">
+              Buyer:
+            </Typography>
+            <Typography variant="body1">
+              {bid.procurementRequest?.buyer?.first_name}{" "}
+              {bid.procurementRequest?.buyer?.last_name} (
+              {bid.procurementRequest?.buyer?.company_name})
+            </Typography>
+          </Box>
+
+          <Box flex="1 1 40%">
+            <Typography variant="body2" color="text.secondary">
+              Procurement Request Deadline:
+            </Typography>
+            <Typography variant="body1">
+              {bid.procurementRequest?.deadline
+                ? dayjs(bid.procurementRequest.deadline).format(
+                    "DD.MM.YYYY HH:mm"
+                  )
+                : "N/A"}
+            </Typography>
           </Box>
         </Box>
 
@@ -168,7 +203,7 @@ const SellerBidCard = ({ bid }) => {
           <Typography variant="body2" fontWeight={500} mb={1}></Typography>
           <BidDocumentUploader
             procurementBidId={bid.id}
-            disabled={!editable || submitted}
+            disabled={!documentsDeadlinePassed || submitted}
           />
         </Box>
       </CardContent>
@@ -192,28 +227,31 @@ const SellerBidCard = ({ bid }) => {
           Created: {dayjs(bid.created_at).format("MMM D, YYYY")}
         </Typography>
 
-        {!submitted && editable && (
+        {!submitted && editable && documentsDeadlinePassed && (
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
             <Chip
               icon={<AccessTimeIcon />}
               label={
-                deadline
-                  ? `Edit Deadline: ${dayjs(deadline).format(
+                editDeadline
+                  ? `Edit Deadline: ${dayjs(editDeadline).format(
                       "DD.MM.YYYY HH:mm"
                     )}`
-                  : "Edit Deadline: Not set"
+                  : "No edit enabled"
               }
               color="error"
               variant="filled"
               size="small"
               sx={{ fontWeight: 500 }}
             />
-            <OutlinedButton onClick={handleEdit}> Edit </OutlinedButton>
+            <OutlinedButton onClick={handleEdit} disabled={!editDeadline}>
+              {" "}
+              Edit{" "}
+            </OutlinedButton>
             <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
           </Box>
         )}
 
-        {deadlinePassed && !submitted && (
+        {( !documentsDeadlinePassed) && !submitted && (
           <Chip
             label="Deadline Passed"
             color="error"

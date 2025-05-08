@@ -192,7 +192,7 @@ const EditBidProposal = () => {
                     sx={{ mb: 2 }}
                   />
                   <TextField
-                    label="Timeline"
+                    label="Delivery Time"
                     name="timeline"
                     value={formData.timeline}
                     onChange={handleChange}
