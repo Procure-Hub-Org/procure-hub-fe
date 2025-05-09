@@ -24,7 +24,7 @@ const CustomPieChart = ({ data, colors, title, subtitle }) => {
           </Typography>
         )}
       </Box>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={data}
