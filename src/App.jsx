@@ -30,6 +30,8 @@ import AdminAuctionsDashboard from "./pages/AdminAuctionsDashboard.jsx";
 import BuyerAuctionsDashboard from "./pages/BuyerAuctionsDashboard.jsx";
 import SellerAuctionsDashboard from "./pages/SellerAuctionsDashboard.jsx";
 import BuyerAnalyitics from "./pages/BuyerAnalytics.jsx";
+import SellerAnalyitics from "./pages/SellerAnalytics.jsx";
+
 
 function App() {
   return (
@@ -238,6 +240,14 @@ function App() {
         element={
           <AuthenticatedRoute>
             <BuyerAnalyitics />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/seller-analytics"
+        element={
+          <AuthenticatedRoute>
+            <SellerAnalyitics />
           </AuthenticatedRoute>
         }
       />
