@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import ProcurementRequestCard from "../components/Cards/ProcurementRequestCard";
-import { fetchFavorites } from "../utils/favorites";
+import { fetchFavorites, fetchSubmittedBidRequestIds } from "../utils/favorites";
 import Layout from "../components/Layout/Layout";
 import "../styles/SellerDashboardRequests.css";
 
 const SellerFavorites = () => {
   const [favorites, setFavorites] = useState([]);
   const [followedRequests, setFollowedRequests] = useState({});
-
+  const [submittedBidRequestIds, setSubmittedBidRequestIds] = useState([]);
+  
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchFavorites();
       setFavorites(data);
+      const ids = await fetchSubmittedBidRequestIds();
+      setSubmittedBidRequestIds(ids);
       console.log(data);
       const initialFollowed = {};
       data.forEach((req) => {
@@ -39,6 +42,7 @@ const SellerFavorites = () => {
               request={request}
               followedRequests={followedRequests}
               setFollowedRequests={setFollowedRequests}
+              submittedBidRequestIds={submittedBidRequestIds}
             />
           ))
         )}
