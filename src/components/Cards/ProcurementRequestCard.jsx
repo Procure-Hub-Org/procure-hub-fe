@@ -8,8 +8,11 @@ const ProcurementRequestCard = ({
   request,
   followedRequests,
   setFollowedRequests,
+  submittedBidRequestIds=[],
 }) => {
   const navigate = useNavigate();
+
+  const isBidSubmitted = submittedBidRequestIds.includes(request.id);
 
   const handleFollowClick = async (requestId) => {
     const isFollowed = followedRequests[requestId] || false;
@@ -34,6 +37,7 @@ const ProcurementRequestCard = ({
         <div style={{ display: "flex", gap: "1rem" }}>
           <PrimaryButton
             onClick={() => handleCreateBidProposalClick(request.id)}
+            disabled={isBidSubmitted}
           >
             Create Bid Proposal
           </PrimaryButton>
