@@ -42,7 +42,7 @@ function getIconForFileType(fileName) {
       return <JpgIcon color="action" />;
     // Add more cases for other file types if needed
     default:
-      return null;
+      return <FileIcon color="action" />;
   }
 }
 
@@ -95,7 +95,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
 
       <div className="bid-details">
         <div className="bid-detail-item">
-            <span className="label">Delivery Time:</span>
+            <span className="label">Delivery time:</span>
             <span className="value">{deliveryTime} {/*days*/}</span>
         </div>
       </div>
