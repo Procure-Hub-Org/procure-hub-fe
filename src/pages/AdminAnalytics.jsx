@@ -7,103 +7,151 @@ import CustomPieChart from "../components/Cards/Analytics/PieChart.jsx";
 import CustomBarChart from "../components/Cards/Analytics/BarChart.jsx";
 import CustomTopList from "../components/Cards/Analytics/CustomUserListCard.jsx";
 import CustomDonutChart from "../components/Cards/Analytics/DonutChart";
+import {isAdmin, isAuthenticated} from "../utils/auth.jsx";
+import axios from "axios";
 
 const AdminAnalytics = () => {
-    const [overview, setOverview] = useState({});
+    const [overview, setOverview] = useState({
+        totalRequests: null,
+        totalAuctions: null,
+        totalBids: null,
+        frozenRatio: null,
+        avgAwardTime: null,
+    });
     const [requestsByCategory, setRequestsByCategory] = useState([]);
     const [avgBidsPerCategory, setAvgBidsPerCategory] = useState([]);
-    const [frozenRequests, setFrozenRequests] = useState([]);
     const [priceReductionBuyers, setPriceReductionBuyers] = useState([]);
     const [frozenBuyers, setFrozenBuyers] = useState([]);
     const [requestStatusDistribution, setRequestStatusDistribution] = useState([]);
+
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
 
     useEffect(() => {
-        setOverview({
-            totalRequests: 150,
-            totalAuctions: 120,
-            totalBids: 1023,
-            frozenRatio: "12.5%",
-            avgAwardTime: "3.8 days",
-        });
+        if (!isAdmin()) {
+            window.location.href = isAuthenticated() ? "/" : "/login";
+            return;
+        }
 
-        setRequestsByCategory([
-            { name: "IT Equipment", value: 45 },
-            { name: "Furniture", value: 30 },
-            { name: "Stationery", value: 15 },
-            { name: "Cleaning Services", value: 7 },
-            { name: "Other", value: 3 },
-        ]);
+        const headers = { Authorization: `Bearer ${token}` };
 
-        setAvgBidsPerCategory([
-            { name: "IT Equipment", value: 7.2 },
-            { name: "Furniture", value: 5.4 },
-            { name: "Stationery", value: 6.1 },
-            { name: "Cleaning Services", value: 4.9 },
-            { name: "Other", value: 3.2 },
-        ]);
+        const fetchOverviewData = async () => {
+            try {
+                const [
+                    totalRequestsRes,
+                    totalAuctionsRes,
+                    totalBidsRes,
+                    frozenRatioRes,
+                    avgAwardTimeRes,
+                ] = await Promise.all([
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/request-counts`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/auctions-count`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/bids-count`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/frozen-requests-ratio`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/avg-time-to-award`, { headers }),
+                ]);
 
-        setFrozenBuyers([
-            {
-                first_name: "Lewis",
-                last_name: "Hamilton",
-                company_name: "Silver Arrow Ltd.",
-                value1: 17, // number of frozen req
-                value2: 40, //total number of proc
-            },
-            {
-                first_name: "Max",
-                last_name: "Verstappen",
-                company_name: "Redline Procurements",
-                value1: 15,
-                value2: 38,
-            },
-            {
-                first_name: "Charles",
-                last_name: "Leclerc",
-                company_name: "Scuderia Supplies",
-                value1: 12,
-                value2: 29,
-            },
-            {
-                first_name: "Lando",
-                last_name: "Norris",
-                company_name: "OrangeTech Procurement",
-                value1: 10,
-                value2: 24,
-            },
-            {
-                first_name: "Fernando",
-                last_name: "Alonso",
-                company_name: "Aston Trade Systems",
-                value1: 9,
-                value2: 22,
-            },
-        ]);
+                setOverview({
+                    totalRequests: frozenRatioRes.data.total_count,
+                    totalAuctions: totalAuctionsRes.data.total_auctions,
+                    totalBids: totalBidsRes.data.total_bids,
+                    frozenRatio: frozenRatioRes.data.frozen_ratio,
+                    avgAwardTime: avgAwardTimeRes.data.average_time_minutes,
+                });
+            } catch (error) {
+                console.error("Error fetching overview analytics:", error);
+            }
+        };
 
-        setPriceReductionBuyers([
-            { name: "John Doe Corp.", value: 17.8 },
-            { name: "Alpha Industries", value: 15.2 },
-            { name: "Global Supplies", value: 14.5 },
-            { name: "EuroProcure", value: 12.9 },
-            { name: "NovaTech", value: 11.3 },
-        ].map((item, i) => {
-            const [first_name, last_name] = item.name.split(" ");
-            return {
-                first_name: first_name || "N/A",
-                last_name: last_name || "N/A",
-                company_name: item.name,
-                value1: item.value,
-            };
-        }));
+        const fetchRequestStatusDistribution = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/admin/analytics/requests-status-distribution`,
+                    { headers }
+                );
+                setRequestStatusDistribution(
+                    response.data.map((item) => ({ name: item.status, value: item.count }))
+                );
+            } catch (error) {
+                console.error("Error fetching request status distribution:", error);
+            }
+        };
 
-        setRequestStatusDistribution([
-            { name: "Draft", value: 20 },
-            { name: "Published", value: 35 },
-            { name: "In Auction", value: 25 },
-            { name: "Awarded", value: 50 },
-            { name: "Frozen", value: 20 },
-        ]);
+        const fetchRequestsByCategory = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/admin/analytics/requests-by-categories`,
+                    { headers }
+                );
+                setRequestsByCategory(
+                    response.data.map((item) => ({ name: item.category, value: item.total_requests }))
+                );
+            } catch (error) {
+                console.error("Error fetching requests by category distribution:", error);
+            }
+        };
+
+        const fetchAvgBidsPerCategory = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/admin/analytics/avg-bids-by-category`,
+                    { headers }
+                );
+                setAvgBidsPerCategory(
+                    response.data.map((item) => ({ name: item.category, value: item.avg_bids }))
+                );
+            } catch (error) {
+                console.error("Error fetching average bids per category:", error);
+            }
+        };
+
+        const fetchTopFrozenBuyers = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/admin/analytics/top5-buyers-frozen`,
+                    { headers }
+                );
+                setFrozenBuyers(
+                    response.data.map(buyer => ({
+                        first_name: buyer.first_name,
+                        last_name: buyer.last_name,
+                        company_name: buyer.company_name,
+                        value1: parseInt(buyer.frozen_requests_count),
+                        value2: parseInt(buyer.total_requests_count),
+                    }))
+                );
+            } catch (error) {
+                console.error("Error fetching top frozen buyers:", error);
+            }
+        };
+
+        const fetchTopPriceReductionBuyers = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_API_URL}/api/admin/analytics/top5-buyers-price-reduction`,
+                    { headers }
+                );
+                setPriceReductionBuyers(
+                    response.data.map(buyer => ({
+                        first_name: buyer.first_name,
+                        last_name: buyer.last_name,
+                        company_name: buyer.company_name,
+                        value1: parseFloat(buyer.average_benefit),      // % reduction
+                        auctions: buyer.auctions                        // array of auction stats if needed
+                    }))
+                );
+            } catch (error) {
+                console.error("Error fetching top price reduction buyers:", error);
+            }
+        };
+
+        fetchOverviewData();
+        fetchRequestStatusDistribution();
+        fetchRequestsByCategory();
+        fetchAvgBidsPerCategory();
+        fetchTopFrozenBuyers();
+        fetchTopPriceReductionBuyers();
+
     }, []);
 
     return (
@@ -194,7 +242,7 @@ const AdminAnalytics = () => {
                     <Grid item xs={12}>
                         <CustomTopList
                             title="Top 5 Buyers by Avg. Price Reduction"
-                            subtitle="Buyers with highest avg. price reductions"
+                            subtitle="Buyers with highest average price reduction (%)"
                             data={priceReductionBuyers}
                             onRowClick={() => navigate(`/`)} // <- prepravi naknadno
                             getTooltipText={() => `Click to view full analytics for this user`}
