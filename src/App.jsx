@@ -29,11 +29,9 @@ import AuctionMonitoringPage from "./pages/AuctionMonitoring.jsx";
 import AdminAuctionsDashboard from "./pages/AdminAuctionsDashboard.jsx";
 import BuyerAuctionsDashboard from "./pages/BuyerAuctionsDashboard.jsx";
 import SellerAuctionsDashboard from "./pages/SellerAuctionsDashboard.jsx";
-import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   return (
-    <ToastProvider> 
     <Routes>
       <Route path="/" element={<Home />} />
       <Route
@@ -235,8 +233,6 @@ function App() {
         }
       />
     </Routes>
-    </ToastProvider>
-
   );
 }
 
