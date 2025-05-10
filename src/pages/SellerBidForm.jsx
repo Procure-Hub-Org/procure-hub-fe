@@ -44,18 +44,10 @@ const BidForm = () => {
     const navigate = useNavigate();
     const [fieldErrors, setFieldErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
-    const [toast, setToast] = useState({ show: false, message: '', type: '' });
+    const [toastState, setToastState] = useState({ show: false, message: '', type: '' });
+
     
     
-    const showToast = (message, type) => {
-    if (type === 'success') {
-        toast.success(message);
-    } else if (type === 'error') {
-        toast.error(message);
-    } else {
-        toast.info(message);
-    }
-    };
 
     // Load if id exists
     useEffect(() => {
@@ -114,16 +106,16 @@ const BidForm = () => {
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
-                toast.success("Request adding failed: " + response.data.message);
+                toast.error("Request adding failed: " + response.data.message);
                 //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
-            toast.success("Request adding failed: " + error.response.data.message );
+            toast.error("Request adding failed: " + error.response.data.message );
             console.error("Error during creation of request:", error);
             if (error.response) {
                 //alert("Request adding failed: " + error.response.data.message);
             } else {
-                toast.success("Request adding failed: " + error.message );
+                toast.error("Request adding failed: " + error.message );
                 //alert("Request adding failed: " + error.message);
             }
         };
@@ -170,16 +162,16 @@ const BidForm = () => {
                 console.log("Server Response:", response.data);
                 navigate("/seller-bids");
             } else {
-                toast.success("Request adding failed: " + response.data.message );
+                toast.error("Request adding failed: " + response.data.message );
                 //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                toast.success("Request adding failed: " + error.response.data.message );
+                toast.error("Request adding failed: " + error.response.data.message );
                 //alert("Request adding failed: " + error.response.data.message);
             } else {
-                toast.success("Request adding failed: " + error.message );
+                toast.error("Request adding failed: " + error.message );
                 //alert("Request adding failed: " + error.message);
             }
         };
@@ -290,21 +282,7 @@ const BidForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
-                        {toast.show && toast.type === 'success' && (
-                            <NotificationSuccsesToast
-                                message={toast.message}
-                                autoHideDuration={3000}
-                                onClose={() => setToast({ ...toast, show: false })}
-                            />
-                        )}
-
-                        {toast.show && toast.type === 'error' && (
-                            <NotificationErrorToast
-                                message={toast.message}
-                                autoHideDuration={3000}
-                                onClose={() => setToast({ ...toast, show: false })}
-                            />
-                        )}
+                  
                     </Container>
                 </Box>
             </AppBar>
