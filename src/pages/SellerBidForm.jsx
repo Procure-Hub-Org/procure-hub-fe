@@ -25,6 +25,9 @@ import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // import { useTheme } from "@mui/system";
 
 const BidForm = () => {
@@ -45,11 +48,14 @@ const BidForm = () => {
     
     
     const showToast = (message, type) => {
-        setToast({ show: false, message: '', type: '' }); // Reset first
-        setTimeout(() => {
-          setToast({ show: true, message, type });
-        }, 0); // Set after a tiny delay
-      };
+    if (type === 'success') {
+        toast.success(message);
+    } else if (type === 'error') {
+        toast.error(message);
+    } else {
+        toast.info(message);
+    }
+    };
 
     // Load if id exists
     useEffect(() => {
@@ -103,21 +109,21 @@ const BidForm = () => {
             );
 
             if (response.status === 200 || response.status === 201) {
-                showToast('Request submit Successful!','success' );
+                toast.success('Request submit Successful!' );
                 console.log("Server Response:", response.data);
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
-                showToast("Request adding failed: " + response.data.message,'error' );
+                toast.success("Request adding failed: " + response.data.message);
                 //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
-            showToast("Request adding failed: " + error.response.data.message,'error' );
+            toast.success("Request adding failed: " + error.response.data.message );
             console.error("Error during creation of request:", error);
             if (error.response) {
                 //alert("Request adding failed: " + error.response.data.message);
             } else {
-                showToast("Request adding failed: " + error.message,'error' );
+                toast.success("Request adding failed: " + error.message );
                 //alert("Request adding failed: " + error.message);
             }
         };
@@ -160,20 +166,20 @@ const BidForm = () => {
             );
             // console.log(response.status);
             if (response.status === 200 || response.status === 201) {
-                showToast('Request saving Successful!','success' );
+                toast.success('Request saving Successful!' );
                 console.log("Server Response:", response.data);
                 navigate("/seller-bids");
             } else {
-                showToast("Request adding failed: " + response.data.message,'error' );
+                toast.success("Request adding failed: " + response.data.message );
                 //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                showToast("Request adding failed: " + error.response.data.message,'error' );
+                toast.success("Request adding failed: " + error.response.data.message );
                 //alert("Request adding failed: " + error.response.data.message);
             } else {
-                showToast("Request adding failed: " + error.message,'error' );
+                toast.success("Request adding failed: " + error.message );
                 //alert("Request adding failed: " + error.message);
             }
         };
@@ -213,6 +219,7 @@ const BidForm = () => {
 
     return (
         <Layout>
+            <ToastContainer position="top-right" autoClose={5000} />
             <AppBar position="static">
                 <Box
                     sx={{
