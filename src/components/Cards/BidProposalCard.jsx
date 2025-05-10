@@ -2,6 +2,21 @@ import React from 'react';
 import PrimaryButton from '../Button/PrimaryButton';
 import SecondaryButton from '../Button/SecondaryButton';
 import '../../styles/BidProposalCard.css';
+import {
+  Box,
+  Typography,
+  Divider,
+  Paper,
+  Stack,
+} from "@mui/material";
+
+import {
+  FilePresent as FileIcon,
+} from "@mui/icons-material";
+
+import PdfIcon from '@mui/icons-material/PictureAsPdf';
+import DocIcon from '@mui/icons-material/Description';
+import JpgIcon from '@mui/icons-material/Image';
 
 // {bidProposals.map(bid => (
 //   <BidProposalCard
@@ -12,6 +27,24 @@ import '../../styles/BidProposalCard.css';
 //     isAwardDisabled={awardedBidId !== null && awardedBidId !== bid.id}
 //   />
 // ))}
+
+function getIconForFileType(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  switch (extension) {
+    case 'pdf':
+      return <PdfIcon color="action" />;
+    case 'doc':
+    case 'docx':
+      return <DocIcon color="action" />;
+    case 'jpg':
+    case 'png':
+    case 'jpeg':
+      return <JpgIcon color="action" />;
+    // Add more cases for other file types if needed
+    default:
+      return null;
+  }
+}
 
 const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
   const { 
@@ -26,7 +59,8 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     evaluation,
     isAwarded,
     auctionHeld,
-    bidAuctionPrice
+    bidAuctionPrice,
+    documents,
   } = bid;
 
   return (
@@ -66,33 +100,75 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
         </div>
       </div>
       
-      <div className="bid-proposal">
-        <p>{proposalDescription}</p>
+      <div className="bid-details">
+        <div className="bid-proposal">
+          <span className="label">Proposal text:</span>
+          <p>{proposalDescription}</p>
+        </div>
+      </div>
+
+      <div className="bid-documentation">
+        <span className="label">Documentation:</span>
+
+        {documents.length > 0 && (
+          console.log("Documents: ", documents),
+          <Box mt={3} px={0} sx={{ width: "100%" }}>
+
+            {documents.map((doc) => (
+              <Paper
+                key={doc.id}
+                sx={{
+                  p: 2,
+                  my: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Stack direction="row" spacing={2} alignItems="center">
+                  {/*<FileIcon color="action" />*/}
+                  {getIconForFileType(doc.original_name)}
+                  <Box>
+                    {/*<Typography fontWeight="bold">{doc.original_name}</Typography>*/}
+                    <Typography fontWeight="bold">
+                      <a href={doc.url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                    </Typography>
+                  </Box>
+                </Stack>
+
+              </Paper>
+            ))}
+          </Box>
+        )}
+
+        {documents.length === 0 && (
+          <span className="value"> <br></br>
+            No documents have been uploaded.
+          </span>
+        )}
+
       </div>
       
       {isEvaluated && (
       <div className="evaluation-results">
         <h5>Evaluation Scores</h5>
         <div className="scores-grid">
-      
-{Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
-  evaluation.scores.map((scoreItem, index) => (
-    <div key={index} className="score-item">
-      <div className="score-item-row">
-        <span className="criterion">
-          <strong>{scoreItem.criteriaName}:</strong>
-        </span>
-        <span className="score">Score: {scoreItem.score}</span>
-        <span className="weight">Weight: {scoreItem.weight}</span>
-      </div>
-    </div>
-  ))
-) : (
-  <p>No evaluations available</p> // Fallback poruka ako nema evaluacija
-)}
 
-
-
+          {Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
+            evaluation.scores.map((scoreItem, index) => (
+              <div key={index} className="score-item">
+                <div className="score-item-row">
+                  <span className="criterion">
+                    <strong>{scoreItem.criteriaName}:</strong>
+                  </span>
+                  <span className="score">Score: {scoreItem.score}</span>
+                  <span className="weight">Weight: {scoreItem.weight}</span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>No evaluations available</p> // Fallback poruka ako nema evaluacija
+          )}
 
         </div>
         <div className="average-score">

@@ -244,6 +244,7 @@ function BuyerBidEvaluation() {
                             isAwarded: false, // Assuming this comes from elsewhere or is determined later
                             auctionHeld: bid?.auctionHeld || false,
                             bidAuctionPrice: bid.bidAuctionPrice || bid.price?.toString() || '0',
+                            documents: bid.documents || [],
                         };
                     } catch (e) {
                         console.error('Error transforming bid:', e, bid);
