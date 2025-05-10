@@ -13,6 +13,8 @@ import "../styles/AdminProcurementRequests.css";
 import {useNavigate, useParams} from "react-router-dom";
 import axios from 'axios';
 import { isAuthenticated, isAdmin } from "../utils/auth.jsx";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const statusOptions = [
@@ -166,17 +168,17 @@ const AdminProcurementDashboard = () => {
               req.id === id ? { ...req, status: "frozen" } : req
             )
           );
-          alert("Procurement request status updated to Frozen!");
+          toast.success("Procurement request status updated to Frozen!");
         })
         .catch((error) => {
           console.error("Error freezing procurement request:", error);
           console.error("Error details:", error.response?.data);  // Log the full error response from the server
-          alert(error.response?.data?.message || "Failed to update procurement status.");
+          toast.error(error.response?.data?.message || "Failed to update procurement status.");
         });
         
     } else {
       // If status is not 'active' or 'closed', show a message or alert
-      alert("Only 'Active' or 'Closed' requests can be frozen.");
+      toast.error("Only 'Active' or 'Closed' requests can be frozen.");
     }
   };
   
@@ -223,6 +225,7 @@ useEffect(() => {
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose ={5000}/>
       <div className="admin-procurement-requests" style={{ display: "flex" }}>
         
       <div

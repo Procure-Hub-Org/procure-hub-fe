@@ -10,6 +10,8 @@ import BasicButton from "../components/Button/BasicButton";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import Layout from "../components/Layout/Layout";
 import "../styles/UserProfile.css";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function UserProfile() {
   const isLoggedIn = isAuthenticated();
@@ -331,7 +333,7 @@ function UserProfile() {
 
         userDataToSend.buyer_type_id = buyerTypeId;
       } catch (error) {
-        alert("Failed to save or update custom buyer type");
+        toast.error("Failed to save or update custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -349,7 +351,7 @@ function UserProfile() {
           }
         }
       } catch (error) {
-        alert("Failed to fetch buyer type");
+        toast.error("Failed to fetch buyer type");
         return;
       }
     } else {
@@ -361,7 +363,7 @@ function UserProfile() {
           userDataToSend.buyer_type_id = response.data[0].id;
         }
       } catch (error) {
-        alert("Failed to fetch buyer type");
+        toast.error("Failed to fetch buyer type");
         return;
       }
     }
@@ -381,24 +383,25 @@ function UserProfile() {
         }
       );
       if (response.status === 200) {
-        alert("Profile updated successfully!");
+        toast.success("Profile updated successfully!");
 
         console.log("Update Response:", response.data);
       } else {
-        alert("Profile update failed: " + response.data.message);
+        toast.error("Profile update failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during profile update:", error);
       if (error.response && error.response.data.error) {
-        alert("Update failed: " + error.response.data.error);
+        toast.error("Update failed: " + error.response.data.error);
       } else {
-        alert("An unexpected error occurred while updating profile.");
+        toast.error("An unexpected error occurred while updating profile.");
       }
     }
   };
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Card
         sx={{
           width: "50%",
