@@ -30,6 +30,9 @@ import { DateTimeField } from "@mui/x-date-pickers";
 import { Check } from "lucide-react";
 import { set } from "date-fns";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // import { useTheme } from "@mui/system";
 
 const EditProcurementForm = () => {
@@ -271,7 +274,7 @@ const EditProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
-            alert(validation.message);
+            toast.error(validation.message);
             return;
         }
 
@@ -310,19 +313,19 @@ const EditProcurementForm = () => {
             );
         
             if((response.status != 200 && response.status != 201)) {
-                alert("Request adding failed: " + response.data.message);
+                toast.error("Request adding failed: " + response.data.message);
             }
             else {
-                alert("Request adding Successful!");
+                toast.success("Request adding Successful!");
                 console.log("Server Response:", response.data);
                 handleClosePreview(id);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request adding failed: " + error.response.data.message);
+                toast.error("Request adding failed: " + error.response.data.message);
             } else {
-                alert("Request adding failed: " + error.message);
+                toast.error("Request adding failed: " + error.message);
             }
         };
     };
@@ -335,7 +338,7 @@ const EditProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
-            alert(validation.message);
+            toast.error(validation.message);
             return;
         }
 
@@ -374,19 +377,19 @@ const EditProcurementForm = () => {
             );
 
             if((response.status !== 200 && response.status !== 201)) {
-                alert("Request update failed: " + response.data.message + " " + response.status);
+                toast.error("Request update failed: " + response.data.message + " " + response.status);
             }
             else {
-                alert("Request update Successful!");
+                toast.success("Request update Successful!");
                 console.log("Server Response:", response.data);
                 handleClosePreview(id);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
-                alert("Request update failed: " + error.response.data.message);
+                toast.error("Request update failed: " + error.response.data.message);
             } else {
-                alert("Request update failed: " + error.message);
+                toast.error("Request update failed: " + error.message);
             }
         };
     }
@@ -397,6 +400,7 @@ const EditProcurementForm = () => {
 
     return (
         <Layout>
+            <ToastContainer position="top-right" autoClose={5000}/>
             <AppBar position="static">
                 <Box
                     sx={{

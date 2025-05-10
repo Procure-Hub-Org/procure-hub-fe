@@ -270,7 +270,6 @@ const RegisterPage = () => {
         registrationData.buyer_type = customBuyerType;
       } catch (error) {
         showToast("Failed to save custom buyer type",'error' );
-        //alert("Failed to save custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -302,14 +301,12 @@ const RegisterPage = () => {
   
       if (response.status === 201) {
         showToast('Registration Successful!','success' );
-        //alert("Registration Successful!");
         console.log("Server Response:", response.data);
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } else {
         showToast("Registration failed: " + response.data.message,'error' );
-        //alert("Registration failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -322,11 +319,9 @@ const RegisterPage = () => {
           }));
         } else {
           showToast("An error occurred during registration: " + error.response.data.error,'error' );
-          //alert("An error occurred during registration: " + error.response.data.error);
         }
       } else {
         showToast("An error occurred during registration",'error' );
-        //alert("An error occurred during registration");
       }
     }
   };

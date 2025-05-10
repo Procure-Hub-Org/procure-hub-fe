@@ -18,8 +18,6 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
-import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
-import NotificationErrorToast from "../components/Notifications/NotificationErrorToast";
 
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
@@ -44,7 +42,6 @@ const BidForm = () => {
     const navigate = useNavigate();
     const [fieldErrors, setFieldErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
-    const [toastState, setToastState] = useState({ show: false, message: '', type: '' });
 
     
     
@@ -107,16 +104,14 @@ const BidForm = () => {
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
                 toast.error("Request adding failed: " + response.data.message);
-                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             toast.error("Request adding failed: " + error.response.data.message );
             console.error("Error during creation of request:", error);
             if (error.response) {
-                //alert("Request adding failed: " + error.response.data.message);
+                toast.error("Request adding failed: " + error.response.data.message);
             } else {
                 toast.error("Request adding failed: " + error.message );
-                //alert("Request adding failed: " + error.message);
             }
         };
     };
@@ -163,16 +158,13 @@ const BidForm = () => {
                 navigate("/seller-bids");
             } else {
                 toast.error("Request adding failed: " + response.data.message );
-                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
                 toast.error("Request adding failed: " + error.response.data.message );
-                //alert("Request adding failed: " + error.response.data.message);
             } else {
                 toast.error("Request adding failed: " + error.message );
-                //alert("Request adding failed: " + error.message);
             }
         };
     }

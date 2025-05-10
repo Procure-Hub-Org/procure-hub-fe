@@ -17,6 +17,9 @@ import Layout from "../components/Layout/Layout";
 import { isAuthenticated, isAdmin } from "../utils/auth";
 import { useTheme } from "@mui/system";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const CreateUserPage = () => {
   const theme = useTheme();
 
@@ -284,7 +287,7 @@ const CreateUserPage = () => {
         );
         userData.buyer_type = customBuyerType;
       } catch (error) {
-        alert("Failed to save custom buyer type");
+        toast.error("Failed to save custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -306,7 +309,7 @@ const CreateUserPage = () => {
       );
 
       if (response.status === 201) {
-        alert("User Created Successfully!");
+        toast.success("User Created Successfully!");
         console.log("Server Response:", response.data);
         setFormData({
           first_name: "",
@@ -322,16 +325,17 @@ const CreateUserPage = () => {
         });
         setErrors({});
       } else {
-        alert("User creation failed: " + response.data.message);
+        toast.error("User creation failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during user creation:", error);
-      alert("An error occurred during user creation");
+      toast.error("An error occurred during user creation");
     }
   };
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose={5000} />
       <AppBar
         position="static"
         sx={{ background: theme.palette.background.default }}

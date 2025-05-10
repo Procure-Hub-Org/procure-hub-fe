@@ -18,6 +18,10 @@ import {
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated, isSeller } from "../utils/auth";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 const EditBidProposal = () => {
   const { id } = useParams(); 
   const token = localStorage.getItem("token");
@@ -63,11 +67,11 @@ const EditBidProposal = () => {
             proposal_text: bidData.proposal_text,
           });
         } else {
-          alert("Failed to fetch bid data.");
+          toast.error("Failed to fetch bid data.");
         }
       } catch (error) {
         console.error("Error fetching bid data:", error);
-        alert("An error occurred while fetching bid data.");
+        toast.error("An error occurred while fetching bid data.");
       }
     };
 
@@ -109,17 +113,17 @@ const EditBidProposal = () => {
       );
 
       if (response.status === 200) {
-        alert("Bid updated and submitted successfully!");
+        toast.success("Bid updated and submitted successfully!");
         navigate(`/preview-bid/${id}`, { state: { formData } });
       } else {
-        alert("Bid update failed.");
+        toast.error("Bid update failed.");
       }
     } catch (error) {
       console.error("Error during bid update:", error);
       if (error.response) {
-        alert("Bid update failed: " + error.response.data.message);
+        toast.error("Bid update failed: " + error.response.data.message);
       } else {
-        alert("Bid update failed: " + error.message);
+        toast.error("Bid update failed: " + error.message);
       }
     }
   };
@@ -148,23 +152,24 @@ const EditBidProposal = () => {
       );
 
       if (response.status === 200) {
-        alert("Bid saved as draft successfully!");
+        toast.success("Bid saved as draft successfully!");
         navigate("/seller-bids");
       } else {
-        alert("Failed to save bid as draft.");
+        toast.error("Failed to save bid as draft.");
       }
     } catch (error) {
       console.error("Error saving bid draft:", error);
       if (error.response) {
-        alert("Failed to save bid as draft: " + error.response.data.message);
+        toast.error("Failed to save bid as draft: " + error.response.data.message);
       } else {
-        alert("Failed to save bid as draft: " + error.message);
+        toast.error("Failed to save bid as draft: " + error.message);
       }
     }
   };
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose={5000}/>
       <AppBar position="static">
         <Box
           sx={{

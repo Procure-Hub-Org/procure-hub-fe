@@ -8,6 +8,8 @@ import EvaluationModal from '../components/Modals/EvaluationModal';
 import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
 import PrimaryButton from '../components/Button/PrimaryButton';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function BuyerBidEvaluation() {
     const { id } = useParams();
@@ -158,7 +160,7 @@ function BuyerBidEvaluation() {
             }
 
             // Show a more detailed error message
-            alert(`Failed to submit evaluation: ${error.response?.data?.message || error.message || 'Unknown error'}`);
+            toast.error(`Failed to submit evaluation: ${error.response?.data?.message || error.message || 'Unknown error'}`);
         }
     };
 
@@ -297,6 +299,7 @@ function BuyerBidEvaluation() {
 
     return (
         <Layout>
+            <ToastContainer position="top-right" autoClose={5000} />
             <div className="buyer-bid-evaluation-container">
                 <div className="bids-section">
                     <div className="bids-header">

@@ -222,7 +222,6 @@ const ProcurementForm = () => {
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
             showToast(validation.message,'error' );
-            //alert(validation.message);
             return;
         }
 
@@ -267,16 +266,13 @@ const ProcurementForm = () => {
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
                 showToast("Request adding failed: " + response.data.message,'error' );
-                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
                 showToast("Request adding failed: " + error.response.data.message,'error' );
-                //alert("Request adding failed: " + error.response.data.message);
             } else {
                 showToast("Request adding failed: " + error.message,'error' );
-                //alert("Request adding failed: " + error.message);
             }
         };
     };
@@ -287,7 +283,6 @@ const ProcurementForm = () => {
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
             showToast(validation.message,'error' );
-            //alert(validation.message);
             return;
         }
 
@@ -332,16 +327,13 @@ const ProcurementForm = () => {
                 navigate("/buyer-procurement-requests"); // Redirect to the requests page
             } else {
                 showToast("Request adding failed: " + response.data.message,'error' );
-                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             console.error("Error during creation of request:", error);
             if (error.response) {
                 showToast("Request adding failed: " + error.response.data.message,'error' );
-                //alert("Request adding failed: " + error.response.data.message);
             } else {
                 showToast("Request adding failed: " + error.message,'error' );
-                //alert("Request adding failed: " + error.message);
             }
         };
     }
