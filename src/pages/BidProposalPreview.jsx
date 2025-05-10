@@ -19,7 +19,8 @@ import SecondaryButton from "../components/Button/SecondaryButton";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 import { useParsedFormat } from "@mui/x-date-pickers";
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const BidPreview = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,19 +58,22 @@ const BidPreview = () => {
       );
 
       if (response.status === 201 || response.status === 200) {
-        alert("Bid submitted successfully!");
-        navigate("/seller-bids");
+        toast.success("Bid submitted successfully!");
+        setTimeout(() => {
+          navigate("/seller-bids");
+        }, 2000);
       } else {
-        alert("Bid submission failed.");
+        toast.error("Bid submission failed.");
       }
     } catch (error) {
       console.error("Submit error:", error);
-      alert("An error occurred while submitting the bid.");
+      toast.error(`An error occurred while submitting the bid: ${error.response?.data?.message || error.message || "Unknown error"}`);
     }
   };
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose={5000} />
       <AppBar position="static">
         <Box
           sx={{
