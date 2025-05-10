@@ -44,7 +44,7 @@ const AdminAnalytics = () => {
                     frozenRatioRes,
                     avgAwardTimeRes,
                 ] = await Promise.all([
-                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/request-counts`, { headers }),
+                    axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/frozen-requests-ratio`, { headers }),
                     axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/auctions-count`, { headers }),
                     axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/bids-count`, { headers }),
                     axios.get(`${import.meta.env.VITE_API_URL}/api/admin/analytics/frozen-requests-ratio`, { headers }),
@@ -52,7 +52,7 @@ const AdminAnalytics = () => {
                 ]);
 
                 setOverview({
-                    totalRequests: frozenRatioRes.data.total_count,
+                    totalRequests: totalRequestsRes.data.total_count,
                     totalAuctions: totalAuctionsRes.data.total_auctions,
                     totalBids: totalBidsRes.data.total_bids,
                     frozenRatio: frozenRatioRes.data.frozen_ratio,
@@ -235,7 +235,7 @@ const AdminAnalytics = () => {
                                 title="Top 5 Buyers by Frozen Requests"
                                 subtitle="Buyers with most frozen requests"
                                 data={frozenBuyers}
-                                onRowClick={() => navigate(`/`)} // <- prepravi naknadno
+                                onRowClick={() => navigate(`/buyer-analytics`)} // <- prepravi naknadno
                                 getTooltipText={() => `Click to view full analytics for this user`}
                         />
                     </Grid>
@@ -244,7 +244,7 @@ const AdminAnalytics = () => {
                             title="Top 5 Buyers by Avg. Price Reduction"
                             subtitle="Buyers with highest average price reduction (%)"
                             data={priceReductionBuyers}
-                            onRowClick={() => navigate(`/`)} // <- prepravi naknadno
+                            onRowClick={() => navigate(`/buyer-analytics`)} // <- prepravi naknadno
                             getTooltipText={() => `Click to view full analytics for this user`}
                         />
                     </Grid>
