@@ -2,6 +2,8 @@ import React from "react";
 import { Box, Typography, Paper } from "@mui/material";
 
 const ResponseTimeCard = ({ averageTime, title, subtitle }) => {
+  const displayTime = averageTime < 1 ? Math.round(averageTime * 60) : averageTime;
+  const displayUnit = averageTime < 1 ? "minutes" : "hours";
   return (
     <Paper
       elevation={3}
@@ -21,15 +23,14 @@ const ResponseTimeCard = ({ averageTime, title, subtitle }) => {
       </Typography>
       <Box sx={{ display: "flex", alignItems: "flex-end", my: 1 }}>
         <Typography variant="h4" component="div" sx={{ fontWeight: 600 }}>
-          {averageTime}
+           {displayTime}
         </Typography>
         <Typography
           variant="body1"
           color="text.secondary"
           sx={{ ml: 1, mb: 0.5 }}
         >
-          hours
-          {/* update in future (days, weekks...) */}
+         {displayUnit}
         </Typography>
       </Box>
     </Paper>

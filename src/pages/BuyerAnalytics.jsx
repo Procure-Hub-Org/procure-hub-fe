@@ -4,33 +4,40 @@ import StatCard from "../components/Cards/Analytics/StatCard";
 import CustomBarChart from "../components/Cards/Analytics/BarChart";
 import ResponseTimeCard from "../components/Cards/Analytics/ResponseTimeCard";
 import { Grid, Typography, Box } from "@mui/material";
-
+import axios from "axios";
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
 
-  useEffect(() => {
-    setSummary({
-      totalRequests: 128,
-      avgBids: 5.3,
-      awardedRatio: 78,
-      frozenRequests: 12,
-      auctionBenefits: 15.3,
-    });
+   useEffect(() => {
+    const token = localStorage.getItem("token");
 
-    setCategories([
-      { category: "IT Hardware", count: 60 },
-      { category: "Software Licenses", count: 45 },
-      { category: "Marketing", count: 30 },
-    ]);
+    if (token) {
+      axios
+        .get(`${import.meta.env.VITE_API_URL}/api/buyer-analytics`, {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          },
+        })
+        .then((response) => {
+          const data = response.data;
+          setSummary({
+            totalRequests: data.totalRequests,
+            avgBids: data.avgBids,
+            awardedRatio: data.awardedRatio,
+            frozenRequests: data.frozenRequests,
+            auctionBenefits: data.auctionBenefits,
+            avgTime: data.avgTime,
+          });
 
-    setCriteria([
-      { criterion: "Price", count: 100 },
-      { criterion: "Quality", count: 75 },
-      { criterion: "Technical Compliance", count: 50 },
-      { criterion: "Sustainability", count: 25 },
-    ]);
+          setCategories(data.requestPerCategory);
+          setCriteria(data.criteriaFrequency);
+        })
+        .catch((error) => {
+          console.error("Error fetching buyer analytics:", error);
+        });
+    }
   }, []);
 
   return (
@@ -53,35 +60,30 @@ const BuyerAnalytics = () => {
             <StatCard
               title="Total Requests"
               value={summary.totalRequests}
-              change={summary.totalRequestsChange}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <StatCard
               title="Avg. Bids per Request"
               value={summary.avgBids}
-              change={summary.avgBidsChange}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <StatCard
               title="Awarded Ratio"
               value={`${summary.awardedRatio}%`}
-              change={summary.awardedRatioChange}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <StatCard
               title="Frozen Requests"
               value={`${summary.frozenRequests}`}
-              change={summary.frozenRequestsChange}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <StatCard
               title="Auction Benefits"
               value={`${summary.auctionBenefits}%`}
-              change={summary.auctionBenefitsChange}
             />
           </Grid>
         </Grid>
@@ -120,7 +122,7 @@ const BuyerAnalytics = () => {
           <ResponseTimeCard
             title="Average Response Time"
             subtitle="Time from request publication to first bid"
-            averageTime="2.5"
+            averageTime={summary.avgTime}
           ></ResponseTimeCard>
         </Grid>
       </Box>

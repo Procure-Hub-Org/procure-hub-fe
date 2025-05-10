@@ -32,7 +32,7 @@ const CustomBarChart = ({
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
         <XAxis dataKey={xKey} tick={false} />
-        <YAxis />
+        <YAxis allowDecimals={false} />
         <Tooltip />
         <Bar dataKey={yKey} fill={barColor} />
       </BarChart>

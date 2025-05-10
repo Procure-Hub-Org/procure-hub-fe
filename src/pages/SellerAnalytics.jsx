@@ -5,6 +5,7 @@ import CustomBarChart from "../components/Cards/Analytics/BarChart";
 import CustomPieChart from "../components/Cards/Analytics/PieChart";
 import CustomLineChart from "../components/Cards/Analytics/LineChart";
 import { Grid, Typography, Box } from "@mui/material";
+import axios from "axios";
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -14,42 +15,44 @@ const SellerAnalytics = () => {
   const [priceReductions, setPriceReductions] = useState([]);
 
   useEffect(() => {
-    setSummary({
-      totalBids: 342,
-      winRatio: 32,
-      avgPriceReduction: 8.7,
-    });
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-    setAwardedCategories([
-      { name: "IT Hardware", value: 35 },
-      { name: "Office Supplies", value: 25 },
-      { name: "Professional Services", value: 20 },
-      { name: "Software Licenses", value: 15 },
-      { name: "Other", value: 5 },
-    ]);
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/seller-analytics`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setParticipationCategories([
-      { name: "IT Hardware", value: 30 },
-      { name: "Office Supplies", value: 25 },
-      { name: "Professional Services", value: 20 },
-      { name: "Software Licenses", value: 15 },
-      { name: "Facility Management", value: 10 },
-    ]);
+        const data = res.data;
 
-    setAuctionPositions([
-      { position: "1st (Winner)", value: 100 },
-      { position: "2nd", value: 75 },
-      { position: "3rd", value: 50 },
-      { position: "4th", value: 25 },
-      { position: "5th or below", value: 0 },
-    ]);
+        setSummary({
+          totalBids: data.totalBidsCount,
+          winRatio: data.ratio?.toFixed(2),
+          avgPriceReduction: data.avgPriceReduction?.toFixed(2),
+        });
 
-    setPriceReductions([
-        { position: "0", percentage: 100 },
-        { position: "1", percentage: 96.5 },
-        { position: "2", percentage: 94.3 },
-      ]);
-    }, []);      
+        setAwardedCategories(
+          Object.entries(data.awardedBidPercentages || {}).map(
+            ([name, value]) => ({ name, value })
+          )
+        );
+        setParticipationCategories(
+          Object.entries(data.submittedBidPercentages || {}).map(
+            ([name, value]) => ({ name, value })
+          )
+        );
+      } catch (error) {
+        console.error("Failed to fetch analytics:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Layout>
@@ -71,7 +74,6 @@ const SellerAnalytics = () => {
             <StatCard
               title="Total Bids Submitted"
               value={summary.totalBids}
-              change={summary.totalBidsChange}
               icon="bid"
             />
           </Grid>
@@ -79,7 +81,6 @@ const SellerAnalytics = () => {
             <StatCard
               title="Win Ratio"
               value={`${summary.winRatio}%`}
-              change={summary.winRatioChange}
               icon="trophy"
             />
           </Grid>
@@ -87,7 +88,6 @@ const SellerAnalytics = () => {
             <StatCard
               title="Avg. Price Reduction"
               value={`${summary.avgPriceReduction}%`}
-              change={summary.avgPriceReductionChange}
               icon="price"
             />
           </Grid>
