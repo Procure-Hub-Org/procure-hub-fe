@@ -39,6 +39,7 @@ const BuyerCreateAuctionForm = () => {
             .then((response) => setRequests(response.data.requests))
             .catch((error) => {
                 console.error("Error fetching requests:", error);
+                toast.error(`Error fetching procurement requests: ${error.response?.data?.message || error.message || "Unknown error"}`);
             });
     }, [token]);
 
@@ -54,6 +55,7 @@ const BuyerCreateAuctionForm = () => {
         setStartingTimeError("");
 
         if (!selectedProcurement) {
+            toast.error("Please select a procurement request.");
             valid = false;
         }
 
@@ -66,10 +68,14 @@ const BuyerCreateAuctionForm = () => {
 
         // Ensure minIncrement is greater than or equal to the lowestBid if lowestBid exists
         if (lowestBid && parseFloat(minIncrement) < parseFloat(lowestBid)) {
+            toast.error(`Minimum bid increment must be at least $${lowestBid}.`);
             return;
         }
 
-        
+        if (parseInt(lastCallTimer || "0") > totalDurationMinutes / 2) {
+            toast.error("Last call timer cannot exceed half the auction duration.");
+            return;
+        }
 
         const startUtcISOString = new Date(localStartDateTime).toISOString();
 
@@ -97,6 +103,7 @@ const BuyerCreateAuctionForm = () => {
             })
             .catch(error => {
                 console.error("Error creating auction:", error);
+                toast.error(`Error creating auction: ${error.response?.data?.message || error.message || "Unknown error occurred"}`);
                 // Handle error (e.g., show error message)
             });
     };
