@@ -4,6 +4,8 @@ import CustomSelect from "../components/Input/DropdownSelect";
 import { Container, Card, CardContent, Typography, Box, CircularProgress } from "@mui/material";
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UpdateUserPage = () => {
   const { id } = useParams();
@@ -116,15 +118,15 @@ const UpdateUserPage = () => {
       });
 
       if (response.status === 200) {
-        alert("User Role and Status Updated Successfully!");
+        toast.success("User Role and Status Updated Successfully!");
         console.log('Server Response:', response.data);
         navigate('/admin/users');
       } else {
-        alert('User update failed: ' + response.data.message);
+        toast.error('User update failed: ' + response.data.message);
       }
     } catch (error) {
       console.error('Error during user update:', error);
-      alert('An error occurred during user update');
+      toast.error('An error occurred during user update');
     }
   };
 
@@ -146,6 +148,7 @@ const UpdateUserPage = () => {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+      <ToastContainer position ="top-right" autoClose={5000}/>
       <Container maxWidth="sm">
         <Card sx={{ width: "100%", padding: 3, boxShadow: 3, borderRadius: 2 }}>
           <CardContent>
