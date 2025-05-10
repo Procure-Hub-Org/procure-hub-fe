@@ -154,7 +154,7 @@ const BidLogs = () => {
                                 {getIconForFileType(doc.original_name)}
                                 <Box>
                                     <Typography fontWeight="bold">
-                                        <a href={doc.url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                                        <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
                                     </Typography>
                                 </Box>
                                 </Stack>

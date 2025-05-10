@@ -131,7 +131,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
                   <Box>
                     {/*<Typography fontWeight="bold">{doc.original_name}</Typography>*/}
                     <Typography fontWeight="bold">
-                      <a href={doc.url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
                     </Typography>
                   </Box>
                 </Stack>
