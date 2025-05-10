@@ -301,16 +301,23 @@ const AuctionMonitoring = () => {
           
                     <div className="timer-section">
                         <div className="countdown-timer">
-                            <div className="timer-icon"><Clock size={20} /></div>
-                                <div className="timer-value">{formatTime(timeRemaining)}</div>
-                            </div>
-
                             {isLastCall && (
                                 <div className="last-call-alert">
                                     {/*<span>Last call: {formatTimeFromSeconds(lastCallCounter-1)} </span> */}
                                     <span>LAST CALL</span>
                                 </div>
                             )}
+
+                            <div className="timer-icon"><Clock size={20} /></div>
+                                <div className="timer-value">{formatTime(timeRemaining)}</div>
+                            </div>
+
+                            {/*Client did not like - it seemed like button
+                              isLastCall && (
+                                <div className="last-call-alert">
+                                    <span>LAST CALL</span>
+                                </div>
+                            )*/}
 
                             <div className="timer-actions">
                                 {isSeller() && (

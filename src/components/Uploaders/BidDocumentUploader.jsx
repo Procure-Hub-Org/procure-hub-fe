@@ -18,6 +18,28 @@ import axios from "axios";
 import PrimaryButton from "../Button/PrimaryButton";
 import SecondaryButton from "../Button/SecondaryButton";
 
+import PdfIcon from '@mui/icons-material/PictureAsPdf';
+import DocIcon from '@mui/icons-material/Description';
+import JpgIcon from '@mui/icons-material/Image';
+
+function getIconForFileType(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  switch (extension) {
+    case 'pdf':
+      return <PdfIcon color="action" />;
+    case 'doc':
+    case 'docx':
+      return <DocIcon color="action" />;
+    case 'jpg':
+    case 'png':
+    case 'jpeg':
+      return <JpgIcon color="action" />;
+    // Add more cases for other file types if needed
+    default:
+      return <FileIcon color="action" />;
+  }
+}
+
 const BidDocumentUploader = ({ procurementBidId, disabled }) => {
   const [files, setFiles] = useState([]);
   const [uploadedDocs, setUploadedDocs] = useState([]);
@@ -239,9 +261,13 @@ const BidDocumentUploader = ({ procurementBidId, disabled }) => {
               }}
             >
               <Stack direction="row" spacing={2} alignItems="center">
-                <FileIcon color="action" />
+                {/*<FileIcon color="action" />*/}
+                {getIconForFileType(doc.original_name)}
                 <Box>
-                  <Typography fontWeight="bold">{doc.original_name}</Typography>
+                  {/*<Typography fontWeight="bold">{doc.original_name}</Typography>*/}
+                  <Typography fontWeight="bold">
+                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                  </Typography>
                 </Box>
               </Stack>
 
