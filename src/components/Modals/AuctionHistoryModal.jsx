@@ -14,8 +14,8 @@ import {
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { isAdmin, isBuyer, isSeller } from "../utils/auth";
-import "../styles/Admin.css";
+import { isAdmin, isBuyer, isSeller } from "../../utils/auth";
+import "../../styles/Admin.css";
 
 
 const AuctionHistoryModal = ({ open, onClose, auctionId }) => {
