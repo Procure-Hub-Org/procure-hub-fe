@@ -9,6 +9,9 @@ import { AppBar, Box, Card, CardContent, Container, Typography, TextField } from
 import TimerIcon from "@mui/icons-material/AvTimer";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const BuyerCreateAuctionForm = () => {
     const navigate = useNavigate();
     const [requests, setRequests] = useState([]);
@@ -34,7 +37,9 @@ const BuyerCreateAuctionForm = () => {
             headers: { Authorization: `Bearer ${token}` },
         })
             .then((response) => setRequests(response.data.requests))
-            .catch((error) => console.error("Error fetching requests:", error));
+            .catch((error) => {
+                console.error("Error fetching requests:", error);
+            });
     }, [token]);
 
     const totalDurationMinutes = parseInt(durationHours || "0") * 60 + parseInt(durationMinutes || "0");
@@ -49,7 +54,6 @@ const BuyerCreateAuctionForm = () => {
         setStartingTimeError("");
 
         if (!selectedProcurement) {
-            alert("Please select a procurement request.");
             valid = false;
         }
 
@@ -62,14 +66,10 @@ const BuyerCreateAuctionForm = () => {
 
         // Ensure minIncrement is greater than or equal to the lowestBid if lowestBid exists
         if (lowestBid && parseFloat(minIncrement) < parseFloat(lowestBid)) {
-            alert(`Minimum bid increment must be at least $${lowestBid}.`);
             return;
         }
 
-        if (parseInt(lastCallTimer || "0") > totalDurationMinutes / 2) {
-            alert("Last call timer cannot exceed half the auction duration.");
-            return;
-        }
+        
 
         const startUtcISOString = new Date(localStartDateTime).toISOString();
 
@@ -92,7 +92,7 @@ const BuyerCreateAuctionForm = () => {
         })
             .then(response => {
                 console.log("Auction Created:", response.data);
-                alert("Auction successfully created!");
+                toast.success("Auction created successfully!");
                 navigate("/buyer-auctions");
             })
             .catch(error => {
@@ -103,6 +103,7 @@ const BuyerCreateAuctionForm = () => {
 
     return (
         <Layout>
+            <ToastContainer position="top-right" autoClose={5000} />
             <AppBar position="static">
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
                     <Container maxWidth="sm">
