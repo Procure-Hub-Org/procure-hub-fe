@@ -136,7 +136,6 @@ const BidLogs = () => {
                     <Typography variant="h6" fontWeight="bold" sx={{ mt: 4 }}> Documentation</Typography>
 
                     {bid.documents && bid.documents.length > 0 && (
-                        console.log("Documents: ", documents),
                         <Box mt={3} px={0} sx={{ width: "100%" }}>
 
                             {bid.documents.map((doc) => (
