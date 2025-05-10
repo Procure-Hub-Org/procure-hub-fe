@@ -29,7 +29,7 @@ import AuctionMonitoringPage from "./pages/AuctionMonitoring.jsx";
 import AdminAuctionsDashboard from "./pages/AdminAuctionsDashboard.jsx";
 import BuyerAuctionsDashboard from "./pages/BuyerAuctionsDashboard.jsx";
 import SellerAuctionsDashboard from "./pages/SellerAuctionsDashboard.jsx";
-import AuctionHistoryPage from "./pages/AuctionHistory.jsx";
+
 
 function App() {
   return (
@@ -230,14 +230,6 @@ function App() {
         element={
           <AuthenticatedRoute>
             <AuctionMonitoringPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/auction-history/:id"
-        element={
-          <AuthenticatedRoute>
-            <AuctionHistoryPage />
           </AuthenticatedRoute>
         }
       />
