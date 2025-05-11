@@ -18,72 +18,38 @@ import CloseIcon from "@mui/icons-material/Close";
 import { isAdmin, isBuyer, isSeller } from "../../utils/auth";
 import "../../styles/Admin.css";
 import { useTheme } from "@mui/material/styles";
+import axios from "axios";
 
 
 const AuctionHistoryModal = ({ open, onClose, auctionId }) => {
   const [historyLogs, setHistoryLogs] = useState([]);
+  const [loading, setLoading] = useState(false);
   const theme = useTheme();
 
-  useEffect(() => {
-    if (!open || !auctionId) return;
+useEffect(() => {
+  if (!open || !auctionId) return;
 
-    // Simulate API call with mock data
-    const mockData = {
-      1: [
+  const fetchHistory = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/auction/${auctionId}/history`,
         {
-          timestamp: "2025-05-10 10:05:00",
-          sellerName: "Alice Smith",
-          sellerCompany: "AlphaTech",
-          bidAmount: 500,
-          previousPosition: 2,
-          newPosition: 1,
-        },
-        {
-          timestamp: "2025-05-10 09:55:00",
-          sellerName: "Bob Johnson",
-          sellerCompany: "BetaCorp",
-          bidAmount: 520,
-          previousPosition: 1,
-          newPosition: 2,
-        },
-        {
-          timestamp: "2025-05-10 09:45:00",
-          sellerName: "Charlie Lee",
-          sellerCompany: "GammaGroup",
-          bidAmount: 530,
-          previousPosition: null,
-          newPosition: 3,
-        },
-      ],
-      2: [
-        {
-          timestamp: "2025-04-28 14:10:00",
-          sellerName: "Derek Adams",
-          sellerCompany: "ZetaWorks",
-          bidAmount: 620,
-          previousPosition: 2,
-          newPosition: 1,
-        },
-      ],
-    };
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-    let logs = mockData[auctionId] || [];
-
-    if (isSeller()) {
-        //route for filtered logs that just show their bids
-        const currentSeller = "Alice Smith"; // Simulate logged-in seller name
-        logs = logs.filter((log) => log.sellerName === currentSeller);
-    } else if (isBuyer() || isAdmin()) {
-        // Buyers and Admins see all logs
-    } else {
-        logs = []; // Unauthorized or unknown role
+      console.log(response.data);
+      setHistoryLogs(response.data);
+    } catch (error) {
+      console.error('Error fetching auction history:', error);
     }
+  };
 
-    const sorted = logs.sort(
-      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-    );
-    setHistoryLogs(sorted);
-  }, [open, auctionId]);
+  fetchHistory();
+}, [open, auctionId]);
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
