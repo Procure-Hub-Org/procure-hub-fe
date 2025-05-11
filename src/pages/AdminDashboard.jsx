@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import BasicButton from "../components/Button/BasicButton";
 import "../styles/Admin.css";
 import PrimaryButton from "../components/Button/PrimaryButton.jsx";
+import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import axios from "axios";
 import CreateUserPage from "./CreateUserPage.jsx";
 import Layout from "../components/Layout/Layout.jsx";
@@ -121,6 +122,15 @@ const AdminDashboard = () => {
         });
 
   };
+  const handleAnalytics = (id, role) => {
+    if (role === "seller") {
+      navigate(`/seller-analytics?id=${id}`); 
+    } else if (role === "buyer") {
+      navigate(`/buyer-analytics?id=${id}`);
+    } else {
+      navigate(`/admin-analytics`); 
+    }
+  }
 
   /* ???????
   const toggleCreateUserPage = () => {
@@ -179,6 +189,9 @@ const AdminDashboard = () => {
                       <PrimaryButton onClick={() => handleApprove(user.id)}>
                         Approve
                       </PrimaryButton>
+                      <OutlinedButton onClick={() => handleAnalytics(user.id, user.role)}>
+                        Analytics
+                      </OutlinedButton>
                   </div>
 
                   </td>
