@@ -124,12 +124,11 @@ const AdminDashboard = () => {
   };
   const handleAnalytics = (id, role) => {
     if (role === "seller") {
-      navigate(`/seller-analytics?id=${id}`); //TODO: add id
+      navigate(`/seller-analytics?id=${id}`); 
     } else if (role === "buyer") {
-      console.log("Buyer role detected: " ,id);
-      navigate(`/buyer-analytics?id=${id}`); //TODO: add id
+      navigate(`/buyer-analytics?id=${id}`);
     } else {
-      navigate(`/admin-analytics`); //TODO: add id
+      navigate(`/admin-analytics`); 
     }
   }
 

@@ -5,15 +5,15 @@ import CustomBarChart from "../components/Cards/Analytics/BarChart";
 import ResponseTimeCard from "../components/Cards/Analytics/ResponseTimeCard";
 import { Grid, Typography, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
+
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = urlParams.get("id");
