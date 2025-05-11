@@ -17,7 +17,7 @@ const SellerAnalytics = () => {
 
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userId = urlParams.get("id");
@@ -59,11 +59,10 @@ const SellerAnalytics = () => {
             )
           );
           setPriceReductions(
-            Object.entries(data.averagePriceReductionOverTime || {}).map(
-              ({ column_index, average_value_in_percentage }) => ({
-                  position: column_index,
-                  percentage: average_value_in_percentage,})
-            )
+            (data.averagePriceReductionOverTime || []).map((item) => ({
+              position: item.column_index,
+              percentage: item.average_value_in_percentage,
+            }))
           );
         })
         .catch((error) => {
@@ -72,6 +71,7 @@ const SellerAnalytics = () => {
     }
   }, []);
 
+  useEffect(() => {}, [priceReductions]);
   return (
     <Layout>
       <Box
