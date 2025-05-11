@@ -58,6 +58,13 @@ const SellerAnalytics = () => {
               ([name, value]) => ({ name, value })
             )
           );
+          setPriceReductions(
+            Object.entries(data.averagePriceReductionOverTime || {}).map(
+              ({ column_index, average_value_in_percentage }) => ({
+                  position: column_index,
+                  percentage: average_value_in_percentage,})
+            )
+          );
         })
         .catch((error) => {
           console.error("Error fetching buyer analytics:", error);
