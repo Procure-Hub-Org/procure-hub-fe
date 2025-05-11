@@ -113,6 +113,7 @@ const AdminAnalytics = () => {
                 );
                 setFrozenBuyers(
                     response.data.map(buyer => ({
+                        buyer_id: buyer.buyer_id,
                         first_name: buyer.first_name,
                         last_name: buyer.last_name,
                         company_name: buyer.company_name,
@@ -133,6 +134,7 @@ const AdminAnalytics = () => {
                 );
                 setPriceReductionBuyers(
                     response.data.map(buyer => ({
+                        buyer_id: buyer.buyer_id,
                         first_name: buyer.first_name,
                         last_name: buyer.last_name,
                         company_name: buyer.company_name,
@@ -235,7 +237,7 @@ const AdminAnalytics = () => {
                                 title="Top 5 Buyers by Frozen Requests"
                                 subtitle="Buyers with most frozen requests"
                                 data={frozenBuyers}
-                                onRowClick={() => navigate(`/buyer-analytics`)} // <- prepravi naknadno
+                                onRowClick={(buyer) => navigate(`/buyer-analytics?id=${buyer.buyer_id}`)}
                                 getTooltipText={() => `Click to view full analytics for this user`}
                         />
                     </Grid>
@@ -244,7 +246,7 @@ const AdminAnalytics = () => {
                             title="Top 5 Buyers by Avg. Price Reduction"
                             subtitle="Buyers with highest average price reduction (%)"
                             data={priceReductionBuyers}
-                            onRowClick={() => navigate(`/buyer-analytics`)} // <- prepravi naknadno
+                            onRowClick={(buyer) => navigate(`/buyer-analytics?id=${buyer.buyer_id}`)}
                             getTooltipText={() => `Click to view full analytics for this user`}
                         />
                     </Grid>
