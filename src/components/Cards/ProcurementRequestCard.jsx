@@ -2,13 +2,13 @@ import React from "react";
 import PrimaryButton from "../Button/PrimaryButton";
 import dayjs from "dayjs";
 import { toggleFollowRequest } from "../../utils/favorites";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const ProcurementRequestCard = ({
   request,
   followedRequests,
   setFollowedRequests,
-  submittedBidRequestIds=[],
+  submittedBidRequestIds = [],
 }) => {
   const navigate = useNavigate();
 
@@ -90,6 +90,39 @@ const ProcurementRequestCard = ({
               ))
             ) : (
               <span> No criteria specified.</span>
+            )}
+          </div>
+          <div className="detail-item">
+            <strong>Items:</strong>
+            {request.items && request.items.length > 0 ? (
+              request.items.map((item, index) => (
+                <div key={item.id || index} style={{ marginBottom: "8px" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <strong>
+                      {item.title} (x{item.quantity})
+                    </strong>
+                  </div>
+                  <span>{item.description}</span>
+                </div>
+              ))
+            ) : (
+              <span>No items specified.</span>
+            )}
+          </div>
+
+          <div className="detail-item">
+            <strong>Requirements:</strong>
+            {request.requirements && request.requirements.length > 0 ? (
+              request.requirements.map((item, index) => (
+                <div key={item.id || index} style={{ marginBottom: "8px" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <strong>{item.type}</strong>
+                  </div>
+                  <span>{item.description}</span>
+                </div>
+              ))
+            ) : (
+              <span>No requirements specified.</span>
             )}
           </div>
         </div>
