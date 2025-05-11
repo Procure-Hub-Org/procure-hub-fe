@@ -194,7 +194,7 @@ const AdminAnalytics = () => {
                     <Grid item xs={12} sm={6} md={3}>
                         <StatCard
                             title="Frozen Ratio"
-                            value={overview.frozenRatio}
+                            value={`${overview.frozenRatio}%`}
                             icon="freeze"
                         />
                     </Grid>
