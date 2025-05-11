@@ -79,7 +79,7 @@ useEffect(() => {
               <TableBody>
                 {historyLogs.map((log, index) => (
                   <TableRow key={index}>
-                    <TableCell>{log.timestamp}</TableCell>
+                    <TableCell>{new Date(log.timestamp).toLocaleDateString()} {new Date(log.timestamp).toLocaleTimeString()}</TableCell>
                     <TableCell>{log.sellerName}</TableCell>
                     <TableCell>{log.sellerCompany}</TableCell>
                     <TableCell>
