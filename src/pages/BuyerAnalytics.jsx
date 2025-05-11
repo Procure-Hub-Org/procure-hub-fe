@@ -4,22 +4,29 @@ import StatCard from "../components/Cards/Analytics/StatCard";
 import CustomBarChart from "../components/Cards/Analytics/BarChart";
 import ResponseTimeCard from "../components/Cards/Analytics/ResponseTimeCard";
 import { Grid, Typography, Box } from "@mui/material";
+import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
-
-   useEffect(() => {
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  
+  useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (token) {
+    const userId = urlParams.get("id");
+    if (token || userId) {
       axios
-        .get(`${import.meta.env.VITE_API_URL}/api/buyer-analytics`, {
-          headers: {
-            Authorization: `Bearer ${token}`, 
-          },
-        })
+        .get(
+          `${import.meta.env.VITE_API_URL}/api/buyer-analytics?id=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         .then((response) => {
           const data = response.data;
           setSummary({
@@ -57,16 +64,10 @@ const BuyerAnalytics = () => {
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
-            <StatCard
-              title="Total Requests"
-              value={summary.totalRequests}
-            />
+            <StatCard title="Total Requests" value={summary.totalRequests} />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
-            <StatCard
-              title="Avg. Bids per Request"
-              value={summary.avgBids}
-            />
+            <StatCard title="Avg. Bids per Request" value={summary.avgBids} />
           </Grid>
           <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <StatCard

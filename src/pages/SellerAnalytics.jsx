@@ -6,52 +6,63 @@ import CustomPieChart from "../components/Cards/Analytics/PieChart";
 import CustomLineChart from "../components/Cards/Analytics/LineChart";
 import { Grid, Typography, Box } from "@mui/material";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [awardedCategories, setAwardedCategories] = useState([]);
   const [participationCategories, setParticipationCategories] = useState([]);
-  const [auctionPositions, setAuctionPositions] = useState([]);
+  const [auctionPositions, setAuctionPositions] = useState({});
   const [priceReductions, setPriceReductions] = useState([]);
 
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/seller-analytics`,
+    const token = localStorage.getItem("token");
+    const userId = urlParams.get("id");
+    if (token || userId) {
+      axios
+        .get(
+          `${import.meta.env.VITE_API_URL}/api/seller-analytics?id=${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
-        );
+        )
+        .then((response) => {
+          const data = response.data;
+          setSummary({
+            totalBids: data.totalBidsCount,
+            winRatio: data.awardedToSubmittedRatio,
+            avgPriceReduction: data.avgPriceReduction,
+          });
 
-        const data = res.data;
+          setAuctionPositions(
+            Object.entries(data.top5PositionsCount || {}).map(
+              ([position, value]) => ({
+                position,
+                value,
+              })
+            )
+          );
 
-        setSummary({
-          totalBids: data.totalBidsCount,
-          winRatio: data.ratio?.toFixed(2),
-          avgPriceReduction: data.avgPriceReduction?.toFixed(2),
+          setAwardedCategories(
+            Object.entries(data.awardedBidPercentages || {}).map(
+              ([name, value]) => ({ name, value })
+            )
+          );
+          setParticipationCategories(
+            Object.entries(data.submittedBidPercentages || {}).map(
+              ([name, value]) => ({ name, value })
+            )
+          );
+        })
+        .catch((error) => {
+          console.error("Error fetching buyer analytics:", error);
         });
-
-        setAwardedCategories(
-          Object.entries(data.awardedBidPercentages || {}).map(
-            ([name, value]) => ({ name, value })
-          )
-        );
-        setParticipationCategories(
-          Object.entries(data.submittedBidPercentages || {}).map(
-            ([name, value]) => ({ name, value })
-          )
-        );
-      } catch (error) {
-        console.error("Failed to fetch analytics:", error);
-      }
-    };
-
-    fetchData();
+    }
   }, []);
 
   return (

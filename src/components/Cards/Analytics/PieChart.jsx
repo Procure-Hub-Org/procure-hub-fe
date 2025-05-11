@@ -11,7 +11,7 @@ import { Paper, Typography, Box } from "@mui/material";
 
 const CustomPieChart = ({ data, colors, title, subtitle }) => {
   return (
-    <Paper elevation={3} sx={{ px: 3, py: 3,borderRadius: 2 }}>
+    <Paper elevation={3} sx={{ px: 3, py: 3, borderRadius: 2 }}>
       <Box mb={2}>
         {title && (
           <Typography variant="h6" gutterBottom>
@@ -35,7 +35,6 @@ const CustomPieChart = ({ data, colors, title, subtitle }) => {
             fill="#8884d8"
             dataKey="value"
             nameKey="name"
-                   
           >
             {data.map((entry, index) => (
               <Cell
@@ -44,7 +43,7 @@ const CustomPieChart = ({ data, colors, title, subtitle }) => {
               />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip formatter={(value) => `${value}%`} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
