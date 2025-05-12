@@ -50,59 +50,52 @@ const ProcurementRequestCard = ({
       <div className="card-body">
         <p className="card-description">{request.description}</p>
         <div className="card-details-grid">
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Category:</strong>
             <span>{request.category_name}</span>
           </div>
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Location:</strong>
             <span>{request.location}</span>
           </div>
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Budget:</strong>
             <span>
               {request.budget_min} $ - {request.budget_max} $
             </span>
           </div>
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Deadline:</strong>
             <span>{dayjs(request.deadline).format("MMM D, YYYY h:mm A")}</span>
           </div>
           {request.buyer_type_name && (
-            <div className="detail-item">
+            <div className="procurement-detail-item">
               <strong>Buyer Type:</strong>
               <span>{request.buyer_type_name}</span>
             </div>
           )}
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Documentation:</strong>
             <span>{request.documentation}</span>
           </div>
-          <div className="detail-item full-width">
-            <strong>Evaluation criteria:</strong>
-            {request.evaluationCriteria &&
-            request.evaluationCriteria.length > 0 ? (
-              request.evaluationCriteria.map((item, index) => (
-                <span key={item.id || index}>
-                  {" "}
-                  {item.criteriaType.name} (Weight: {item.weight})
-                </span>
-              ))
-            ) : (
-              <span> No criteria specified.</span>
-            )}
-          </div>
-          <div className="detail-item">
+
+          <div className="procurement-detail-item">
             <strong>Items:</strong>
             {request.items && request.items.length > 0 ? (
               request.items.map((item, index) => (
-                <div key={item.id || index} style={{ marginBottom: "8px" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <strong>
+                <div
+                  key={item.id || index}
+                  style={{ marginBottom: "8px", display: "flex", flex: "row" }}
+                >
+                  <li style={{ marginLeft: "16px" }}>
+                    <strong style={{ fontWeight: 400 }}>
                       {item.title} (x{item.quantity})
                     </strong>
-                  </div>
-                  <span>{item.description}</span>
+                  </li>
+                  <span>
+                    {" - "}
+                    {item.description}
+                  </span>
                 </div>
               ))
             ) : (
@@ -110,19 +103,42 @@ const ProcurementRequestCard = ({
             )}
           </div>
 
-          <div className="detail-item">
+          <div className="procurement-detail-item">
             <strong>Requirements:</strong>
             {request.requirements && request.requirements.length > 0 ? (
               request.requirements.map((item, index) => (
-                <div key={item.id || index} style={{ marginBottom: "8px" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <strong>{item.type}</strong>
-                  </div>
-                  <span>{item.description}</span>
+                <div
+                  key={item.id || index}
+                  style={{ marginBottom: "8px", display: "flex", flex: "row" }}
+                >
+                  <li style={{ marginLeft: "16px" }}>
+                    <strong style={{ fontWeight: 400 }}>{item.type}</strong>
+                  </li>
+                  <span>
+                    {" - "}
+                    {item.description}
+                  </span>
                 </div>
               ))
             ) : (
               <span>No requirements specified.</span>
+            )}
+          </div>
+
+          <div className="procurement-detail-item">
+            <strong>Evaluation criteria:</strong>
+            {request.evaluationCriteria &&
+            request.evaluationCriteria.length > 0 ? (
+              request.evaluationCriteria.map((item, index) => (
+                <li style={{ marginLeft: "16px" }}>
+                  <span key={item.id || index}>
+                    {" "}
+                    {item.criteriaType.name} (Weight: {item.weight})
+                  </span>
+                </li>
+              ))
+            ) : (
+              <span> No criteria specified.</span>
             )}
           </div>
         </div>
