@@ -74,11 +74,16 @@ const ProcurementRequestCard = ({
               <span>{request.buyer_type_name}</span>
             </div>
           )}
+          
           <div className="procurement-detail-item">
             <strong>Documentation:</strong>
             <span>{request.documentation}</span>
           </div>
-
+          {!request.buyer_type_name && (
+            <div className="procurement-detail-item">
+              
+            </div>
+          )}
           <div className="procurement-detail-item">
             <strong>Items:</strong>
             {request.items && request.items.length > 0 ? (
