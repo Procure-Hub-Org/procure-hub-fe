@@ -138,7 +138,7 @@ const ProcurementRequestCard = ({
                 <li style={{ marginLeft: "16px" }}>
                   <span key={item.id || index}>
                     {" "}
-                    {item.criteriaType.name} (Weight: {item.weight})
+                    {item.criteriaType.name} (Weight: {item.weight}%)
                   </span>
                 </li>
               ))
