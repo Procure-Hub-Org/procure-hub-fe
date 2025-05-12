@@ -254,7 +254,15 @@ const AdminAnalytics = () => {
 
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={6} mt={3}>
-                        <StatCard title="Average time from request creation to award" value={overview.avgAwardTime} icon="time" />
+                        <StatCard
+                                title="Average time from request creation to award"
+                                value={
+                                    overview.avgAwardTime > 60
+                                    ? `${(overview.avgAwardTime / 60).toFixed(2)} hours`
+                                    : `${overview.avgAwardTime} minutes`
+                                }
+                                icon="time"
+                                />
                     </Grid>
                 </Grid>
 
