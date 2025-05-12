@@ -257,9 +257,14 @@ const AdminAnalytics = () => {
                         <StatCard
                                 title="Average time from request creation to award"
                                 value={
-                                    overview.avgAwardTime > 60
+                                    overview.avgAwardTime > 1440
+                                    ? `${(overview.avgAwardTime / 1440).toFixed(0)} days ${((overview.avgAwardTime % 1440)/60).toFixed(0)} hours ${((overview.avgAwardTime % 1440)%60).toFixed(0)} minutes`
+                                    : (overview.avgAwardTime > 60
+                                        ? `${(overview.avgAwardTime / 60).toFixed(0)} hours ${(overview.avgAwardTime % 60).toFixed(0)} minutes`
+                                        : `${overview.avgAwardTime} minutes`)
+                                    /*overview.avgAwardTime > 60
                                     ? `${(overview.avgAwardTime / 60).toFixed(2)} hours`
-                                    : `${overview.avgAwardTime} minutes`
+                                    : `${overview.avgAwardTime} minutes`*/
                                 }
                                 icon="time"
                                 />
