@@ -160,7 +160,7 @@ const PreviewProcurement = () => {
                                 </Typography>
 
                                 <Typography sx={{ mb: 1 }}>
-                                    <strong>Enable bid proposals editing : </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
+                                    <strong>Enable bid proposals editing: </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
                                 </Typography>
     
                                 <Box sx={{ mt: 3 }}>

@@ -64,6 +64,8 @@
   
   .bid-details {
     display: flex;
+    /*justify-content: space-between;*/
+    align-items: center;
     gap: 2rem;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
@@ -90,6 +92,17 @@
     margin-bottom: 1.5rem;
     color: #444;
     line-height: 1.5;
+  }
+
+  .bid-proposal .label {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  
+  .bid-proposal .value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.125rem;
   }
   
   .evaluation-results {
@@ -386,5 +399,24 @@
   
   .score-item-row span {
     margin-right: 15px; /* Razmak između svakog od elemenata u redu */
+  }
+
+  /*Documentation*/
+  .bid-documentation{
+    margin-right: 15px;
+    margin-bottom: 0 auto;	
+  }
+
+   .bid-documentation .label {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 0 auto;	
+  }
+
+  .bid-documentation .value {
+    font-weight: 400;
+    font-size: 1.05rem;
+    color: #444;
+    margin-bottom: 0 auto;	
   }
   

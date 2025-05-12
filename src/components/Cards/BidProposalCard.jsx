@@ -2,6 +2,21 @@ import React from 'react';
 import PrimaryButton from '../Button/PrimaryButton';
 import SecondaryButton from '../Button/SecondaryButton';
 import '../../styles/BidProposalCard.css';
+import {
+  Box,
+  Typography,
+  Divider,
+  Paper,
+  Stack,
+} from "@mui/material";
+
+import {
+  FilePresent as FileIcon,
+} from "@mui/icons-material";
+
+import PdfIcon from '@mui/icons-material/PictureAsPdf';
+import DocIcon from '@mui/icons-material/Description';
+import JpgIcon from '@mui/icons-material/Image';
 
 // {bidProposals.map(bid => (
 //   <BidProposalCard
@@ -12,6 +27,24 @@ import '../../styles/BidProposalCard.css';
 //     isAwardDisabled={awardedBidId !== null && awardedBidId !== bid.id}
 //   />
 // ))}
+
+function getIconForFileType(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  switch (extension) {
+    case 'pdf':
+      return <PdfIcon color="action" />;
+    case 'doc':
+    case 'docx':
+      return <DocIcon color="action" />;
+    case 'jpg':
+    case 'png':
+    case 'jpeg':
+      return <JpgIcon color="action" />;
+    // Add more cases for other file types if needed
+    default:
+      return <FileIcon color="action" />;
+  }
+}
 
 const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
   const { 
@@ -24,7 +57,10 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     submissionDate, 
     isEvaluated, 
     evaluation,
-    isAwarded
+    isAwarded,
+    auctionHeld,
+    bidAuctionPrice,
+    documents,
   } = bid;
 
   return (
@@ -44,66 +80,95 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
       
       <div className="bid-details">
         <div className="bid-detail-item">
-          <span className="label">Price:</span>
+          <span className="label">Bid price:</span>
           <span className="value">${price}</span>
         </div>
+
+        {auctionHeld && (
+          <div className="bid-detail-item">
+            <span className="label">Price after auction: </span>
+            <span className="value">${bidAuctionPrice}</span>
+          </div>
+        )}
+        
+      </div>
+
+      <div className="bid-details">
         <div className="bid-detail-item">
-          <span className="label">Delivery Time:</span>
-          <span className="value">{deliveryTime} {/*days*/}</span>
+            <span className="label">Delivery time:</span>
+            <span className="value">{deliveryTime} {/*days*/}</span>
         </div>
       </div>
       
-      <div className="bid-proposal">
-        <p>{proposalDescription}</p>
+      <div className="bid-details">
+        <div className="bid-proposal">
+          <span className="label">Proposal text:</span>
+          <p>{proposalDescription}</p>
+        </div>
+      </div>
+
+      <div className="bid-documentation">
+        <span className="label">Documentation:</span>
+
+        {documents.length > 0 && (
+          console.log("Documents: ", documents),
+          <Box mt={3} px={0} sx={{ width: "100%" }}>
+
+            {documents.map((doc) => (
+              <Paper
+                key={doc.id}
+                sx={{
+                  p: 2,
+                  my: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Stack direction="row" spacing={2} alignItems="center">
+                  {/*<FileIcon color="action" />*/}
+                  {getIconForFileType(doc.original_name)}
+                  <Box>
+                    {/*<Typography fontWeight="bold">{doc.original_name}</Typography>*/}
+                    <Typography fontWeight="bold">
+                      <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                    </Typography>
+                  </Box>
+                </Stack>
+
+              </Paper>
+            ))}
+          </Box>
+        )}
+
+        {documents.length === 0 && (
+          <span className="value"> <br></br>
+            No documents have been uploaded.
+          </span>
+        )}
+
       </div>
       
       {isEvaluated && (
       <div className="evaluation-results">
         <h5>Evaluation Scores</h5>
         <div className="scores-grid">
-      {  /*  {Object.entries(evaluation.scores).map(([id, scoreItem]) => {
-           // const criterionMap = {
-             // 'quality': 'Quality',
-              //'price': 'Price',
-              //'delivery': 'Delivery',
-              //'expertise': 'Expertise',
-              //'communication': 'Communication',
-              // Keep backward compatibility with old data (since first code had these keys)
-             // 'technicalQuality': 'Technical Quality',
-             // 'priceFeasibility': 'Price Feasibility',
-             // 'deliveryTimeline': 'Delivery Timeline',
-             // 'experience': 'Experience'
-           // };
-            
-           // const displayName = criterionMap[criterionId] || 
-                         //     criterionId.charAt(0).toUpperCase() + 
-                          //    criterionId.slice(1).replace(/([A-Z])/g, ' $1').trim();
-            
-            return (
-              <div key={evaluation.criteriaId} className="score-item">
-                <span className="criterion">{scoreItem.name}:</span>
-                <span className="score">{scoreItem.score}</span>
+
+          {Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
+            evaluation.scores.map((scoreItem, index) => (
+              <div key={index} className="score-item">
+                <div className="score-item-row">
+                  <span className="criterion">
+                    <strong>{scoreItem.criteriaName}:</strong>
+                  </span>
+                  <span className="score">Score: {scoreItem.score}</span>
+                  <span className="weight">Weight: {scoreItem.weight}</span>
+                </div>
               </div>
-            );
-          })} */}
-{Array.isArray(evaluation.scores) && evaluation.scores.length > 0 ? (
-  evaluation.scores.map((scoreItem, index) => (
-    <div key={index} className="score-item">
-      <div className="score-item-row">
-        <span className="criterion">
-          <strong>{scoreItem.criteriaName}:</strong>
-        </span>
-        <span className="score">Score: {scoreItem.score}</span>
-        <span className="weight">Weight: {scoreItem.weight}</span>
-      </div>
-    </div>
-  ))
-) : (
-  <p>No evaluations available</p> // Fallback poruka ako nema evaluacija
-)}
-
-
-
+            ))
+          ) : (
+            <p>No evaluations available</p> // Fallback poruka ako nema evaluacija
+          )}
 
         </div>
         <div className="average-score">

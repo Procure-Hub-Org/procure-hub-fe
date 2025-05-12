@@ -29,7 +29,21 @@ const SellerDashboardRequests = () => {
     const [budgetMin, setBudgetMin] = useState();
     const [budgetMax, setBudgetMax] = useState();
     const [followedRequests, setFollowedRequests] = useState({});
+    
+    const [submittedBidRequestIds, setSubmittedBidRequestIds] = useState([]);
 
+    const fetchSubmittedBidRequestIds = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bids/request-ids`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            });
+            setSubmittedBidRequestIds(response.data.requestIds);
+        } catch (error) {
+            console.error('Error fetching submitted bid request IDs:', error);
+        }
+    };
     const fetchBuyerTypes = async () => {
         try {
             const response = await axios.get(
@@ -87,6 +101,7 @@ const SellerDashboardRequests = () => {
         fetchBuyerTypes();
         fetchCategories();
         fetchRequests();
+        fetchSubmittedBidRequestIds();
       
         const loadFavorites = async () => {
           const favorites = await fetchFavorites();
@@ -195,6 +210,7 @@ const SellerDashboardRequests = () => {
                                         request={request}
                                         followedRequests={followedRequests}
                                         setFollowedRequests={setFollowedRequests}
+                                        submittedBidRequestIds={submittedBidRequestIds}
                                     />
                                 ))}
                             </div>

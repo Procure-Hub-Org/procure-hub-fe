@@ -55,6 +55,9 @@ const Navbar = () => {
             <BasicButton onClick={() => navigate("/admin")}>
               Users
             </BasicButton>
+            <BasicButton onClick={() => navigate("/admin-analytics")}>
+              Analytics
+            </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
             </BasicButton>
@@ -72,6 +75,11 @@ const Navbar = () => {
               onClick={() => navigate("/buyer-auctions")}
             >
               Auctions
+            </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/buyer-analytics")}
+            >
+              Analytics
             </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
@@ -94,6 +102,9 @@ const Navbar = () => {
             </BasicButton>
             <BasicButton onClick={() => navigate("/seller-auctions")}>
               Auctions
+            </BasicButton>
+            <BasicButton onClick={() => navigate("/seller-analytics")}>
+              Analytics
             </BasicButton>
             <BasicButton onClick={() => navigate("/profile")}>
               Profile
