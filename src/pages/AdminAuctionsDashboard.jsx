@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import "../styles/AuctionsDashboard.css";
+import AuctionHistoryModal from "../components/Modals/AuctionHistoryModal.jsx";
 
 const AdminAuctionsDashboard = () => {
   const theme = useTheme();
@@ -14,6 +15,18 @@ const AdminAuctionsDashboard = () => {
   const [activeAuctions, setActiveAuctions] = useState([]);
   const [closedAuctions, setClosedAuctions] = useState([]);
   const navigate = useNavigate();
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [selectedAuctionId, setSelectedAuctionId] = useState(null);
+
+  const openHistoryModal = (auctionId) => {
+    setSelectedAuctionId(auctionId);
+    setHistoryModalOpen(true);
+  };
+
+  const closeHistoryModal = () => {
+    setHistoryModalOpen(false);
+    setSelectedAuctionId(null);
+  };
 
   const sortOpenAuctions = (auctions) => {
     return auctions.sort(
@@ -151,6 +164,14 @@ const AdminAuctionsDashboard = () => {
           </PrimaryButton>
         </div>
       )}
+      {columnType === "closed" && (
+        <div className="auction-button-wrapper">
+          <PrimaryButton onClick={() => openHistoryModal(auction.id)}>
+            View History
+          </PrimaryButton>
+        </div>
+      )}
+
     </div>
   );
 
@@ -186,6 +207,11 @@ const AdminAuctionsDashboard = () => {
           </div>
         </div>
       </div>
+      <AuctionHistoryModal
+        open={historyModalOpen}
+        onClose={closeHistoryModal}
+        auctionId={selectedAuctionId}
+      />
     </Layout>
   );
 };

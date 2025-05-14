@@ -118,11 +118,21 @@ const AdminProcurementPreview = () => {
                             flexDirection: "column",
                             alignItems: "flex-end",
                         }}>
+                            {/* Status Chip */}
                             <Chip
                                 label={data.status.toUpperCase()}
-                                color={data.status === "draft" ? "warning" : "success"}
+                                color={
+                                    {
+                                        draft: 'warning',    
+                                        active: 'success',   
+                                        frozen: 'error',     
+                                        closed: 'info',      
+                                        awarded: 'success',  
+                                    }[data.status] || 'default'
+                                }
                                 sx={{ mb: 1 }}
                             />
+                            
                             {data.status === "awarded" && (
                                 <Box>
                                     <Typography variant="body1" color="primary">
@@ -141,7 +151,7 @@ const AdminProcurementPreview = () => {
                                 <Typography sx={{ mb: 1 }}><strong>Budget Range:</strong> {data.budget_min} - {data.budget_max} $</Typography>
                                 <Typography sx={{ mb: 1 }}><strong>Category:</strong> {data.procurementCategory.name}</Typography>
                                 <Typography sx={{ mb: 1 }}>
-                                    <strong>Enable bid proposals editing : </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
+                                    <strong>Enable bid proposals editing: </strong> {data.bid_edit_deadline? `Yes, until ${formatDate(data.bid_edit_deadline)}` : "No"}
                                 </Typography>
                                 <Box sx={{ mt: 3 }}>
                                     <Typography variant="h5" fontWeight={"bolder"}>Items</Typography>

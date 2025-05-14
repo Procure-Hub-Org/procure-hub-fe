@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/api`;
+const token = localStorage.getItem("token");
 
 export const toggleFollowRequest = async (requestId, currentFollowedState, setFollowedState) => {
-    const token = localStorage.getItem("token");
 
     try {
         const method = currentFollowedState ? 'delete' : 'post';
@@ -26,7 +26,6 @@ export const toggleFollowRequest = async (requestId, currentFollowedState, setFo
 };
 
 export const fetchFavorites = async () => {
-    const token = localStorage.getItem("token");
 
     try {
         const res = await axios.get(`${API_URL}/procurement-requests/favorites`, {
@@ -34,11 +33,26 @@ export const fetchFavorites = async () => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        console.log("iz favorites.jsx" ,res.data);
 
-        return res.data;
+        const activeFavorites = res.data.filter(item => item.status === "active");
+        
+        return activeFavorites;
     } catch (error) {
         console.error("Error fetching favorites:", error);
         return [];
     }
 };
+
+export const fetchSubmittedBidRequestIds = async () => {
+    try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/bids/request-ids`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        return response.data.requestIds;
+    } catch (error) {
+        console.error('Error fetching submitted bid request IDs:', error);
+    }
+};
+
