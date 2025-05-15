@@ -80,6 +80,20 @@ const awardBid = async (bidId, procurementRequestId) => {
         }
       }
     );
+
+    /*const response = await axios.post(
+      `${API_BASE_URL}/api/new-contract`,
+      {
+        procurement_request_id: procurementRequestId,
+        procurement_bid_id: bidId
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );*/
     
     console.log('Award response:', response.data);
     return response.data;

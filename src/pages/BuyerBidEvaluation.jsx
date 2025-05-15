@@ -177,6 +177,22 @@ function BuyerBidEvaluation() {
                 }
             );
 
+            /*const response = await axios.post(
+            `${API_BASE_URL}/api/new-contract`,
+            {
+                procurement_request_id: id,
+                procurement_bid_id: bidId
+            },
+            {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                }
+            }
+            );
+            
+            cosole.log('Procurement request awarded:', response.data);*/
+
             console.log('Procurement status updated:', response.data);
 
             // Localy signal which bid was awarded
@@ -241,10 +257,12 @@ function BuyerBidEvaluation() {
                                 averageScore: bid.finalScore !== null ? bid.finalScore : "Pending",
                                 evaluationDate: new Date().toISOString()
                             } : null,
-                            isAwarded: false, // Assuming this comes from elsewhere or is determined later
+                            isAwarded: bid.isAwarded || false,
                             auctionHeld: bid?.auctionHeld || false,
                             bidAuctionPrice: bid.bidAuctionPrice || bid.price?.toString() || '0',
                             documents: bid.documents || [],
+                            procurementRequestId: data.procurementRequestId || null,
+                            isRequestAwarded: data.isRequestAwarded || false,
                         };
                     } catch (e) {
                         console.error('Error transforming bid:', e, bid);
