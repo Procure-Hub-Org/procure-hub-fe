@@ -185,6 +185,12 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
         )*/}
       </div>
     )}
+
+    {isRequestAwarded && !isEvaluated && (
+      <div className="evaluation-results">
+        <h5>Bid proposal has not been evaluated</h5>
+      </div>
+    )}
       
       { !isRequestAwarded && (
         <div className="bid-actions">

@@ -195,6 +195,8 @@ function BuyerBidEvaluation() {
 
             console.log('Procurement status updated:', response.data);
 
+            window.location.reload(); // Reload the page to reflect changes
+
             // Localy signal which bid was awarded
             setBidProposals(prevBids =>
                 prevBids.map(bid => ({

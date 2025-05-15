@@ -96,6 +96,7 @@ const awardBid = async (bidId, procurementRequestId) => {
     );*/
     
     console.log('Award response:', response.data);
+    window.location.reload(); // Reload the page to reflect changes
     return response.data;
   } catch (error) {
     console.error('Error awarding bid:', error);
