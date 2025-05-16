@@ -198,14 +198,6 @@ function BuyerBidEvaluation() {
             navigate('/contract-dashboard'); // Adjust the path as needed
 
 
-            // Localy signal which bid was awarded
-            /*setBidProposals(prevBids =>
-                prevBids.map(bid => ({
-                    ...bid,
-                    isAwarded: bid.id === bidId,
-                }))
-            );*/
-
             setLoading(false);
         } catch (err) {
             console.error('Error awarding bid:', err);
