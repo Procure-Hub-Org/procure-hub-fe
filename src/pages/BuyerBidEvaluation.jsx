@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import BidProposalCard from '../components/Cards/BidProposalCard';
 import CustomSelect from '../components/Input/DropdownSelect';
@@ -11,6 +11,7 @@ import PrimaryButton from '../components/Button/PrimaryButton';
 
 function BuyerBidEvaluation() {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     async function fetchBidCriteria(procurementId) {
         try {
@@ -168,24 +169,34 @@ function BuyerBidEvaluation() {
 
             const token = localStorage.getItem('token');
 
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
+            /*const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
                 { id, status: 'awarded' },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
-            );
+            );*/
 
-            console.log('Procurement status updated:', response.data);
-
-            // Localy signal which bid was awarded
-            setBidProposals(prevBids =>
-                prevBids.map(bid => ({
-                    ...bid,
-                    isAwarded: bid.id === bidId,
-                }))
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/new-contract`,
+                {
+                    procurement_request_id: Number(id),
+                    bid_id: bidId
+                },
+                {
+                    headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                    }
+                }
             );
+                        
+            console.log('Procurement request awarded:', response.data);
+
+            //window.location.reload(); // Reload the page to reflect changes
+            // Optionally redirect to a contract dashboard
+            navigate('/contract-dashboard'); // Adjust the path as needed
+
 
             setLoading(false);
         } catch (err) {
@@ -241,10 +252,12 @@ function BuyerBidEvaluation() {
                                 averageScore: bid.finalScore !== null ? bid.finalScore : "Pending",
                                 evaluationDate: new Date().toISOString()
                             } : null,
-                            isAwarded: false, // Assuming this comes from elsewhere or is determined later
+                            isAwarded: bid.isAwarded || false,
                             auctionHeld: bid?.auctionHeld || false,
                             bidAuctionPrice: bid.bidAuctionPrice || bid.price?.toString() || '0',
                             documents: bid.documents || [],
+                            procurementRequestId: data.procurementRequestId || null,
+                            isRequestAwarded: data.isRequestAwarded || false,
                         };
                     } catch (e) {
                         console.error('Error transforming bid:', e, bid);
