@@ -131,7 +131,7 @@ const PreviewProcurement = () => {
                             {data.status === "awarded" && (
                                 <Box>
                                     <Typography variant="body1" color="primary">
-                                        <strong>Awarded to: </strong> {data.seller || "Jane Doe"}
+                                        <strong>Awarded to: </strong> {data.seller.fullName || "Jane Doe"}
                                     </Typography>
                                 </Box>
                             )}

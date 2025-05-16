@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -67,7 +68,7 @@ const awardBid = async (bidId, procurementRequestId) => {
     console.log(`Awarding bid ${bidId} for procurement request ${procurementRequestId}`);
     
     // Use the correct endpoint and HTTP method
-    const response = await axios.put(
+    /*const response = await axios.put(
       `${API_BASE_URL}/api/procurement/${procurementRequestId}/status`, 
       { 
         status: 'awarded',
@@ -79,13 +80,12 @@ const awardBid = async (bidId, procurementRequestId) => {
           'Content-Type': 'application/json'
         }
       }
-    );
+    );*/
 
-    /*const response = await axios.post(
-      `${API_BASE_URL}/api/new-contract`,
+    const response = await axios.post(`${API_BASE_URL}/api/new-contract`,
       {
-        procurement_request_id: procurementRequestId,
-        procurement_bid_id: bidId
+        procurement_request_id: Number(procurementRequestId),
+        bid_id: bidId
       },
       {
         headers: {
@@ -93,10 +93,14 @@ const awardBid = async (bidId, procurementRequestId) => {
           'Content-Type': 'application/json'
         }
       }
-    );*/
+    );
     
     console.log('Award response:', response.data);
-    window.location.reload(); // Reload the page to reflect changes
+    //window.location.reload(); // Reload the page to reflect changes
+    // Optionally redirect to a contract dashboard
+    useNavigate('/contract-dashboard'); // Adjust the path as needed
+
+
     return response.data;
   } catch (error) {
     console.error('Error awarding bid:', error);
