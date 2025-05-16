@@ -130,8 +130,8 @@ const PreviewProcurement = () => {
                             {/* Show "Awarded To" if status is "awarded" */}
                             {data.status === "awarded" && (
                                 <Box>
-                                    <Typography variant="body1" color="primary">
-                                        <strong>Awarded to: </strong> {data.seller.fullName || "Jane Doe"}
+                                    <Typography variant="body1" color="primary" textAlign={"center"}>
+                                        <strong>Seller: </strong> {data.seller.fullName || "Jane Doe"}
                                     </Typography>
                                 </Box>
                             )}
