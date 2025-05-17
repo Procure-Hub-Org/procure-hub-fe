@@ -9,7 +9,7 @@ import {
 } from "recharts";
 import { Paper, Typography, Box } from "@mui/material";
 
-const CustomPieChart = ({ data, colors, title, subtitle }) => {
+const CustomPieChart = ({ data, colors, title, subtitle, tooltipFormatter }) => {
   return (
     <Paper elevation={3} sx={{ px: 3, py: 3, borderRadius: 2 }}>
       <Box mb={2}>
@@ -43,7 +43,8 @@ const CustomPieChart = ({ data, colors, title, subtitle }) => {
               />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => `${value}%`} />
+          {/*<Tooltip formatter={(value) => `${value}%`} />*/}
+          <Tooltip formatter={tooltipFormatter || ((value) => `${value}%`)} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>
