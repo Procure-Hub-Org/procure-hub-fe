@@ -12,8 +12,7 @@ import {
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 
-const AddDisputePopup = ({ open, onClose, onSubmit }) => {
-    const [title, setTitle] = useState('');
+const AddDisputePopup = ({ open, onClose, onSubmit, contractId }) => {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -23,9 +22,10 @@ const AddDisputePopup = ({ open, onClose, onSubmit }) => {
         setError(null);
 
         try {
-            // You can plug in your API logic here
-            await onSubmit({ title, text });
-            setTitle('');
+            await onSubmit({
+                contract_id: contractId,
+                complainment_text: text
+            });
             setText('');
             onClose();
         } catch (e) {
@@ -37,7 +37,6 @@ const AddDisputePopup = ({ open, onClose, onSubmit }) => {
 
     const handleClose = () => {
         if (!loading) {
-            setTitle('');
             setText('');
             setError(null);
             onClose();
@@ -50,17 +49,10 @@ const AddDisputePopup = ({ open, onClose, onSubmit }) => {
                 Submit Dispute for Contract: <strong>{'Unnamed Contract'}</strong>
             </DialogTitle>
             <DialogContent>
-                <Card variant="outlined">
-                    <CardContent>
+                <Card elevation={0}>
+                    <CardContent  sx={{ pt: 1, mb:0 }}>
                         <Typography>Please provide a detailed description of the
                             issue you are experiencing with this contract.</Typography>
-                        <TextField
-                            label="Title"
-                            fullWidth
-                            margin="normal"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
                         <TextField
                             label="Dispute Description"
                             fullWidth
@@ -88,7 +80,7 @@ const AddDisputePopup = ({ open, onClose, onSubmit }) => {
                 </SecondaryButton>
                 <PrimaryButton
                     onClick={handleSubmit}
-                    disabled={loading || !text || !title}
+                    disabled={loading || !text}
                     size="medium"
                     sx={{ minWidth: 100 , textTransform: 'none' }}>
                     Submit

@@ -244,6 +244,7 @@ const SellerBidCard = ({ bid }) => {
             open={reportOpen}
             onClose={() => setReportOpen(false)}
             procurementTitle={bid.procurementRequest.title}
+            procurementRequestId={bid.procurementRequest.id}
             onSubmit={handleReportSubmit}
         />
         {showReportButton && (

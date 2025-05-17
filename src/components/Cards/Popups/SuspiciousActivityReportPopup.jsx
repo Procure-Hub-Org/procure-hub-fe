@@ -9,8 +9,9 @@ import {
 } from '@mui/material';
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
+import {data} from "react-router-dom";
 
-const SuspiciousActivityReportPopup = ({ open, onClose, procurementTitle }) => {
+const SuspiciousActivityReportPopup = ({ open, onClose, procurementTitle, procurementRequestId }) => {
     const [reportText, setReportText] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -25,7 +26,7 @@ const SuspiciousActivityReportPopup = ({ open, onClose, procurementTitle }) => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!reportText.trim()) {
             setError('Please enter a report.');
             return;
@@ -34,12 +35,21 @@ const SuspiciousActivityReportPopup = ({ open, onClose, procurementTitle }) => {
         setLoading(true);
         setError(null);
 
-        // Mocking API call
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            const data = {
+                procurement_request_id: procurementRequestId,
+                text: reportText.trim(),
+            };
+
+            console.log("Suspicious activity JSON payload:", data);
+
             setSuccess(true);
             handleClose();
-        }, 1000);
+        } catch (e) {
+            setError('Something went wrong while preparing the report.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
