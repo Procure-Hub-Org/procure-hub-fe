@@ -11,6 +11,7 @@ import SellerBidCard from "../components/Cards/SellerBidCard";
 import AdminReportPopup from "./AdminReportPopup";
 import ContractDisputeSubmit from "../components/Cards/Popups/ContractDisputesPopup";
 import "../styles/ContractsDashboard.css";
+import AddDisputePopup from "../components/Cards/Popups/AddDisputePopup";
 
 const ContractsDashboard = () => {
   const [contracts, setContracts] = useState([]);
@@ -23,16 +24,46 @@ const ContractsDashboard = () => {
   const navigate = useNavigate();
 
   const [openModalRequest, setOpenModalRequest] = useState(false);
-  const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [openModalBid, setOpenModalBid] = useState(false);
-  const [selectedBidId, setSelectedBidId] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedBid, setSelectedBid] = useState(null);
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [isDisputesOpen, setIsDisputesOpen] = useState(false);
+  const [isAddDisputeOpen, setIsAddDisputeOpen] = useState(false);
+  const [selectedContractId, setSelectedContractId] = useState(null);
+
 
   const handleOpenDisputes = () => setIsDisputesOpen(true);
   const handleCloseDisputes = () => setIsDisputesOpen(false);
+
+  const handleOpenAddDispute = (contractId) => {
+    setSelectedContractId(contractId);
+    setIsAddDisputeOpen(true);
+  };
+
+  const handleCloseAddDispute = () => {
+    setSelectedContractId(null);
+    setIsAddDisputeOpen(false);
+  };
+
+  const handleSubmitDispute = async ({ contract_id, complainment_text }) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/new-dispute`,
+        { 
+          user_id: userId,
+          contract_id,
+          complainment_text,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+    } catch (error) {
+      console.error("Error submitting dispute:", error);
+      throw error;
+    }
+  };
 
   const handleOpenRequest = async (id) => {
     try {
@@ -42,8 +73,8 @@ const ContractsDashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      
       setSelectedRequest(response.data.data);
-      console.log("Selected request:", response.data.data);
       setOpenModalRequest(true);
     } catch (error) {
       console.error("Greška pri dohvaćanju zahtjeva:", error);
@@ -71,7 +102,7 @@ const ContractsDashboard = () => {
   };
 
   const handleCloseBid = () => {
-    setSelectedBidId(null);
+    setSelectedBid(null);
     setOpenModalBid(false);
   };
 
@@ -81,102 +112,20 @@ const ContractsDashboard = () => {
       return;
     }
 
-    // Mock data
-    const mockContracts = [
-      {
-        contract_id: 1,
-        buyer_id: 1,
-        buyer_name: "Ima Galijašević",
-        buyer_company_name: "ETF",
-        seller_id: 10,
-        seller_name: "Seller One",
-        seller_company_name: "Seller Co 1",
-        procurement_request_title: "Request A",
-        procurement_request_id: 5,
-        bid_id: 9,
-        number_of_disputes: 0,
-      },
-      {
-        contract_id: 2,
-        buyer_id: 3,
-        buyer_name: "Irma Galijašević",
-        buyer_company_name: "Company B",
-        seller_id: 11,
-        seller_name: "Seller Two",
-        seller_company_name: "Seller Co 2",
-        procurement_request_title: "Request B",
-        procurement_request_id: 2,
-        bid_id: 2,
-        number_of_disputes: 2,
-      },
-      {
-        contract_id: 3,
-        buyer_id: 3,
-        buyer_name: "Irma Galijašević",
-        buyer_company_name: "Company B",
-        seller_id: 10,
-        seller_name: "Seller One",
-        seller_company_name: "Seller Co 1",
-        procurement_request_title: "Request C",
-        procurement_request_id: 3,
-        bid_id: 3,
-        number_of_disputes: 1,
-      },
-      {
-        contract_id: 4,
-        buyer_id: 1,
-        buyer_name: "Ima Galijašević",
-        buyer_company_name: "ETF",
-        seller_id: 10,
-        seller_name: "Seller One",
-        seller_company_name: "Seller Co 1",
-        procurement_request_title: "Request A",
-        procurement_request_id: 4,
-        bid_id: 4,
-        number_of_disputes: 0,
-      },
-      {
-        contract_id: 5,
-        buyer_id: 3,
-        buyer_name: "Irma Galijašević",
-        buyer_company_name: "Company B",
-        seller_id: 11,
-        seller_name: "Seller Two",
-        seller_company_name: "Seller Co 2",
-        procurement_request_title: "Request B",
-        procurement_request_id: 5,
-        bid_id: 5,
-        number_of_disputes: 0,
-      },
-      {
-        contract_id: 6,
-        buyer_id: 3,
-        buyer_name: "Irma Galijašević",
-        buyer_company_name: "Company B",
-        seller_id: 10,
-        seller_name: "Seller One",
-        seller_company_name: "Seller Co 1",
-        procurement_request_title: "Request C",
-        procurement_request_id: 6,
-        bid_id: 6,
-      },
-    ];
-
-    // Commented out real API call
-    // axios
-    //   .get(`${import.meta.env.VITE_API_URL}/api/contracts`, {
-    //     headers: { Authorization: `Bearer ${token}` },
-    //   })
-    //   .then((response) => {
-    //     setContracts(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching contracts:", error);
-    //   });
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/contracts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        setContracts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching contracts:", error);
+      });
 
     const filtered = isAdmin()
-      ? mockContracts
-      : mockContracts.filter(
+      ? contracts
+      : contracts.filter(
           (contract) =>
             contract.buyer_id === userId || contract.seller_id === userId
         );
@@ -254,7 +203,7 @@ const ContractsDashboard = () => {
 
                   <td>
                     <span
-                      onClick={() => handleOpenBid(contract.bid_id)}
+                      onClick={() => handleOpenBid(contract.procurement_bid_id)}
                       style={{
                         cursor: "pointer",
                         color: theme.palette.primary.main,
@@ -278,13 +227,13 @@ const ContractsDashboard = () => {
                         onClick={handleOpenDisputes}
                       >
                         View Disputes
-                        <ContractDisputeSubmit
+                      </OutlinedButton>
+                       <ContractDisputeSubmit
                           open={isDisputesOpen}
                           onClose={handleCloseDisputes}
                         />
-                      </OutlinedButton>
                       {!isAdmin() && (
-                        <PrimaryButton onClick={() => {}}>
+                        <PrimaryButton onClick={() => handleOpenAddDispute(contract.contract_id)}>
                           Add Dispute
                         </PrimaryButton>
                       )}
@@ -385,6 +334,13 @@ const ContractsDashboard = () => {
         {showReportPopup && (
           <AdminReportPopup onClose={() => setShowReportPopup(false)} />
         )}
+        <AddDisputePopup
+          open={isAddDisputeOpen}
+          onClose={handleCloseAddDispute}
+          onSubmit={handleSubmitDispute}
+          contractId={selectedContractId}
+        />
+
       </div>
     </Layout>
   );

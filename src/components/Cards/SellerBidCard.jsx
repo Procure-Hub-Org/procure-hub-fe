@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -16,8 +16,9 @@ import PrimaryButton from "../Button/PrimaryButton";
 import OutlinedButton from "../Button/OutlinedButton";
 import SuspiciousActivityReportPopup from "./Popups/SuspiciousActivityReportPopup.jsx";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred"; // optional icon
+import { useEffect } from "react";
 
-const SellerBidCard = ({ bid, buttonsWrapper=true }) => {
+const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
   const navigate = useNavigate();
   const submitted = bid.submitted_at !== null;
   const editDeadline = bid.procurementRequest.bid_edit_deadline;
@@ -25,15 +26,26 @@ const SellerBidCard = ({ bid, buttonsWrapper=true }) => {
   const now = dayjs();
 
   const [reportOpen, setReportOpen] = useState(false);
-  const suspiciousAlreadyReported = bid.suspicious_report_submitted;
+  const [suspiciousAlreadyReported, setSuspiciousAlreadyReported] = useState(false);
   const showReportButton = !suspiciousAlreadyReported;
 
+  const [loadingReports, setLoadingReports] = useState(true);
+
+  const sellerId = localStorage.getItem("id");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!sellerId) return;
 
     const handleReportSubmit = (text) => {
       // Replace with actual API call
       console.log("Submitting suspicious report:", text);
       // Optional: disable the button, reload, show toast, etc.
   };
+
+    fetchReports();
+  }, [sellerId, bid.procurementRequest.id]);
+
 
   const isEditable = () => {
     if (submitted) return false;
@@ -66,8 +78,6 @@ const SellerBidCard = ({ bid, buttonsWrapper=true }) => {
       alert("Bid can not be edited!");
     }
   };
-
-  
 
   const handleSubmit = async () => {
     const formData = {
@@ -241,51 +251,53 @@ const SellerBidCard = ({ bid, buttonsWrapper=true }) => {
         </Typography>
 
         <SuspiciousActivityReportPopup
-            open={reportOpen}
-            onClose={() => setReportOpen(false)}
-            procurementTitle={bid.procurementRequest.title}
-            procurementRequestId={bid.procurementRequest.id}
-            onSubmit={handleReportSubmit}
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          procurementTitle={bid.procurementRequest.title}
+          procurementRequestId={bid.procurementRequest.id}
         />
         {buttonsWrapper && showReportButton && (
-            <Box textAlign="center">
-                <PrimaryButton
-                    onClick={() => setReportOpen(true)}
-                    disabled={suspiciousAlreadyReported}
-                    startIcon={<ReportGmailerrorredIcon />}
-                >
-                    {suspiciousAlreadyReported
-                        ? "Report Submitted"
-                        : "Report Suspicious Activity"}
-                </PrimaryButton>
-            </Box>
-        )}
-
-        {buttonsWrapper && !submitted && editable && documentsDeadlinePassed && (
-          <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-            <Chip
-              icon={<AccessTimeIcon />}
-              label={
-                editDeadline
-                  ? `Edit Deadline: ${dayjs(editDeadline).format(
-                      "DD.MM.YYYY HH:mm"
-                    )}`
-                  : "No edit enabled"
-              }
-              color="error"
-              variant="filled"
-              size="small"
-              sx={{ fontWeight: 500 }}
-            />
-            <OutlinedButton onClick={handleEdit} disabled={!editDeadline}>
-              {" "}
-              Edit{" "}
-            </OutlinedButton>
-            <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
+          <Box textAlign="center">
+            <PrimaryButton
+              onClick={() => setReportOpen(true)}
+              disabled={suspiciousAlreadyReported}
+              startIcon={<ReportGmailerrorredIcon />}
+            >
+              {suspiciousAlreadyReported
+                ? "Report Submitted"
+                : "Report Suspicious Activity"}
+            </PrimaryButton>
           </Box>
         )}
 
-        {buttonsWrapper && ( !documentsDeadlinePassed) && !submitted && (
+        {buttonsWrapper &&
+          !submitted &&
+          editable &&
+          documentsDeadlinePassed && (
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Chip
+                icon={<AccessTimeIcon />}
+                label={
+                  editDeadline
+                    ? `Edit Deadline: ${dayjs(editDeadline).format(
+                        "DD.MM.YYYY HH:mm"
+                      )}`
+                    : "No edit enabled"
+                }
+                color="error"
+                variant="filled"
+                size="small"
+                sx={{ fontWeight: 500 }}
+              />
+              <OutlinedButton onClick={handleEdit} disabled={!editDeadline}>
+                {" "}
+                Edit{" "}
+              </OutlinedButton>
+              <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
+            </Box>
+          )}
+
+        {buttonsWrapper && !documentsDeadlinePassed && !submitted && (
           <Chip
             label="Deadline Passed"
             color="error"
