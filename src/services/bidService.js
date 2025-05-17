@@ -66,21 +66,6 @@ const awardBid = async (bidId, procurementRequestId) => {
     const token = localStorage.getItem('token');
     
     console.log(`Awarding bid ${bidId} for procurement request ${procurementRequestId}`);
-    
-    // Use the correct endpoint and HTTP method
-    /*const response = await axios.put(
-      `${API_BASE_URL}/api/procurement/${procurementRequestId}/status`, 
-      { 
-        status: 'awarded',
-        awarded_bid_id: bidId // Include the winning bid ID
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );*/
 
     const response = await axios.post(`${API_BASE_URL}/api/new-contract`,
       {
