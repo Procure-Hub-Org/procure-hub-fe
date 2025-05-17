@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import OutlinedButton from "../components/Button/OutlinedButton";
 import { isAdmin, isAuthenticated } from "../utils/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
 
 const ContractsDashboard = () => {
   const [contracts, setContracts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [contractsPerPage] = useState(10);
+  const [contractsPerPage] = useState(5);
+  const theme = useTheme();
 
   const token = localStorage.getItem("token");
   const userId = Number(localStorage.getItem("id"));
@@ -20,7 +23,78 @@ const ContractsDashboard = () => {
       return;
     }
 
-    // Commented out API call
+    // Mock data
+    const mockContracts = [
+  {
+    contract_id: 1,
+    buyer_id: 1,
+    buyer_name: "Ima Galijašević",
+    buyer_company_name: "ETF",
+    seller_id: 10,
+    seller_name: "Seller One",
+    seller_company_name: "Seller Co 1",
+    procurement_request_title: "Request A",
+    number_of_disputes: 0,
+  },
+  {
+    contract_id: 2,
+    buyer_id: 3,
+    buyer_name: "Irma Galijašević",
+    buyer_company_name: "Company B",
+    seller_id: 11,
+    seller_name: "Seller Two",
+    seller_company_name: "Seller Co 2",
+    procurement_request_title: "Request B",
+    number_of_disputes: 2,
+  },
+  {
+    contract_id: 3,
+    buyer_id: 3,
+    buyer_name: "Irma Galijašević",
+    buyer_company_name: "Company B",
+    seller_id: 10,
+    seller_name: "Seller One",
+    seller_company_name: "Seller Co 1",
+    procurement_request_title: "Request C",
+    number_of_disputes: 1,
+  },
+  {
+    contract_id: 4,
+    buyer_id: 1,
+    buyer_name: "Ima Galijašević",
+    buyer_company_name: "ETF",
+    seller_id: 10,
+    seller_name: "Seller One",
+    seller_company_name: "Seller Co 1",
+    procurement_request_title: "Request A",
+    number_of_disputes: 0,
+  },
+  {
+    contract_id: 5,
+    buyer_id: 3,
+    buyer_name: "Irma Galijašević",
+    buyer_company_name: "Company B",
+    seller_id: 11,
+    seller_name: "Seller Two",
+    seller_company_name: "Seller Co 2",
+    procurement_request_title: "Request B",
+    number_of_disputes: 0,
+  },
+  {
+    contract_id: 6,
+    buyer_id: 3,
+    buyer_name: "Irma Galijašević",
+    buyer_company_name: "Company B",
+    seller_id: 10,
+    seller_name: "Seller One",
+    seller_company_name: "Seller Co 1",
+    procurement_request_title: "Request C",
+    number_of_disputes: 3,
+  },
+];
+
+
+    // Commented out real API call
     // axios
     //   .get(`${import.meta.env.VITE_API_URL}/api/contracts`, {
     //     headers: { Authorization: `Bearer ${token}` },
@@ -32,60 +106,35 @@ const ContractsDashboard = () => {
     //     console.error("Error fetching contracts:", error);
     //   });
 
-    // Mock data
-    const mockContracts = [
-      {
-        contract_id: 1,
-        buyer_id: 1,
-        buyer_name: "I. Galijasevic",
-        buyer_company_name: "ETF Buyers",
-        seller_id: 10,
-        seller_name: "Seller One",
-        seller_company_name: "Company A",
-        procurement_request_id: 101,
-        procurement_request_title: "Request A",
-        procurement_bid_id: 201
-      },
-      {
-        contract_id: 2,
-        buyer_id: 3,
-        buyer_name: "Irma G.",
-        buyer_company_name: "Global Buy Co.",
-        seller_id: 11,
-        seller_name: "Seller Two",
-        seller_company_name: "Company B",
-        procurement_request_id: 102,
-        procurement_request_title: "Request B",
-        procurement_bid_id: 202
-      },
-      {
-        contract_id: 3,
-        buyer_id: 99,
-        buyer_name: "John Doe",
-        buyer_company_name: "Doe Corp",
-        seller_id: 11,
-        seller_name: "Seller Two",
-        seller_company_name: "Company B",
-        procurement_request_id: 103,
-        procurement_request_title: "Request C",
-        procurement_bid_id: 203
-      }
-    ];
-
-    const filteredContracts = isAdmin()
+    const filtered = isAdmin()
       ? mockContracts
       : mockContracts.filter(
-          (contract) => contract.buyer_id === userId || contract.seller_id === userId
+          (contract) =>
+            contract.buyer_id === userId || contract.seller_id === userId
         );
 
-    setContracts(filteredContracts);
+    setContracts(filtered);
   }, [token]);
 
   const indexOfLast = currentPage * contractsPerPage;
   const indexOfFirst = indexOfLast - contractsPerPage;
   const currentContracts = contracts.slice(indexOfFirst, indexOfLast);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const totalPages = Math.ceil(contracts.length / contractsPerPage);
+  const maxPageButtons = 5;
+  const startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
+  const endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+
+  const pageNumbers = [];
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i);
+  }
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   return (
     <Layout>
@@ -110,59 +159,95 @@ const ContractsDashboard = () => {
                 <th>Buyer Company</th>
                 <th>Seller Name</th>
                 <th>Seller Company</th>
-                <th>Request Title</th>
                 <th>Request</th>
                 <th>Bid</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {currentContracts.map((contract) => (
-                <tr key={contract.contract_id}>
-                  <td>{contract.buyer_name}</td>
-                  <td>{contract.buyer_company_name}</td>
-                  <td>{contract.seller_name}</td>
-                  <td>{contract.seller_company_name}</td>
-                  <td>{contract.procurement_request_title}</td>
-                  <td>
-                    <OutlinedButton onClick={() => {}}>
-                      View Request
-                    </OutlinedButton>
-                  </td>
-                  <td>
-                    <OutlinedButton onClick={() => {}}>
-                      View Bid
-                    </OutlinedButton>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <OutlinedButton disabled>
-                        View Disputes
-                      </OutlinedButton>
-                      {!isAdmin() && (
-                        <PrimaryButton onClick={() => {}}>
-                          Add Dispute
-                        </PrimaryButton>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                {currentContracts.map((contract) => (
+                    <tr key={contract.contract_id}>
+                    <td>{contract.buyer_name}</td>
+                    <td>{contract.buyer_company_name}</td>
+                    <td>{contract.seller_name}</td>
+                    <td>{contract.seller_company_name}</td>
+
+                    {/* Make request title a clickable link */}
+                    <td>
+                        <Link
+                        to={`/requests/${contract.contract_id}`} // Use the correct request ID if available
+                        style={{ color: theme.palette.primary.main, textDecoration: "underline" }}
+                        >
+                        {contract.procurement_request_title}
+                        </Link>
+                    </td>
+
+                    {/* Replace button with clickable 'Bid Proposal' */}
+                    <td>
+                        <Link
+                        to={`/bids/${contract.contract_id}`} // Use actual bid ID if needed
+                        style={{ color: theme.palette.primary.main, textDecoration: "underline" }}
+                        >
+                        Bid Proposal
+                        </Link>
+                    </td>
+
+                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
+                        <OutlinedButton disabled={contract.number_of_disputes === 0}>
+                            View Disputes
+                        </OutlinedButton>
+                        {!isAdmin() && (
+                            <PrimaryButton onClick={() => {}}>
+                            Add Dispute
+                            </PrimaryButton>
+                        )}
+                        </div>
+                    </td>
+                    </tr>
+                ))}
+                </tbody>
+
           </table>
         </div>
 
         {/* Pagination */}
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          {Array.from({ length: Math.ceil(contracts.length / contractsPerPage) }, (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => paginate(i + 1)}
-              style={{ margin: '0 5px', padding: '5px 10px' }}
-            >
-              {i + 1}
-            </button>
+          <OutlinedButton
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            style={{ margin: '0 5px', padding: '5px 10px' }}
+          >
+            &laquo; Prev
+          </OutlinedButton>
+
+          {pageNumbers.map((number) => (
+            number === currentPage ? (
+              <PrimaryButton
+                key={number}
+                onClick={() => paginate(number)}
+                style={{ margin: '0 5px', padding: '5px 10px' }}
+              >
+                {number}
+              </PrimaryButton>
+            ) : (
+              <OutlinedButton
+                key={number}
+                onClick={() => paginate(number)}
+                style={{ margin: '0 5px', padding: '5px 10px' }}
+              >
+                {number}
+              </OutlinedButton>
+            )
           ))}
+
+          <OutlinedButton
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            style={{ margin: '0 5px', padding: '5px 10px' }}
+          >
+            Next &raquo;
+          </OutlinedButton>
         </div>
       </div>
     </Layout>
