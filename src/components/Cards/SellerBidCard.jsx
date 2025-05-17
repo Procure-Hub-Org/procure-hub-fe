@@ -17,7 +17,7 @@ import OutlinedButton from "../Button/OutlinedButton";
 import SuspiciousActivityReportPopup from "./Popups/SuspiciousActivityReportPopup.jsx";
 import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred"; // optional icon
 
-const SellerBidCard = ({ bid }) => {
+const SellerBidCard = ({ bid, buttonsWrapper=true }) => {
   const navigate = useNavigate();
   const submitted = bid.submitted_at !== null;
   const editDeadline = bid.procurementRequest.bid_edit_deadline;
@@ -247,7 +247,7 @@ const SellerBidCard = ({ bid }) => {
             procurementRequestId={bid.procurementRequest.id}
             onSubmit={handleReportSubmit}
         />
-        {showReportButton && (
+        {buttonsWrapper && showReportButton && (
             <Box textAlign="center">
                 <PrimaryButton
                     onClick={() => setReportOpen(true)}
@@ -261,7 +261,7 @@ const SellerBidCard = ({ bid }) => {
             </Box>
         )}
 
-        {!submitted && editable && documentsDeadlinePassed && (
+        {buttonsWrapper && !submitted && editable && documentsDeadlinePassed && (
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
             <Chip
               icon={<AccessTimeIcon />}
@@ -285,7 +285,7 @@ const SellerBidCard = ({ bid }) => {
           </Box>
         )}
 
-        {( !documentsDeadlinePassed) && !submitted && (
+        {buttonsWrapper && ( !documentsDeadlinePassed) && !submitted && (
           <Chip
             label="Deadline Passed"
             color="error"

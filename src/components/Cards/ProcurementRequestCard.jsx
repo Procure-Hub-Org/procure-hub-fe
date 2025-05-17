@@ -9,6 +9,7 @@ const ProcurementRequestCard = ({
   followedRequests,
   setFollowedRequests,
   submittedBidRequestIds = [],
+  buttonsWrapper = true,
 }) => {
   const navigate = useNavigate();
 
@@ -34,7 +35,8 @@ const ProcurementRequestCard = ({
     <div className="request-card">
       <div className="card-header d-flex justify-content-between align-items-center">
         <h3 className="card-title">{request.title}</h3>
-        <div style={{ display: "flex", gap: "1rem" }}>
+        {buttonsWrapper && (
+          <div className="buttons-wrapper-pr" style={{ display: "flex", gap: "1rem" }}>
           <PrimaryButton
             onClick={() => handleCreateBidProposalClick(request.id)}
             disabled={isBidSubmitted}
@@ -45,6 +47,8 @@ const ProcurementRequestCard = ({
             {followedRequests[request.id] ? "Unfollow" : "Follow"}
           </PrimaryButton>
         </div>
+        )}
+        
       </div>
 
       <div className="card-body">

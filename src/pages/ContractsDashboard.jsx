@@ -6,6 +6,11 @@ import OutlinedButton from "../components/Button/OutlinedButton";
 import { isAdmin, isAuthenticated } from "../utils/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import ProcurementRequestCard from "../components/Cards/ProcurementRequestCard";
+import SellerBidCard from "../components/Cards/SellerBidCard";
+import AdminReportPopup from "./AdminReportPopup";
+import ContractDisputeSubmit from "../components/Cards/Popups/ContractDisputesPopup";
+import "../styles/ContractsDashboard.css";
 
 const ContractsDashboard = () => {
   const [contracts, setContracts] = useState([]);
@@ -17,6 +22,59 @@ const ContractsDashboard = () => {
   const userId = Number(localStorage.getItem("id"));
   const navigate = useNavigate();
 
+  const [openModalRequest, setOpenModalRequest] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [openModalBid, setOpenModalBid] = useState(false);
+  const [selectedBidId, setSelectedBidId] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedBid, setSelectedBid] = useState(null);
+  const [showReportPopup, setShowReportPopup] = useState(false);
+  const [isDisputesOpen, setIsDisputesOpen] = useState(false);
+
+  const handleOpenDisputes = () => setIsDisputesOpen(true);
+  const handleCloseDisputes = () => setIsDisputesOpen(false);
+
+  const handleOpenRequest = async (id) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/procurement-requests/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSelectedRequest(response.data.data);
+      console.log("Selected request:", response.data.data);
+      setOpenModalRequest(true);
+    } catch (error) {
+      console.error("Greška pri dohvaćanju zahtjeva:", error);
+    }
+  };
+
+  const handleCloseRequest = () => {
+    setOpenModalRequest(false);
+    setSelectedRequestId(null);
+  };
+
+  const handleOpenBid = async (id) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/procurement-bid/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSelectedBid(response.data.data);
+      setOpenModalBid(true);
+    } catch (error) {
+      console.error("Greška pri dohvaćanju zahtjeva:", error);
+    }
+  };
+
+  const handleCloseBid = () => {
+    setSelectedBidId(null);
+    setOpenModalBid(false);
+  };
+
   useEffect(() => {
     if (!isAuthenticated()) {
       navigate("/login");
@@ -25,74 +83,84 @@ const ContractsDashboard = () => {
 
     // Mock data
     const mockContracts = [
-  {
-    contract_id: 1,
-    buyer_id: 1,
-    buyer_name: "Ima Galijašević",
-    buyer_company_name: "ETF",
-    seller_id: 10,
-    seller_name: "Seller One",
-    seller_company_name: "Seller Co 1",
-    procurement_request_title: "Request A",
-    number_of_disputes: 0,
-  },
-  {
-    contract_id: 2,
-    buyer_id: 3,
-    buyer_name: "Irma Galijašević",
-    buyer_company_name: "Company B",
-    seller_id: 11,
-    seller_name: "Seller Two",
-    seller_company_name: "Seller Co 2",
-    procurement_request_title: "Request B",
-    number_of_disputes: 2,
-  },
-  {
-    contract_id: 3,
-    buyer_id: 3,
-    buyer_name: "Irma Galijašević",
-    buyer_company_name: "Company B",
-    seller_id: 10,
-    seller_name: "Seller One",
-    seller_company_name: "Seller Co 1",
-    procurement_request_title: "Request C",
-    number_of_disputes: 1,
-  },
-  {
-    contract_id: 4,
-    buyer_id: 1,
-    buyer_name: "Ima Galijašević",
-    buyer_company_name: "ETF",
-    seller_id: 10,
-    seller_name: "Seller One",
-    seller_company_name: "Seller Co 1",
-    procurement_request_title: "Request A",
-    number_of_disputes: 0,
-  },
-  {
-    contract_id: 5,
-    buyer_id: 3,
-    buyer_name: "Irma Galijašević",
-    buyer_company_name: "Company B",
-    seller_id: 11,
-    seller_name: "Seller Two",
-    seller_company_name: "Seller Co 2",
-    procurement_request_title: "Request B",
-    number_of_disputes: 0,
-  },
-  {
-    contract_id: 6,
-    buyer_id: 3,
-    buyer_name: "Irma Galijašević",
-    buyer_company_name: "Company B",
-    seller_id: 10,
-    seller_name: "Seller One",
-    seller_company_name: "Seller Co 1",
-    procurement_request_title: "Request C",
-    number_of_disputes: 3,
-  },
-];
-
+      {
+        contract_id: 1,
+        buyer_id: 1,
+        buyer_name: "Ima Galijašević",
+        buyer_company_name: "ETF",
+        seller_id: 10,
+        seller_name: "Seller One",
+        seller_company_name: "Seller Co 1",
+        procurement_request_title: "Request A",
+        procurement_request_id: 5,
+        bid_id: 9,
+        number_of_disputes: 0,
+      },
+      {
+        contract_id: 2,
+        buyer_id: 3,
+        buyer_name: "Irma Galijašević",
+        buyer_company_name: "Company B",
+        seller_id: 11,
+        seller_name: "Seller Two",
+        seller_company_name: "Seller Co 2",
+        procurement_request_title: "Request B",
+        procurement_request_id: 2,
+        bid_id: 2,
+        number_of_disputes: 2,
+      },
+      {
+        contract_id: 3,
+        buyer_id: 3,
+        buyer_name: "Irma Galijašević",
+        buyer_company_name: "Company B",
+        seller_id: 10,
+        seller_name: "Seller One",
+        seller_company_name: "Seller Co 1",
+        procurement_request_title: "Request C",
+        procurement_request_id: 3,
+        bid_id: 3,
+        number_of_disputes: 1,
+      },
+      {
+        contract_id: 4,
+        buyer_id: 1,
+        buyer_name: "Ima Galijašević",
+        buyer_company_name: "ETF",
+        seller_id: 10,
+        seller_name: "Seller One",
+        seller_company_name: "Seller Co 1",
+        procurement_request_title: "Request A",
+        procurement_request_id: 4,
+        bid_id: 4,
+        number_of_disputes: 0,
+      },
+      {
+        contract_id: 5,
+        buyer_id: 3,
+        buyer_name: "Irma Galijašević",
+        buyer_company_name: "Company B",
+        seller_id: 11,
+        seller_name: "Seller Two",
+        seller_company_name: "Seller Co 2",
+        procurement_request_title: "Request B",
+        procurement_request_id: 5,
+        bid_id: 5,
+        number_of_disputes: 0,
+      },
+      {
+        contract_id: 6,
+        buyer_id: 3,
+        buyer_name: "Irma Galijašević",
+        buyer_company_name: "Company B",
+        seller_id: 10,
+        seller_name: "Seller One",
+        seller_company_name: "Seller Co 1",
+        procurement_request_title: "Request C",
+        procurement_request_id: 6,
+        bid_id: 6,
+      },
+    ];
 
     // Commented out real API call
     // axios
@@ -145,7 +213,7 @@ const ContractsDashboard = () => {
           </div>
 
           {isAdmin() && (
-            <PrimaryButton onClick={() => {}}>
+            <PrimaryButton onClick={() => setShowReportPopup(true)}>
               Generate Reports
             </PrimaryButton>
           )}
@@ -165,68 +233,85 @@ const ContractsDashboard = () => {
               </tr>
             </thead>
             <tbody>
-                {currentContracts.map((contract) => (
-                    <tr key={contract.contract_id}>
-                    <td>{contract.buyer_name}</td>
-                    <td>{contract.buyer_company_name}</td>
-                    <td>{contract.seller_name}</td>
-                    <td>{contract.seller_company_name}</td>
+              {currentContracts.map((contract) => (
+                <tr key={contract.contract_id}>
+                  <td>{contract.buyer_name}</td>
+                  <td>{contract.buyer_company_name}</td>
+                  <td>{contract.seller_name}</td>
+                  <td>{contract.seller_company_name}</td>
+                  <td>
+                    <span
+                      onClick={() =>
+                        handleOpenRequest(contract.procurement_request_id)
+                      }
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      {contract.procurement_request_title}
+                    </span>
+                  </td>
 
-                    {/* Make request title a clickable link */}
-                    <td>
-                        <Link
-                        to={`/requests/${contract.contract_id}`} // Use the correct request ID if available
-                        style={{ color: theme.palette.primary.main, textDecoration: "underline" }}
-                        >
-                        {contract.procurement_request_title}
-                        </Link>
-                    </td>
+                  <td>
+                    <span
+                      onClick={() => handleOpenBid(contract.bid_id)}
+                      style={{
+                        cursor: "pointer",
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      Bid Proposal
+                    </span>
+                  </td>
 
-                    {/* Replace button with clickable 'Bid Proposal' */}
-                    <td>
-                        <Link
-                        to={`/bids/${contract.contract_id}`} // Use actual bid ID if needed
-                        style={{ color: theme.palette.primary.main, textDecoration: "underline" }}
-                        >
-                        Bid Proposal
-                        </Link>
-                    </td>
-
-                    <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                        <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', justifyContent: 'center' }}>
-                        <OutlinedButton disabled={contract.number_of_disputes === 0}>
-                            View Disputes
-                        </OutlinedButton>
-                        {!isAdmin() && (
-                            <PrimaryButton onClick={() => {}}>
-                            Add Dispute
-                            </PrimaryButton>
-                        )}
-                        </div>
-                    </td>
-                    </tr>
-                ))}
-                </tbody>
-
+                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        gap: "8px",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <OutlinedButton
+                        disabled={contract.number_of_disputes === 0}
+                        onClick={handleOpenDisputes}
+                      >
+                        View Disputes
+                        <ContractDisputeSubmit
+                          open={isDisputesOpen}
+                          onClose={handleCloseDisputes}
+                        />
+                      </OutlinedButton>
+                      {!isAdmin() && (
+                        <PrimaryButton onClick={() => {}}>
+                          Add Dispute
+                        </PrimaryButton>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
           <OutlinedButton
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
-            style={{ margin: '0 5px', padding: '5px 10px' }}
+            style={{ margin: "0 5px", padding: "5px 10px" }}
           >
             &laquo; Prev
           </OutlinedButton>
 
-          {pageNumbers.map((number) => (
+          {pageNumbers.map((number) =>
             number === currentPage ? (
               <PrimaryButton
                 key={number}
                 onClick={() => paginate(number)}
-                style={{ margin: '0 5px', padding: '5px 10px' }}
+                style={{ margin: "0 5px", padding: "5px 10px" }}
               >
                 {number}
               </PrimaryButton>
@@ -234,21 +319,72 @@ const ContractsDashboard = () => {
               <OutlinedButton
                 key={number}
                 onClick={() => paginate(number)}
-                style={{ margin: '0 5px', padding: '5px 10px' }}
+                style={{ margin: "0 5px", padding: "5px 10px" }}
               >
                 {number}
               </OutlinedButton>
             )
-          ))}
+          )}
 
           <OutlinedButton
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
-            style={{ margin: '0 5px', padding: '5px 10px' }}
+            style={{ margin: "0 5px", padding: "5px 10px" }}
           >
             Next &raquo;
           </OutlinedButton>
         </div>
+
+        {openModalRequest && selectedRequest && (
+          <div
+            className="request-modal-contract-dashboard"
+            onClick={handleCloseRequest}
+          >
+            <div
+              className="request-modal-contract-dashboard-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={handleCloseRequest}
+                className="admin-close-button"
+                style={{ float: "right" }}
+              >
+                X
+              </button>
+              <ProcurementRequestCard
+                request={selectedRequest}
+                followedRequests={[]}
+                setFollowedRequests={() => {}}
+                submittedBidRequestIds={[]}
+                buttonsWrapper={false}
+              />
+            </div>
+          </div>
+        )}
+
+        {openModalBid && selectedBid && (
+          <div
+            className="bid-modal-contract-dashboard"
+            onClick={handleCloseBid}
+          >
+            <div
+              className="bid-modal-contract-dashboard-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={handleCloseBid}
+                className="admin-close-button"
+                style={{ float: "right" }}
+              >
+                X
+              </button>
+              <SellerBidCard bid={selectedBid} buttonsWrapper={false} />
+            </div>
+          </div>
+        )}
+        {showReportPopup && (
+          <AdminReportPopup onClose={() => setShowReportPopup(false)} />
+        )}
       </div>
     </Layout>
   );
