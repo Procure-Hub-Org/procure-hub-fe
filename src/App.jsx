@@ -32,7 +32,7 @@ import SellerAuctionsDashboard from "./pages/SellerAuctionsDashboard.jsx";
 import BuyerAnalyitics from "./pages/BuyerAnalytics.jsx";
 import SellerAnalyitics from "./pages/SellerAnalytics.jsx";
 import AdminAnalytics from "./pages/AdminAnalytics.jsx";
-
+import ContractsDashboard from "./pages/ContractsDashboard.jsx";
 
 
 function App() {
@@ -258,6 +258,14 @@ function App() {
         element={
           <AuthenticatedRoute>
               <AdminAnalytics />
+          </AuthenticatedRoute>
+        }
+      />
+      <Route
+        path="/contract-dashboard"
+        element={
+          <AuthenticatedRoute>
+              <ContractsDashboard />
           </AuthenticatedRoute>
         }
       />
