@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate} from "react-router-dom";
 import {
   Card,
@@ -14,6 +14,8 @@ import dayjs from "dayjs";
 import BidDocumentUploader from "../Uploaders/BidDocumentUploader";
 import PrimaryButton from "../Button/PrimaryButton";
 import OutlinedButton from "../Button/OutlinedButton";
+import SuspiciousActivityReportPopup from "./Popups/SuspiciousActivityReportPopup.jsx";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred"; // optional icon
 
 const SellerBidCard = ({ bid }) => {
   const navigate = useNavigate();
@@ -21,6 +23,17 @@ const SellerBidCard = ({ bid }) => {
   const editDeadline = bid.procurementRequest.bid_edit_deadline;
   const procurementRequestdeadline = bid.procurementRequest.deadline;
   const now = dayjs();
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const suspiciousAlreadyReported = bid.suspicious_report_submitted;
+  const showReportButton = !suspiciousAlreadyReported;
+
+
+    const handleReportSubmit = (text) => {
+      // Replace with actual API call
+      console.log("Submitting suspicious report:", text);
+      // Optional: disable the button, reload, show toast, etc.
+  };
 
   const isEditable = () => {
     if (submitted) return false;
@@ -226,6 +239,27 @@ const SellerBidCard = ({ bid }) => {
         <Typography variant="caption" color="text.secondary">
           Created: {dayjs(bid.created_at).format("MMM D, YYYY")}
         </Typography>
+
+        <SuspiciousActivityReportPopup
+            open={reportOpen}
+            onClose={() => setReportOpen(false)}
+            procurementTitle={bid.procurementRequest.title}
+            procurementRequestId={bid.procurementRequest.id}
+            onSubmit={handleReportSubmit}
+        />
+        {showReportButton && (
+            <Box textAlign="center">
+                <PrimaryButton
+                    onClick={() => setReportOpen(true)}
+                    disabled={suspiciousAlreadyReported}
+                    startIcon={<ReportGmailerrorredIcon />}
+                >
+                    {suspiciousAlreadyReported
+                        ? "Report Submitted"
+                        : "Report Suspicious Activity"}
+                </PrimaryButton>
+            </Box>
+        )}
 
         {!submitted && editable && documentsDeadlinePassed && (
           <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
