@@ -43,7 +43,6 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
       // Optional: disable the button, reload, show toast, etc.
   };
 
-    fetchReports();
   }, [sellerId, bid.procurementRequest.id]);
 
 
