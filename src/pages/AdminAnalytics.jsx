@@ -84,7 +84,7 @@ const AdminAnalytics = () => {
                     { headers }
                 );
                 setRequestsByCategory(
-                    response.data.map((item) => ({ name: item.category, value: item.total_requests }))
+                    response.data.map((item) => ({ name: item.category, value: parseInt(item.total_requests) }))
                 );
             } catch (error) {
                 console.error("Error fetching requests by category distribution:", error);
