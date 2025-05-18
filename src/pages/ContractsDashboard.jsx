@@ -229,7 +229,7 @@ const ContractsDashboard = () => {
                       }}
                     >
                       <OutlinedButton
-                        disabled={contract.number_of_disputes === 0}
+                        disabled={contract.number_of_disputes == 0}
                         onClick={() => handleOpenDisputes(contract.contract_id)}
                       >
                         View Disputes

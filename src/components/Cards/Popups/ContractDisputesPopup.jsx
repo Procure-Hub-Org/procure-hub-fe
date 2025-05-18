@@ -54,13 +54,15 @@ const ContractDisputeSubmit = ({ open, onClose, contractId }) => {
                     {disputes.map((dispute) => (
                         <Card key={dispute.id} variant="outlined">
                             <CardContent>
-                                <Typography variant="subtitle1" fontWeight="bold">
-                                    {(dispute.buyer_name || dispute.seller_name) || "Unknown User"}{" "}
-                                    (
-                                    {dispute.buyer_company_name ||
-                                        dispute.seller_company_name ||
-                                        "Unknown Company"}
-                                    )
+                                <Typography variant="subtitle1">
+                                    Sender: <strong>
+                                        {(dispute.buyer_name || dispute.seller_name) || "Unknown User"}{" "}
+                                        (
+                                            {dispute.buyer_company_name ||
+                                                dispute.seller_company_name ||
+                                                "Unknown Company"}
+                                        )
+                                </strong>
                                 </Typography>
                                 <Typography variant="body2" mt={1}>
                                     {dispute.complainment_text}
