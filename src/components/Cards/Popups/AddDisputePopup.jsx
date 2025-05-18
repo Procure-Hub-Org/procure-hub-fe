@@ -12,7 +12,7 @@ import {
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 
-const AddDisputePopup = ({ open, onClose, onSubmit, contractId }) => {
+const AddDisputePopup = ({ open, onClose, onSubmit, contractId, contractName}) => {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -46,7 +46,7 @@ const AddDisputePopup = ({ open, onClose, onSubmit, contractId }) => {
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogTitle variant="h5" gutterBottom>
-                Submit Dispute for Contract: <strong>{'Unnamed Contract'}</strong>
+                Submit Dispute for Contract of Request: <strong>{contractName ?? 'N/A'}</strong>
             </DialogTitle>
             <DialogContent>
                 <Card elevation={0}>

@@ -31,13 +31,20 @@ const ContractsDashboard = () => {
   const [isDisputesOpen, setIsDisputesOpen] = useState(false);
   const [isAddDisputeOpen, setIsAddDisputeOpen] = useState(false);
   const [selectedContractId, setSelectedContractId] = useState(null);
+  const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [selectedContractName, setSelectedContractName] =useState(null);
 
 
-  const handleOpenDisputes = () => setIsDisputesOpen(true);
+
+  const handleOpenDisputes = (contractId) => {
+    setSelectedContractId(contractId);
+    setIsDisputesOpen(true);
+  };
   const handleCloseDisputes = () => setIsDisputesOpen(false);
 
-  const handleOpenAddDispute = (contractId) => {
+  const handleOpenAddDispute = (contractId, contractName) => {
     setSelectedContractId(contractId);
+    setSelectedContractName(contractName);
     setIsAddDisputeOpen(true);
   };
 
@@ -51,7 +58,6 @@ const ContractsDashboard = () => {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/new-dispute`,
         { 
-          user_id: userId,
           contract_id,
           complainment_text,
         },
@@ -224,16 +230,19 @@ const ContractsDashboard = () => {
                     >
                       <OutlinedButton
                         disabled={contract.number_of_disputes === 0}
-                        onClick={handleOpenDisputes}
+                        onClick={() => handleOpenDisputes(contract.contract_id)}
                       >
                         View Disputes
                       </OutlinedButton>
+
                        <ContractDisputeSubmit
                           open={isDisputesOpen}
                           onClose={handleCloseDisputes}
                         />
                       {!isAdmin() && (
-                        <PrimaryButton onClick={() => handleOpenAddDispute(contract.contract_id)}>
+                        <PrimaryButton 
+                          onClick={() => handleOpenAddDispute(contract.contract_id, contract.procurement_request_title)}
+                        >
                           Add Dispute
                         </PrimaryButton>
                       )}
@@ -339,8 +348,13 @@ const ContractsDashboard = () => {
           onClose={handleCloseAddDispute}
           onSubmit={handleSubmitDispute}
           contractId={selectedContractId}
+          contractName={selectedContractName}
         />
-
+        <ContractDisputeSubmit
+          open={isDisputesOpen}
+          onClose={handleCloseDisputes}
+          contractId={selectedContractId}
+        />
       </div>
     </Layout>
   );
