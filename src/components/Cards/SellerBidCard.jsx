@@ -26,25 +26,42 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
   const now = dayjs();
 
   const [reportOpen, setReportOpen] = useState(false);
-  const [suspiciousAlreadyReported, setSuspiciousAlreadyReported] = useState(false);
-  const showReportButton = !suspiciousAlreadyReported;
-
+  const [disableReportButton, setDisableReportButton] = useState(false);
   const [loadingReports, setLoadingReports] = useState(true);
 
   const sellerId = localStorage.getItem("id");
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    if (!sellerId) return;
+    const fetchReports = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/seller-reports/${sellerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    const handleReportSubmit = (text) => {
-      // Replace with actual API call
-      console.log("Submitting suspicious report:", text);
-      // Optional: disable the button, reload, show toast, etc.
-  };
+        const reportedIds = response.data.reports.map(
+          (report) => report.procurement_request_id
+        );
 
-  }, [sellerId, bid.procurementRequest.id]);
+        if (reportedIds.includes(bid.procurementRequest.id)) {
+          setDisableReportButton(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch suspicious reports:", error);
+      } finally {
+        setLoadingReports(false);
+      }
+    };
 
+    if (sellerId && bid.procurementRequest?.id) {
+      fetchReports();
+    }
+  }, [sellerId, bid.procurementRequest?.id]);
 
   const isEditable = () => {
     if (submitted) return false;
@@ -255,16 +272,14 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
           procurementTitle={bid.procurementRequest.title}
           procurementRequestId={bid.procurementRequest.id}
         />
-        {buttonsWrapper && showReportButton && (
+        {buttonsWrapper && (
           <Box textAlign="center">
             <PrimaryButton
               onClick={() => setReportOpen(true)}
-              disabled={suspiciousAlreadyReported}
               startIcon={<ReportGmailerrorredIcon />}
+              disabled={disableReportButton}
             >
-              {suspiciousAlreadyReported
-                ? "Report Submitted"
-                : "Report Suspicious Activity"}
+              Report Suspicious Activity
             </PrimaryButton>
           </Box>
         )}
