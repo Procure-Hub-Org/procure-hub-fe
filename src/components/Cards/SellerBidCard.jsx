@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -14,13 +14,54 @@ import dayjs from "dayjs";
 import BidDocumentUploader from "../Uploaders/BidDocumentUploader";
 import PrimaryButton from "../Button/PrimaryButton";
 import OutlinedButton from "../Button/OutlinedButton";
+import SuspiciousActivityReportPopup from "./Popups/SuspiciousActivityReportPopup.jsx";
+import ReportGmailerrorredIcon from "@mui/icons-material/ReportGmailerrorred"; // optional icon
+import { useEffect } from "react";
 
-const SellerBidCard = ({ bid }) => {
+const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
   const navigate = useNavigate();
   const submitted = bid.submitted_at !== null;
   const editDeadline = bid.procurementRequest.bid_edit_deadline;
   const procurementRequestdeadline = bid.procurementRequest.deadline;
   const now = dayjs();
+
+  const [reportOpen, setReportOpen] = useState(false);
+  const [disableReportButton, setDisableReportButton] = useState(false);
+  const [loadingReports, setLoadingReports] = useState(true);
+
+  const sellerId = localStorage.getItem("id");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/seller-reports/${sellerId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const reportedIds = response.data.reports.map(
+          (report) => report.procurement_request_id
+        );
+
+        if (reportedIds.includes(bid.procurementRequest.id)) {
+          setDisableReportButton(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch suspicious reports:", error);
+      } finally {
+        setLoadingReports(false);
+      }
+    };
+
+    if (sellerId && bid.procurementRequest?.id) {
+      fetchReports();
+    }
+  }, [sellerId, bid.procurementRequest?.id]);
 
   const isEditable = () => {
     if (submitted) return false;
@@ -53,8 +94,6 @@ const SellerBidCard = ({ bid }) => {
       alert("Bid can not be edited!");
     }
   };
-
-  
 
   const handleSubmit = async () => {
     const formData = {
@@ -227,31 +266,52 @@ const SellerBidCard = ({ bid }) => {
           Created: {dayjs(bid.created_at).format("MMM D, YYYY")}
         </Typography>
 
-        {!submitted && editable && documentsDeadlinePassed && (
-          <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
-            <Chip
-              icon={<AccessTimeIcon />}
-              label={
-                editDeadline
-                  ? `Edit Deadline: ${dayjs(editDeadline).format(
-                      "DD.MM.YYYY HH:mm"
-                    )}`
-                  : "No edit enabled"
-              }
-              color="error"
-              variant="filled"
-              size="small"
-              sx={{ fontWeight: 500 }}
-            />
-            <OutlinedButton onClick={handleEdit} disabled={!editDeadline}>
-              {" "}
-              Edit{" "}
-            </OutlinedButton>
-            <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
+        <SuspiciousActivityReportPopup
+          open={reportOpen}
+          onClose={() => setReportOpen(false)}
+          procurementTitle={bid.procurementRequest.title}
+          procurementRequestId={bid.procurementRequest.id}
+        />
+        {buttonsWrapper && (
+          <Box textAlign="center">
+            <PrimaryButton
+              onClick={() => setReportOpen(true)}
+              startIcon={<ReportGmailerrorredIcon />}
+              disabled={disableReportButton}
+            >
+              Report Suspicious Activity
+            </PrimaryButton>
           </Box>
         )}
 
-        {( !documentsDeadlinePassed) && !submitted && (
+        {buttonsWrapper &&
+          !submitted &&
+          editable &&
+          documentsDeadlinePassed && (
+            <Box display="flex" alignItems="center" gap={2} flexWrap="wrap">
+              <Chip
+                icon={<AccessTimeIcon />}
+                label={
+                  editDeadline
+                    ? `Edit Deadline: ${dayjs(editDeadline).format(
+                        "DD.MM.YYYY HH:mm"
+                      )}`
+                    : "No edit enabled"
+                }
+                color="error"
+                variant="filled"
+                size="small"
+                sx={{ fontWeight: 500 }}
+              />
+              <OutlinedButton onClick={handleEdit} disabled={!editDeadline}>
+                {" "}
+                Edit{" "}
+              </OutlinedButton>
+              <PrimaryButton onClick={handleSubmit}> Submit </PrimaryButton>
+            </Box>
+          )}
+
+        {buttonsWrapper && !documentsDeadlinePassed && !submitted && (
           <Chip
             label="Deadline Passed"
             color="error"
