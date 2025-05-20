@@ -12,6 +12,7 @@ import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 import { data } from "react-router-dom";
 import axios from "axios";
+import { trackSuspiciousActivity } from "../../../utils/plausible";
 
 const SuspiciousActivityReportPopup = ({
   open,
@@ -57,6 +58,16 @@ const SuspiciousActivityReportPopup = ({
           headers: {
             Authorization: `Bearer ${token}`,
           },
+        }
+      );
+
+      // Track suspicious activity report
+      trackSuspiciousActivity(
+        'procurement_request',
+        procurementRequestId,
+        {
+          title: procurementTitle,
+          report_text: reportText.trim()
         }
       );
 

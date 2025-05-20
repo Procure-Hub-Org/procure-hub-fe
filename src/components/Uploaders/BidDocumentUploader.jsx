@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import PrimaryButton from "../Button/PrimaryButton";
 import SecondaryButton from "../Button/SecondaryButton";
+import { trackDocumentUpload } from "../../utils/plausible";
 
 import PdfIcon from '@mui/icons-material/PictureAsPdf';
 import DocIcon from '@mui/icons-material/Description';
@@ -141,6 +142,18 @@ const BidDocumentUploader = ({ procurementBidId, disabled }) => {
       setUploadedDocs((prev) => [...prev, res.data.bidDocument]);
       setFiles((prev) => prev.filter((f) => f !== file));
       setError("");
+      
+      // Track successful document upload
+      trackDocumentUpload(
+        file.name.split('.').pop().toLowerCase(), // document type
+        'bid',
+        procurementBidId,
+        {
+          file_name: file.name,
+          file_size: file.size,
+          file_type: file.type
+        }
+      );
     } catch (err) {
       setError(err.response?.data?.error || "Unexpected error during upload.");
     }

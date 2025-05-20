@@ -1,5 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import PageViewTracker from "./components/PageViewTracker";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import RegisterPage from "./pages/RegisterPage";
@@ -37,239 +38,241 @@ import ContractsDashboard from "./pages/ContractsDashboard.jsx";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route
-        path="/login"
-        element={
-          <UnauthenticatedRoute>
-            <Login />
-          </UnauthenticatedRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <UnauthenticatedRoute>
-            <RegisterPage />
-          </UnauthenticatedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <AuthenticatedRoute>
-            <UserProfile />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/buyer-procurement-requests"
-        element={
-          <AuthenticatedRoute>
-            <BuyerDashboardRequests />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/new-auction"
-        element={
-          <AuthenticatedRoute>
-            <BuyerCreateAuctionForm />
-          </AuthenticatedRoute>
-        }
-      />
+    <PageViewTracker>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/login"
+          element={
+            <UnauthenticatedRoute>
+              <Login />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <UnauthenticatedRoute>
+              <RegisterPage />
+            </UnauthenticatedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <AuthenticatedRoute>
+              <UserProfile />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/buyer-procurement-requests"
+          element={
+            <AuthenticatedRoute>
+              <BuyerDashboardRequests />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/new-auction"
+          element={
+            <AuthenticatedRoute>
+              <BuyerCreateAuctionForm />
+            </AuthenticatedRoute>
+          }
+        />
 
-      <Route
-        path="/new-request"
-        element={
-          <AuthenticatedRoute>
-            <BuyerProcurementForm />
-          </AuthenticatedRoute>
-        }
-      />
+        <Route
+          path="/new-request"
+          element={
+            <AuthenticatedRoute>
+              <BuyerProcurementForm />
+            </AuthenticatedRoute>
+          }
+        />
 
-      <Route
-        path="/buyer-request/:id"
-        element={
-          <AuthenticatedRoute>
-            <ProcurementPreview />
-          </AuthenticatedRoute>
-        }
-      />
+        <Route
+          path="/buyer-request/:id"
+          element={
+            <AuthenticatedRoute>
+              <ProcurementPreview />
+            </AuthenticatedRoute>
+          }
+        />
 
-      <Route
-        path="/edit-request/:id"
-        element={
-          <AuthenticatedRoute>
-            <EditProcurementForm />
-          </AuthenticatedRoute>
-        }
-      />
+        <Route
+          path="/edit-request/:id"
+          element={
+            <AuthenticatedRoute>
+              <EditProcurementForm />
+            </AuthenticatedRoute>
+          }
+        />
 
-      <Route
-        path="/buyer-auctions"
-        element={
-          <AuthenticatedRoute>
-            <BuyerAuctionsDashboard />
-          </AuthenticatedRoute>
-        }
-      />
+        <Route
+          path="/buyer-auctions"
+          element={
+            <AuthenticatedRoute>
+              <BuyerAuctionsDashboard />
+            </AuthenticatedRoute>
+          }
+        />
 
-      <Route
-        path="/seller-procurement-requests"
-        element={
-          <AuthenticatedRoute>
-            <SellerDashboardRequests />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/seller-favorites"
-        element={
-          <AuthenticatedRoute>
-            <SellerFavorites />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/seller-bids"
-        element={
-          <AuthenticatedRoute>
-            <SellerBidsDashboard />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/seller-auctions"
-        element={
-          <AuthenticatedRoute>
-            <SellerAuctionsDashboard />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route path="/preview" element={<PreviewComponent />} />
-      <Route
-        path="/admin"
-        element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin-procurement-requests"
-        element={
-          <AdminRoute>
-            <AdminProcurementDashboard />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin-procurement-requests/:id"
-        element={
-          <AdminRoute>
-            <AdminProcurementPreview />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin-procurement-requests/:requestId/bid/:bidId"
-        element={
-          <AdminRoute>
-            <BidLogs />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/admin-auctions"
-        element={
-          <AdminRoute>
-            <AdminAuctionsDashboard />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/create-user"
-        element={
-          <AdminRoute>
-            <CreateUserPage />
-          </AdminRoute>
-        }
-      />
-      <Route
-        path="/buyer/procurement/:id/bids"
-        element={
-          <AuthenticatedRoute>
-            <BuyerBidEvaluation />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/new-bid/:requestId"
-        element={
-          <AuthenticatedRoute>
-            <SellerBidForm />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/preview-bid/:id"
-        element={
-          <AuthenticatedRoute>
-            <BidProposalPreview />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/edit-bid/:id"
-        element={
-          <AuthenticatedRoute>
-            <EditBidProposalSeller />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/auction-monitoring/:id"
-        element={
-          <AuthenticatedRoute>
-            <AuctionMonitoringPage />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/buyer-analytics"
-        element={
-          <AuthenticatedRoute>
-            <BuyerAnalyitics />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/seller-analytics"
-        element={
-          <AuthenticatedRoute>
-            <SellerAnalyitics />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/admin-analytics"
-        element={
-          <AuthenticatedRoute>
-              <AdminAnalytics />
-          </AuthenticatedRoute>
-        }
-      />
-      <Route
-        path="/contract-dashboard"
-        element={
-          <AuthenticatedRoute>
-              <ContractsDashboard />
-          </AuthenticatedRoute>
-        }
-      />
-    </Routes>
+        <Route
+          path="/seller-procurement-requests"
+          element={
+            <AuthenticatedRoute>
+              <SellerDashboardRequests />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/seller-favorites"
+          element={
+            <AuthenticatedRoute>
+              <SellerFavorites />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/seller-bids"
+          element={
+            <AuthenticatedRoute>
+              <SellerBidsDashboard />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/seller-auctions"
+          element={
+            <AuthenticatedRoute>
+              <SellerAuctionsDashboard />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route path="/preview" element={<PreviewComponent />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin-procurement-requests"
+          element={
+            <AdminRoute>
+              <AdminProcurementDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin-procurement-requests/:id"
+          element={
+            <AdminRoute>
+              <AdminProcurementPreview />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin-procurement-requests/:requestId/bid/:bidId"
+          element={
+            <AdminRoute>
+              <BidLogs />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin-auctions"
+          element={
+            <AdminRoute>
+              <AdminAuctionsDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/create-user"
+          element={
+            <AdminRoute>
+              <CreateUserPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/buyer/procurement/:id/bids"
+          element={
+            <AuthenticatedRoute>
+              <BuyerBidEvaluation />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/new-bid/:requestId"
+          element={
+            <AuthenticatedRoute>
+              <SellerBidForm />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/preview-bid/:id"
+          element={
+            <AuthenticatedRoute>
+              <BidProposalPreview />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/edit-bid/:id"
+          element={
+            <AuthenticatedRoute>
+              <EditBidProposalSeller />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/auction-monitoring/:id"
+          element={
+            <AuthenticatedRoute>
+              <AuctionMonitoringPage />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/buyer-analytics"
+          element={
+            <AuthenticatedRoute>
+              <BuyerAnalyitics />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/seller-analytics"
+          element={
+            <AuthenticatedRoute>
+              <SellerAnalyitics />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/admin-analytics"
+          element={
+            <AuthenticatedRoute>
+                <AdminAnalytics />
+            </AuthenticatedRoute>
+          }
+        />
+        <Route
+          path="/contract-dashboard"
+          element={
+            <AuthenticatedRoute>
+                <ContractsDashboard />
+            </AuthenticatedRoute>
+          }
+        />
+      </Routes>
+    </PageViewTracker>
   );
 }
 

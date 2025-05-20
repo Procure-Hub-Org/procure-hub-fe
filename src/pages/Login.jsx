@@ -5,6 +5,7 @@ import Layout from "../components/Layout/Layout";
 import { isAuthenticated } from "../utils/auth";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomInput from "../components/Input/CustomInput";  
+import { trackEvent } from "../utils/plausible";
 
 const Login = () => {
   const isLoggedIn = isAuthenticated();
@@ -43,13 +44,25 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
         localStorage.setItem("id", data.user.id);
-        //console.log(data.token)
+        
+        // Track successful login
+        trackEvent('login', {
+          success: true,
+          role: data.user.role
+        });
+
         if (data.user.role === "admin") {
           navigate("/admin");
         } else {
           navigate("/");
         }
       } else {
+        // Track failed login attempt
+        trackEvent('login', {
+          success: false,
+          error: response.status === 401 ? 'invalid_credentials' : 'account_suspended'
+        });
+
         if (response.status === 401) {
           setError("Invalid email or password.");
         } else if (response.status === 403) {
@@ -59,6 +72,12 @@ const Login = () => {
         }
       }
     } catch (err) {
+      // Track login error
+      trackEvent('login', {
+        success: false,
+        error: 'system_error'
+      });
+      
       setError("An error occurred. Please try again.");
       console.error(err);
     }
