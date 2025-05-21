@@ -8,10 +8,22 @@ import { useEffect } from 'react';
 // Helper function to ensure Plausible is available
 const ensurePlausible = () => {
   if (typeof window === 'undefined') return false;
-  if (!window.plausible) {
-    window.plausible = function() { (window.plausible.q = window.plausible.q || []).push(arguments) };
+  
+  try {
+    if (!window.plausible) {
+      window.plausible = function() { 
+        try {
+          (window.plausible.q = window.plausible.q || []).push(arguments);
+        } catch (e) {
+          console.warn('Plausible tracking failed:', e);
+        }
+      };
+    }
+    return true;
+  } catch (e) {
+    console.warn('Plausible initialization failed:', e);
+    return false;
   }
-  return true;
 };
 
 /**
@@ -20,8 +32,12 @@ const ensurePlausible = () => {
  * @param {Object} [props] - Additional properties for the event
  */
 export const trackEvent = (eventName, props = {}) => {
-  if (ensurePlausible()) {
-    window.plausible(eventName, { props });
+  try {
+    if (ensurePlausible()) {
+      window.plausible(eventName, { props });
+    }
+  } catch (e) {
+    console.warn('Failed to track event:', eventName, e);
   }
 };
 
@@ -30,8 +46,12 @@ export const trackEvent = (eventName, props = {}) => {
  * @param {string} [url] - URL to track (defaults to current URL)
  */
 export const trackPageView = (url) => {
-  if (ensurePlausible()) {
-    window.plausible('pageview', { url });
+  try {
+    if (ensurePlausible()) {
+      window.plausible('pageview', { url });
+    }
+  } catch (e) {
+    console.warn('Failed to track pageview:', e);
   }
 };
 
@@ -185,10 +205,14 @@ export const usePageView = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (ensurePlausible()) {
-      window.plausible('pageview', {
-        url: pathname
-      });
+    try {
+      if (ensurePlausible()) {
+        window.plausible('pageview', {
+          url: pathname
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to track pageview in usePageView:', e);
     }
   }, [pathname]);
 }; 
