@@ -85,16 +85,17 @@ const BuyerCreateAuctionForm = () => {
         }
 
         const auctionData = {
-            procurement_request_id: selectedProcurement,
-            start_time: startingTime,
-            duration_minutes: totalDurationMinutes,
-            min_increment: parseFloat(minIncrement),
+            procurement_id: Number(selectedProcurement),
+            starting_time: startingTime,
+            duration: totalDurationMinutes,
+            min_bid_increment: parseFloat(minIncrement),
             last_call_timer: parseInt(lastCallTimer) || 0
         };
 
         try {
+            console.log("Creating auction with data:", auctionData);
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/api/auction/create`,
+                `${import.meta.env.VITE_API_URL}/api/auctions`,
                 auctionData,
                 {
                     headers: {
