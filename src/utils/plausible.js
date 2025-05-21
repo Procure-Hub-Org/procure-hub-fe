@@ -5,13 +5,22 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
+// Helper function to ensure Plausible is available
+const ensurePlausible = () => {
+  if (typeof window === 'undefined') return false;
+  if (!window.plausible) {
+    window.plausible = function() { (window.plausible.q = window.plausible.q || []).push(arguments) };
+  }
+  return true;
+};
+
 /**
  * Track a custom event
  * @param {string} eventName - Name of the event
  * @param {Object} [props] - Additional properties for the event
  */
 export const trackEvent = (eventName, props = {}) => {
-  if (window.plausible) {
+  if (ensurePlausible()) {
     window.plausible(eventName, { props });
   }
 };
@@ -21,7 +30,7 @@ export const trackEvent = (eventName, props = {}) => {
  * @param {string} [url] - URL to track (defaults to current URL)
  */
 export const trackPageView = (url) => {
-  if (window.plausible) {
+  if (ensurePlausible()) {
     window.plausible('pageview', { url });
   }
 };
@@ -176,7 +185,7 @@ export const usePageView = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (window.plausible) {
+    if (ensurePlausible()) {
       window.plausible('pageview', {
         url: pathname
       });
