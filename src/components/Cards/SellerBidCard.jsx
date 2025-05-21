@@ -271,6 +271,7 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
           onClose={() => setReportOpen(false)}
           procurementTitle={bid.procurementRequest.title}
           procurementRequestId={bid.procurementRequest.id}
+          onReportSubmitted={() => setDisableReportButton(true)}
         />
         {buttonsWrapper && (
           <Box textAlign="center">
