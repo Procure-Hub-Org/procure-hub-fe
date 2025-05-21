@@ -61,6 +61,8 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
     auctionHeld,
     bidAuctionPrice,
     documents,
+    procurementRequestId,
+    isRequestAwarded,
   } = bid;
 
   return (
@@ -183,20 +185,28 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
         )*/}
       </div>
     )}
-      
-      <div className="bid-actions">
-        {!isEvaluated || evaluation?.averageScore === "Pending" ? (
-          <PrimaryButton onClick={onEvaluate}>Evaluate</PrimaryButton>
-        ) : (
-          <SecondaryButton 
-            onClick={onAward} 
-            disabled={isAwardDisabled && !isAwarded}
-            className={isAwarded ? 'awarded-button' : ''}
-          >
-            {isAwarded ? 'Awarded' : 'Award Bid'}
-          </SecondaryButton>
-        )}
+
+    {isRequestAwarded && !isEvaluated && (
+      <div className="evaluation-results">
+        <h5>Bid proposal has not been evaluated</h5>
       </div>
+    )}
+      
+      { !isRequestAwarded && (
+        <div className="bid-actions">
+          {!isEvaluated || evaluation?.averageScore === "Pending" ? (
+            <PrimaryButton onClick={onEvaluate}>Evaluate</PrimaryButton>
+          ) : (
+            <SecondaryButton 
+              onClick={onAward} 
+              disabled={isAwardDisabled && !isAwarded}
+              className={isAwarded ? 'awarded-button' : ''}
+            >
+              {isAwarded ? 'Awarded' : 'Award Bid'}
+            </SecondaryButton>
+          )}
+        </div>
+      )}
     </div>
   );
 };

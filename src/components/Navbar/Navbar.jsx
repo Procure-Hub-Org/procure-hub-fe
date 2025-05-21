@@ -52,6 +52,10 @@ const Navbar = () => {
               onClick={() => navigate("/admin-auctions")}>
               Auctions
             </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/contract-dashboard")}>
+              Contracts
+            </BasicButton>
             <BasicButton onClick={() => navigate("/admin")}>
               Users
             </BasicButton>
@@ -75,6 +79,10 @@ const Navbar = () => {
               onClick={() => navigate("/buyer-auctions")}
             >
               Auctions
+            </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/contract-dashboard")}>
+              Contracts
             </BasicButton>
             <BasicButton
               onClick={() => navigate("/buyer-analytics")}
@@ -102,6 +110,10 @@ const Navbar = () => {
             </BasicButton>
             <BasicButton onClick={() => navigate("/seller-auctions")}>
               Auctions
+            </BasicButton>
+            <BasicButton
+              onClick={() => navigate("/contract-dashboard")}>
+              Contracts
             </BasicButton>
             <BasicButton onClick={() => navigate("/seller-analytics")}>
               Analytics

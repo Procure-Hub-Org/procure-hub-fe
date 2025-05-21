@@ -84,7 +84,7 @@ const AdminAnalytics = () => {
                     { headers }
                 );
                 setRequestsByCategory(
-                    response.data.map((item) => ({ name: item.category, value: item.total_requests }))
+                    response.data.map((item) => ({ name: item.category, value: parseInt(item.total_requests) }))
                 );
             } catch (error) {
                 console.error("Error fetching requests by category distribution:", error);
@@ -214,6 +214,7 @@ const AdminAnalytics = () => {
                             height={300}
                             width={800}
                             colors={["#4e79a7", "#f28e2b", "#e15759", "#59a14f", "#8cd17d"]}
+                            tooltipFormatter={(value) => value}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
