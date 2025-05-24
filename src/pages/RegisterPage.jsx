@@ -16,6 +16,7 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import { isAuthenticated } from "../utils/auth";
 import { useTheme } from "@mui/system";
+import { trackEvent } from "../utils/plausible";
 
 const RegisterPage = () => {
   const theme = useTheme();
@@ -270,6 +271,12 @@ const RegisterPage = () => {
         registrationData.buyer_type = customBuyerType;
       } catch (error) {
         showToast("Failed to save custom buyer type",'error' );
+        trackEvent('registration', {
+          success: false,
+          error: 'buyer_type_creation_failed',
+          role: formData.role
+        });
+        //alert("Failed to save custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -284,7 +291,15 @@ const RegisterPage = () => {
   
     setErrors(newErrors);
   
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      trackEvent('registration', {
+        success: false,
+        error: 'validation_failed',
+        role: formData.role,
+        fields: Object.keys(newErrors)
+      });
+      return;
+    }
   
     console.log("Sending registration data:", registrationData);
   
@@ -301,27 +316,54 @@ const RegisterPage = () => {
   
       if (response.status === 201) {
         showToast('Registration Successful!','success' );
+        trackEvent('registration', {
+          success: true,
+          role: formData.role,
+          buyer_type: formData.role === 'buyer' ? selectedBuyerType : null
+        });
+        //alert("Registration Successful!");
         console.log("Server Response:", response.data);
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } else {
         showToast("Registration failed: " + response.data.message,'error' );
+        trackEvent('registration', {
+          success: false,
+          error: 'server_error',
+          role: formData.role
+        });
+        //alert("Registration failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
   
       if (error.response && error.response.data.error) {
         if (error.response.data.error === "Email already registered") {
+          trackEvent('registration', {
+            success: false,
+            error: 'email_exists',
+            role: formData.role
+          });
           setErrors((prevErrors) => ({
             ...prevErrors,
             email: "Email is already registered. Please use a different email.",
           }));
         } else {
-          showToast("An error occurred during registration: " + error.response.data.error,'error' );
+          trackEvent('registration', {
+            success: false,
+            error: 'server_error',
+            role: formData.role
+          });
+          alert("An error occurred during registration: " + error.response.data.error);
         }
       } else {
-        showToast("An error occurred during registration",'error' );
+        trackEvent('registration', {
+          success: false,
+          error: 'unknown_error',
+          role: formData.role
+        });
+        alert("An error occurred during registration");
       }
     }
   };

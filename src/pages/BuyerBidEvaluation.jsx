@@ -8,8 +8,7 @@ import EvaluationModal from '../components/Modals/EvaluationModal';
 import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
 import PrimaryButton from '../components/Button/PrimaryButton';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { trackBidAward, trackContractCreation } from '../utils/plausible';
 
 function BuyerBidEvaluation() {
     const { id } = useParams();
@@ -171,14 +170,12 @@ function BuyerBidEvaluation() {
 
             const token = localStorage.getItem('token');
 
-            /*const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/procurement/${id}/status`,
-                { id, status: 'awarded' },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );*/
+            // Track bid award
+            trackBidAward(bidId, id, {
+                procurement_title: procurementRequest?.title,
+                bid_price: bidProposals.find(b => b.id === bidId)?.price,
+                seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
+            });
 
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/new-contract`,
                 {
@@ -187,19 +184,27 @@ function BuyerBidEvaluation() {
                 },
                 {
                     headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
                     }
                 }
             );
                         
-            console.log('Procurement request awarded:', response.data);
+            console.log('Contract created:', response.data);
 
-            //window.location.reload(); // Reload the page to reflect changes
-            // Optionally redirect to a contract dashboard
-            navigate('/contract-dashboard'); // Adjust the path as needed
+            // Track contract creation
+            trackContractCreation(
+                response.data.contract_id,
+                bidId,
+                id,
+                {
+                    procurement_title: procurementRequest?.title,
+                    contract_status: 'active',
+                    seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
+                }
+            );
 
-
+            navigate('/contract-dashboard');
             setLoading(false);
         } catch (err) {
             console.error('Error awarding bid:', err);

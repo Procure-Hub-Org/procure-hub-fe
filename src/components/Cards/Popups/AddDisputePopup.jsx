@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
+import { trackDispute } from "../../../utils/plausible";
 
 const AddDisputePopup = ({ open, onClose, onSubmit, contractId, contractName}) => {
     const [text, setText] = useState('');
@@ -26,6 +27,17 @@ const AddDisputePopup = ({ open, onClose, onSubmit, contractId, contractName}) =
                 contract_id: contractId,
                 complainment_text: text
             });
+
+            // Track dispute creation
+            trackDispute(
+                'contract',
+                contractId,
+                text,
+                {
+                    contract_name: contractName
+                }
+            );
+
             setText('');
             onClose();
         } catch (e) {

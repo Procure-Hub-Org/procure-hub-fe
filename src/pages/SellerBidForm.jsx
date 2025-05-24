@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
 import { isAuthenticated, isBuyer, isSeller } from '../utils/auth';
+import { trackEvent } from "../utils/plausible";
 import {
     AppBar,
     Box,
@@ -99,14 +100,34 @@ const BidForm = () => {
 
             if (response.status === 200 || response.status === 201) {
                 toast.success('Request submit Successful!' );
+                trackEvent('bid', {
+                    action: 'create',
+                    status: 'success',
+                    procurement_request_id: requestId,
+                    price: formData.price,
+                    has_timeline: !!formData.timeline,
+                    has_proposal: !!formData.proposal_text
+                });
+               
                 console.log("Server Response:", response.data);
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
-                toast.error("Request adding failed: " + response.data.message);
+                trackEvent('bid', {
+                    action: 'create',
+                    status: 'failed',
+                    procurement_request_id: requestId,
+                    error: response.data.message
+                });
+                alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
-            toast.error("Request adding failed: " + error.response.data.message );
+            trackEvent('bid', {
+                action: 'create',
+                status: 'error',
+                procurement_request_id: requestId,
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 toast.error("Request adding failed: " + error.response.data.message);
@@ -154,12 +175,34 @@ const BidForm = () => {
             // console.log(response.status);
             if (response.status === 200 || response.status === 201) {
                 toast.success('Request saving Successful!' );
+                trackEvent('bid', {
+                    action: 'save_draft',
+                    status: 'success',
+                    procurement_request_id: requestId,
+                    price: formData.price,
+                    has_timeline: !!formData.timeline,
+                    has_proposal: !!formData.proposal_text
+                });
+                //alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
                 navigate("/seller-bids");
             } else {
                 toast.error("Request adding failed: " + response.data.message );
+                trackEvent('bid', {
+                    action: 'save_draft',
+                    status: 'failed',
+                    procurement_request_id: requestId,
+                    error: response.data.message
+                });
+                //alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            trackEvent('bid', {
+                action: 'save_draft',
+                status: 'error',
+                procurement_request_id: requestId,
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 toast.error("Request adding failed: " + error.response.data.message );

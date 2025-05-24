@@ -9,6 +9,8 @@ import CustomTopList from "../components/Cards/Analytics/CustomUserListCard.jsx"
 import CustomDonutChart from "../components/Cards/Analytics/DonutChart";
 import {isAdmin, isAuthenticated} from "../utils/auth.jsx";
 import axios from "axios";
+import PrimaryButton from "../components/Button/PrimaryButton.jsx";
+import PlausibleDashboardPopup from "../components/Cards/Popups/PlausibleDashboardPopup.jsx";
 
 const AdminAnalytics = () => {
     const [overview, setOverview] = useState({
@@ -23,6 +25,7 @@ const AdminAnalytics = () => {
     const [priceReductionBuyers, setPriceReductionBuyers] = useState([]);
     const [frozenBuyers, setFrozenBuyers] = useState([]);
     const [requestStatusDistribution, setRequestStatusDistribution] = useState([]);
+    const [plausibleOpen, setPlausibleOpen] = useState(false);
 
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
@@ -168,6 +171,13 @@ const AdminAnalytics = () => {
                     width: "100%",
                 }}
             >
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', mt: 4, mb: 2, mr: 8
+                 }}>
+                    <PrimaryButton onClick={() => setPlausibleOpen(true)}>
+                        Platform Growth
+                    </PrimaryButton>
+                </Box>
+
                 <Typography variant="h5" mt={4} mb={2}>
                     Platform Overview
                 </Typography>
@@ -287,6 +297,11 @@ const AdminAnalytics = () => {
                         />
                     </Grid>
                 </Grid>
+
+                <PlausibleDashboardPopup 
+                    open={plausibleOpen}
+                    onClose={() => setPlausibleOpen(false)}
+                />
             </Box>
         </Layout>
     );

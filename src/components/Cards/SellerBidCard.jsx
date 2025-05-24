@@ -36,7 +36,7 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
     const fetchReports = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/seller-reports/${sellerId}`,
+          `${import.meta.env.VITE_API_URL}/api/seller-reports/${sellerId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -271,6 +271,7 @@ const SellerBidCard = ({ bid, buttonsWrapper = true }) => {
           onClose={() => setReportOpen(false)}
           procurementTitle={bid.procurementRequest.title}
           procurementRequestId={bid.procurementRequest.id}
+          onReportSubmitted={() => setDisableReportButton(true)}
         />
         {buttonsWrapper && (
           <Box textAlign="center">
