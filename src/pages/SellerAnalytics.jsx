@@ -7,6 +7,7 @@ import CustomLineChart from "../components/Cards/Analytics/LineChart";
 import { Grid, Typography, Box } from "@mui/material";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -70,6 +71,19 @@ const SellerAnalytics = () => {
         });
     }
   }, []);
+
+    // Mock data for Seller Regression Analysis
+  const performanceAttributes = [
+    { name: "Bid Price", value: 80 },
+    { name: "Price Difference from Average", value: 45 },
+    { name: "Evaluation Score", value: 60 },
+    { name: "Time to Bid", value: 30 },
+    { name: "Number of Bid Revisions", value: 75 },
+    { name: "Participated in Auction", value: 55 },
+    { name: "Final Price After Auction", value: 20 },
+    { name: "Price Decrease in Auction", value: 85 },
+    { name: "Bid Submission Phase", value: 70 },
+  ];
 
   useEffect(() => {}, [priceReductions]);
   return (
@@ -139,7 +153,7 @@ const SellerAnalytics = () => {
 
         <Typography variant="h5" mt={4} mb={2}>
           Auction Performance
-        </Typography>
+        </Typography>v
         <Grid container spacing={3}>
           <Grid item xs={12} md={12}>
             <CustomBarChart
@@ -154,7 +168,7 @@ const SellerAnalytics = () => {
           <Grid item xs={12} md={12}>
             <CustomLineChart
               data={priceReductions}
-              xKey="position"
+              xKey="position" 
               yKey="percentage"
               lineColor="#e15759"
               title="Price Reductions Over Time"
@@ -162,6 +176,25 @@ const SellerAnalytics = () => {
             />
           </Grid>
         </Grid>
+        {/* New section with the horizontal percentage bar chart */}
+        <Typography variant="h5" mb={2} textAlign="center">
+              Performance Attributes Overview
+        </Typography>
+        <Box mt={6} width="60%">
+          <HorizontalPercentageBarChart
+            data={performanceAttributes}
+            height={400}
+            width="100%"
+            title="Attributes Percentage"
+            subtitle="Regression coefficients showing the impact of bidding factors on seller outcomes"
+          />
+          <Box mt={4} width="100%">
+              <StatCard
+                title="Percentage Of Winning The Next Procurement Contract"
+                value="72%"    // mock percentage
+              />
+            </Box>
+          </Box>
       </Box>
     </Layout>
   );

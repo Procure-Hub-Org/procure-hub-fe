@@ -6,6 +6,7 @@ import ResponseTimeCard from "../components/Cards/Analytics/ResponseTimeCard";
 import { Grid, Typography, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
 
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -46,6 +47,20 @@ const BuyerAnalytics = () => {
         });
     }
   }, []);
+
+    // Mock data for the horizontal percentage bar chart
+  const performanceAttributes = [
+    { name: "Auction Duration", value: 80 },
+    { name: "Last Call Duration", value: 45 },
+    { name: "Number of Bidders", value: 60 },
+    { name: "Time Until Last Bid", value: 30 },
+    { name: "Total Number of Bids", value: 75 },
+    { name: "Evaluation Weight Entropy", value: 55 },
+    { name: "Has Must-Have Criteria", value: 20 },
+    { name: "Strictness of Criteria", value: 85 },
+    { name: "Price Decrease in Auction", value: 70 },
+    { name: "Extended Duration", value: 95 },
+  ];
 
   return (
     <Layout>
@@ -126,6 +141,19 @@ const BuyerAnalytics = () => {
             averageTime={summary.avgTime}
           ></ResponseTimeCard>
         </Grid>
+        {/* New section with the horizontal percentage bar chart */}
+        <Box mt={6} width="60%">
+          <Typography variant="h5" mb={2} textAlign="center">
+            Performance Attributes Overview
+          </Typography>
+          <HorizontalPercentageBarChart
+            data={performanceAttributes}
+            height={400}
+            width="100%"
+            title="Attributes Percentage"
+            subtitle="Regression coefficients indicating how auction factors influence the final procurement price"
+          />
+        </Box>
       </Box>
     </Layout>
   );
