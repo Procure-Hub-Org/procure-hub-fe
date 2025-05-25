@@ -15,6 +15,7 @@ const SellerAnalytics = () => {
   const [participationCategories, setParticipationCategories] = useState([]);
   const [auctionPositions, setAuctionPositions] = useState({});
   const [priceReductions, setPriceReductions] = useState([]);
+  const [performanceAttributes, setPerformanceAttributes] = useState([]); 
 
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
@@ -25,7 +26,7 @@ const SellerAnalytics = () => {
     if (token || userId) {
       axios
         .get(
-          `${import.meta.env.VITE_API_URL}/api/seller-analytics?id=${userId}`,
+          `${import.meta.env.VITE_API_URL}/api/seller-regression?id=${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -69,10 +70,25 @@ const SellerAnalytics = () => {
         .catch((error) => {
           console.error("Error fetching buyer analytics:", error);
         });
+
+        // DODATNI API poziv za performance attributes regression
+      axios
+        .get(`${import.meta.env.VITE_API_URL}/api/seller-regression?id=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+            console.log('Response data:', response.data);
+          // Pretpostavljamo da vraća niz objekata sa { name, value }
+          setPerformanceAttributes(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching seller performance attributes:", error);
+          setPerformanceAttributes([]); // fallback
+        });
     }
   }, []);
 
-    // Mock data for Seller Regression Analysis
+    /*Mock data for Seller Regression Analysis
   const performanceAttributes = [
     { name: "Bid Price", value: 80 },
     { name: "Price Difference from Average", value: 45 },
@@ -84,7 +100,7 @@ const SellerAnalytics = () => {
     { name: "Price Decrease in Auction", value: 85 },
     { name: "Bid Submission Phase", value: 70 },
   ];
-
+*/
   useEffect(() => {}, [priceReductions]);
   return (
     <Layout>

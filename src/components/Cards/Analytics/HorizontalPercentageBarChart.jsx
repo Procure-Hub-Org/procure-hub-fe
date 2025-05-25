@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography, Box, Paper } from "@mui/material";
 import {
+  ReferenceLine,
   BarChart,
   Bar,
   XAxis,
@@ -12,10 +13,14 @@ import {
 } from "recharts";
 
 const getBarColor = (value) => {
-  if (value <= 25) return "#f44336"; // red
-  if (value <= 75) return "#ffeb3b"; // yellow
-  return "#4caf50"; // green
+  if (value < 0) return "#f44336";     // crveno
+  if (value <= 25) return "#f48fb1";   // ružičasto
+  if (value <= 75) return "#ffeb3b";   // žuto
+  return "#2e7d32";                    // tamnozeleno
 };
+
+<ReferenceLine x={0} stroke="#999" />
+
 
 const HorizontalPercentageBarChart = ({
   data,
@@ -58,11 +63,16 @@ const HorizontalPercentageBarChart = ({
           {/* Percentages on x-axis */}
           <XAxis
             type="number"
-            domain={[0, 100]}
+            domain={[
+              (dataMin) => Math.min(-100, dataMin),
+              (dataMax) => Math.max(100, dataMax)
+            ]}
             tickFormatter={(tick) => `${tick}%`}
             axisLine={false}
             tickLine={false}
           />
+            <ReferenceLine x={0} stroke="#999" />
+
           <Tooltip
             formatter={(value) => `${value}%`}
             cursor={{ fill: "rgba(0,0,0,0.1)" }}

@@ -12,6 +12,7 @@ const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
+  const [performanceAttributes, setPerformanceAttributes] = useState([]); // NOVO
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 
@@ -45,10 +46,25 @@ const BuyerAnalytics = () => {
         .catch((error) => {
           console.error("Error fetching buyer analytics:", error);
         });
+        
+         // Drugi API poziv za buyer regression (performanceAttributes)
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/buyer-regression?id=${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log('Response data:', response);
+
+        setPerformanceAttributes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching regression data:", error);
+        setPerformanceAttributes([]); // ili možeš postaviti neki fallback ili poruku o grešci
+      });
     }
   }, []);
 
-    // Mock data for the horizontal percentage bar chart
+    /* Mock data for the horizontal percentage bar chart
   const performanceAttributes = [
     { name: "Auction Duration", value: 80 },
     { name: "Last Call Duration", value: 45 },
@@ -60,7 +76,7 @@ const BuyerAnalytics = () => {
     { name: "Strictness of Criteria", value: 85 },
     { name: "Price Decrease in Auction", value: 70 },
     { name: "Extended Duration", value: 95 },
-  ];
+  ];*/
 
   return (
     <Layout>
