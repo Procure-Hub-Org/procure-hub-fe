@@ -17,6 +17,7 @@ const SellerAnalytics = () => {
   const [auctionPositions, setAuctionPositions] = useState({});
   const [priceReductions, setPriceReductions] = useState([]);
   const [performanceAttributes, setPerformanceAttributes] = useState([]); 
+  const [probabilityOfWinning, setProbabilityOfWinning] = useState(0); // NOVO
 
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
@@ -37,7 +38,7 @@ const SellerAnalytics = () => {
     if (token || userId) {
       axios
         .get(
-          `${import.meta.env.VITE_API_URL}/api/seller-regression?id=${userId}`,
+          `${import.meta.env.VITE_API_URL}/api/seller-analytics?id=${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -82,19 +83,24 @@ const SellerAnalytics = () => {
           console.error("Error fetching buyer analytics:", error);
         });
 
-        // DODATNI API poziv za performance attributes regression
+        // performance attributes regression
       axios
         .get(`${import.meta.env.VITE_API_URL}/api/seller-regression?id=${userId}`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-            console.log('Response data:', response.data);
-          // Pretpostavljamo da vraća niz objekata sa { name, value }
-          setPerformanceAttributes(response.data);
+            //console.log('Response data:', response.data);
+
+          const probabilityAttr = response.data.find(attr => attr.name === 'Probability of winning next procurement');
+          setProbabilityOfWinning(probabilityAttr?.value);
+
+          const remainingAttributes = response.data.filter(attr => attr.name !== 'Probability of winning next procurement');
+          setPerformanceAttributes(remainingAttributes);
         })
         .catch((error) => {
           console.error("Error fetching seller performance attributes:", error);
           setPerformanceAttributes([]); // fallback
+          setProbabilityOfWinning(0); // fallback
         });
     }
   }, []);
@@ -204,8 +210,8 @@ const SellerAnalytics = () => {
           />
           <Box mt={4} width="100%">
               <StatCard
-                title="Percentage Of Winning The Next Procurement Contract"
-                value="72%"    // mock percentage
+                title="Probability Of Winning The Next Procurement Contract"
+                value={`${probabilityOfWinning}%`}
               />
             </Box>
           </Box>
