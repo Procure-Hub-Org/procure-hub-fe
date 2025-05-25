@@ -11,6 +11,7 @@ import {
   LabelList,
   Cell,
 } from "recharts";
+import { padding } from "@mui/system";
 
 const getBarColor = (value) => {
   if (value < 0) return "#f44336";     // crveno
@@ -50,7 +51,7 @@ const HorizontalPercentageBarChart = ({
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          margin={{ top: 20, right: 50, left: 90, bottom: 20 }}
         >
           {/* Attribute names on left */}
           <YAxis
@@ -58,7 +59,8 @@ const HorizontalPercentageBarChart = ({
             type="category"
             axisLine={false}
             tickLine={false}
-            width={190}
+            width={200}
+            tickMargin={70}
           />
           {/* Percentages on x-axis */}
           <XAxis

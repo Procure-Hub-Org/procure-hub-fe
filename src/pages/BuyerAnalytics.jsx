@@ -156,7 +156,7 @@ const BuyerAnalytics = () => {
         </Grid>
         {/* New section with the horizontal percentage bar chart */}
         <Box mt={6} width="60%">
-          <Typography variant="h5" mb={2} textAlign="center">
+          <Typography variant="h5" mt={4} mb={2} textAlign="center">
             Performance Attributes Overview
           </Typography>
           <HorizontalPercentageBarChart

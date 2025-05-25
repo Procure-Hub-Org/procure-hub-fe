@@ -9,6 +9,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
 import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
+import { gap } from "@mui/system";
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -89,7 +90,7 @@ const SellerAnalytics = () => {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-            //console.log('Response data:', response.data);
+          //console.log('Response data:', response.data);
 
           const probabilityAttr = response.data.find(attr => attr.name === 'Probability of winning next procurement');
           setProbabilityOfWinning(probabilityAttr?.value);
@@ -173,7 +174,7 @@ const SellerAnalytics = () => {
 
         <Typography variant="h5" mt={4} mb={2}>
           Auction Performance
-        </Typography>v
+        </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} md={12}>
             <CustomBarChart
@@ -197,10 +198,10 @@ const SellerAnalytics = () => {
           </Grid>
         </Grid>
         {/* New section with the horizontal percentage bar chart */}
-        <Typography variant="h5" mb={2} textAlign="center">
+        <Typography variant="h5" mt={4} mb={2} textAlign="center">
               Performance Attributes Overview
         </Typography>
-        <Box mt={6} width="60%">
+        <Box mt={2} width="60%">
           <HorizontalPercentageBarChart
             data={performanceAttributes}
             height={400}
