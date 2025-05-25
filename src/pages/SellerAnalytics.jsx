@@ -209,7 +209,7 @@ const SellerAnalytics = () => {
             title="Attributes Percentage"
             subtitle="Regression coefficients showing the impact of bidding factors on seller outcomes"
           />
-          <Box mt={4} width="100%">
+          <Box mt={4} width="100%" display="flex" justifyContent="center" alignItems="center">
               <StatCard
                 title="Probability Of Winning The Next Procurement Contract"
                 value={`${probabilityOfWinning}%`}
