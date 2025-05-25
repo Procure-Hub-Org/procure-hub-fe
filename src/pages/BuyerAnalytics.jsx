@@ -7,18 +7,30 @@ import { Grid, Typography, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
+import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
 
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
   const [performanceAttributes, setPerformanceAttributes] = useState([]); // NOVO
+  //const [userId, setUserId] = useState(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = urlParams.get("id");
+
+    // user ID from local storage
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    let userId = decoded.id;
+
+    const AdminLoged_user = urlParams.get("id");
+    if (isAdmin() && AdminLoged_user) {
+      userId = AdminLoged_user; //if admin is viewing another user's analytics
+    }
+
+
     if (token || userId) {
       axios
         .get(
@@ -63,20 +75,6 @@ const BuyerAnalytics = () => {
       });
     }
   }, []);
-
-    /* Mock data for the horizontal percentage bar chart
-  const performanceAttributes = [
-    { name: "Auction Duration", value: 80 },
-    { name: "Last Call Duration", value: 45 },
-    { name: "Number of Bidders", value: 60 },
-    { name: "Time Until Last Bid", value: 30 },
-    { name: "Total Number of Bids", value: 75 },
-    { name: "Evaluation Weight Entropy", value: 55 },
-    { name: "Has Must-Have Criteria", value: 20 },
-    { name: "Strictness of Criteria", value: 85 },
-    { name: "Price Decrease in Auction", value: 70 },
-    { name: "Extended Duration", value: 95 },
-  ];*/
 
   return (
     <Layout>
