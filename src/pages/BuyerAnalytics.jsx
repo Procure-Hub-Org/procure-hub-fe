@@ -6,17 +6,30 @@ import ResponseTimeCard from "../components/Cards/Analytics/ResponseTimeCard";
 import { Grid, Typography, Box } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
+import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
 
 const BuyerAnalytics = () => {
   const [summary, setSummary] = useState({});
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
+  const [performanceAttributes, setPerformanceAttributes] = useState([]); // NOVO
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = urlParams.get("id");
+
+    // user ID from local storage
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    let userId = decoded.id;
+
+    const AdminLoged_user = urlParams.get("id");
+    if (isAdmin() && AdminLoged_user) {
+      userId = AdminLoged_user; //if admin is viewing another user's analytics
+    }
+
+
     if (token || userId) {
       axios
         .get(
@@ -44,6 +57,21 @@ const BuyerAnalytics = () => {
         .catch((error) => {
           console.error("Error fetching buyer analytics:", error);
         });
+        
+         // Drugi API poziv za buyer regression (performanceAttributes)
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/buyer-regression?id=${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log('Response data:', response);
+
+        setPerformanceAttributes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching regression data:", error);
+        setPerformanceAttributes([]); // ili možeš postaviti neki fallback ili poruku o grešci
+      });
     }
   }, []);
 
@@ -126,6 +154,19 @@ const BuyerAnalytics = () => {
             averageTime={summary.avgTime}
           ></ResponseTimeCard>
         </Grid>
+        {/* New section with the horizontal percentage bar chart */}
+        <Box mt={6} width="60%">
+          <Typography variant="h5" mt={4} mb={2} textAlign="center">
+            Performance Attributes Overview
+          </Typography>
+          <HorizontalPercentageBarChart
+            data={performanceAttributes}
+            height={400}
+            width="100%"
+            title="Attributes Percentage"
+            subtitle="Regression coefficients indicating how auction factors influence the final procurement price"
+          />
+        </Box>
       </Box>
     </Layout>
   );
