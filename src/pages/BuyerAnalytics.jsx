@@ -14,7 +14,6 @@ const BuyerAnalytics = () => {
   const [categories, setCategories] = useState([]);
   const [criteria, setCriteria] = useState([]);
   const [performanceAttributes, setPerformanceAttributes] = useState([]); // NOVO
-  //const [userId, setUserId] = useState(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 

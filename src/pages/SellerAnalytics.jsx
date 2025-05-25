@@ -8,6 +8,7 @@ import { Grid, Typography, Box } from "@mui/material";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
+import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -22,7 +23,17 @@ const SellerAnalytics = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = urlParams.get("id");
+    //const userId = urlParams.get("id");
+
+    // user ID from local storage
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    let userId = decoded.id;
+
+    const AdminLoged_user = urlParams.get("id");
+    if (isAdmin() && AdminLoged_user) {
+      userId = AdminLoged_user; //if admin is viewing another user's analytics
+    }
+
     if (token || userId) {
       axios
         .get(
@@ -88,19 +99,6 @@ const SellerAnalytics = () => {
     }
   }, []);
 
-    /*Mock data for Seller Regression Analysis
-  const performanceAttributes = [
-    { name: "Bid Price", value: 80 },
-    { name: "Price Difference from Average", value: 45 },
-    { name: "Evaluation Score", value: 60 },
-    { name: "Time to Bid", value: 30 },
-    { name: "Number of Bid Revisions", value: 75 },
-    { name: "Participated in Auction", value: 55 },
-    { name: "Final Price After Auction", value: 20 },
-    { name: "Price Decrease in Auction", value: 85 },
-    { name: "Bid Submission Phase", value: 70 },
-  ];
-*/
   useEffect(() => {}, [priceReductions]);
   return (
     <Layout>
