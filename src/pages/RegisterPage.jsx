@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import PrimaryButton from "../components/Button/PrimaryButton";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
-import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {
   AppBar,
   Container,
@@ -43,16 +45,6 @@ const RegisterPage = () => {
   const [selectedBuyerType, setSelectedBuyerType] = useState("");
   const [customBuyerType, setCustomBuyerType] = useState("");
   const [errors, setErrors] = useState({});
-  const [toast, setToast] = useState({ show: false, message: '', type: '' });
-      
-  
-  const showToast = (message, type) => {
-    setToast({ show: false, message: '', type: '' }); // Reset first
-    setTimeout(() => {
-      setToast({ show: true, message, type });
-    }, 0); // Set after a tiny delay
-  };
-
   useEffect(() => {
     const fetchBuyerTypes = async () => {
       try {
@@ -270,13 +262,12 @@ const RegisterPage = () => {
         );
         registrationData.buyer_type = customBuyerType;
       } catch (error) {
-        showToast("Failed to save custom buyer type",'error' );
+        toast.error("Failed to save custom buyer type");
         trackEvent('registration', {
           success: false,
           error: 'buyer_type_creation_failed',
           role: formData.role
         });
-        //alert("Failed to save custom buyer type");
         return;
       }
     } else if (selectedBuyerType) {
@@ -315,25 +306,23 @@ const RegisterPage = () => {
       );
   
       if (response.status === 201) {
-        showToast('Registration Successful!','success' );
+        toast.success('Registration Successful!');
         trackEvent('registration', {
           success: true,
           role: formData.role,
           buyer_type: formData.role === 'buyer' ? selectedBuyerType : null
         });
-        //alert("Registration Successful!");
         console.log("Server Response:", response.data);
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } else {
-        showToast("Registration failed: " + response.data.message,'error' );
+        toast.error("Registration failed: " + response.data.message);
         trackEvent('registration', {
           success: false,
           error: 'server_error',
           role: formData.role
         });
-        //alert("Registration failed: " + response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
@@ -355,7 +344,7 @@ const RegisterPage = () => {
             error: 'server_error',
             role: formData.role
           });
-          alert("An error occurred during registration: " + error.response.data.error);
+          toast.error("An error occurred during registration: " + error.response.data.error);
         }
       } else {
         trackEvent('registration', {
@@ -363,7 +352,7 @@ const RegisterPage = () => {
           error: 'unknown_error',
           role: formData.role
         });
-        alert("An error occurred during registration");
+        toast.error("An error occurred during registration");
       }
     }
   };
@@ -373,6 +362,7 @@ const RegisterPage = () => {
 
   return (
     <Layout>
+      <ToastContainer position="top-right" autoClose={5000} />
       <AppBar
         position="static"
         sx={{ background: theme.palette.background.default }}
@@ -534,25 +524,10 @@ const RegisterPage = () => {
                 </form>
               </CardContent>
             </Card>
-            {toast.show && toast.type === 'success' && (
-              <NotificationSuccsesToast
-                  message={toast.message}
-                  autoHideDuration={3000}
-                  onClose={() => setToast({ ...toast, show: false })}
-              />
-            )}
-            {toast.show && toast.type === 'error' && (
-              <NotificationErrorToast
-                  message={toast.message}
-                  autoHideDuration={3000}
-                  onClose={() => setToast({ ...toast, show: false })}
-              />
-            )}
           </Container>
         </Box>
       </AppBar>
     </Layout>
   );
 };
-
 export default RegisterPage;

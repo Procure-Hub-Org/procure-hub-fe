@@ -22,8 +22,8 @@ import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import OutlinedButton from "../components/Button/OutlinedButton.jsx";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
-import NotificationSuccsesToast from "../components/Notifications/NotificationSuccsesToast";
-import NotificationErrorToast from "../components/Notifications/NotificationErrorToast";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // ikonice
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
@@ -42,16 +42,7 @@ const ProcurementForm = () => {
     const token = localStorage.getItem("token");
     const [fieldErrors, setFieldErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
-    const [toast, setToast] = useState({ show: false, message: '', type: '' });
-
-
-    const showToast = (message, type) => {
-        setToast({ show: false, message: '', type: '' }); // Reset first
-        setTimeout(() => {
-          setToast({ show: true, message, type });
-        }, 0); // Set after a tiny delay
-      };
-
+    
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -226,7 +217,7 @@ const ProcurementForm = () => {
                 status: 'validation_failed',
                 error: validation.message
             });
-            alert(validation.message);
+            toast.success(validation.message);
             return;
         }
 
@@ -273,7 +264,7 @@ const ProcurementForm = () => {
                     criteria_count: requestData.criteria.length,
                     has_bid_editing: !!requestData.bid_edit_deadline
                 });
-                alert("Request adding Successful!");
+                toast.success("Request adding Successful!");
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests");
             } else {
@@ -282,7 +273,7 @@ const ProcurementForm = () => {
                     status: 'failed',
                     error: response.data.message
                 });
-                alert("Request adding failed: " + response.data.message);
+                toast.error("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             trackEvent('procurement_request', {
@@ -292,9 +283,9 @@ const ProcurementForm = () => {
             });
             console.error("Error during creation of request:", error);
             if (error.response) {
-                showToast("Request adding failed: " + error.response.data.message,'error' );
+                toast.error("Request adding failed: " + error.response.data.message);
             } else {
-                showToast("Request adding failed: " + error.message,'error' );
+                toast.error("Request adding failed: " + error.message);
             }
         }
     };
@@ -309,7 +300,7 @@ const ProcurementForm = () => {
                 status: 'validation_failed',
                 error: validation.message
             });
-            alert(validation.message);
+            toast.error(validation.message);
             return;
         }
 
@@ -346,7 +337,7 @@ const ProcurementForm = () => {
             );
         
             if (response.status === 201) {
-                showToast('Request adding successful!','success' );
+                toast.success('Request adding successful!');
                 trackEvent('procurement_request', {
                     action: 'save_draft',
                     status: 'success',
@@ -356,17 +347,15 @@ const ProcurementForm = () => {
                     criteria_count: requestData.criteria.length,
                     has_bid_editing: !!requestData.bid_edit_deadline
                 });
-                //alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
                 navigate("/buyer-procurement-requests");
             } else {
-                showToast("Request adding failed: " + response.data.message,'error' );
                 trackEvent('procurement_request', {
                     action: 'save_draft',
                     status: 'failed',
                     error: response.data.message
                 });
-                //alert("Request adding failed: " + response.data.message);
+                toast.error("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             trackEvent('procurement_request', {
@@ -376,9 +365,9 @@ const ProcurementForm = () => {
             });
             console.error("Error during creation of request:", error);
             if (error.response) {
-                showToast("Request adding failed: " + error.response.data.message,'error' );
+                toast.error("Request adding failed: " + error.response.data.message);
             } else {
-                showToast("Request adding failed: " + error.message,'error' );
+                toast.error("Request adding failed: " + error.message);
             }
         }
     }
@@ -475,6 +464,7 @@ const ProcurementForm = () => {
 
     return (
         <Layout>
+            <ToastContainer position="top-right" autoClose={5000} />
             <AppBar position="static">
                 <Box
                     sx={{
@@ -485,6 +475,7 @@ const ProcurementForm = () => {
                     }}
                 >
                     <Container maxWidth="sm">
+
                         <Card sx={{ width: "100%", p: 3, boxShadow: 3, borderRadius: 2 }}>
                             <CardContent>
                                 <Typography variant="h5" gutterBottom align="center">
@@ -868,21 +859,7 @@ const ProcurementForm = () => {
                                 </form>
                             </CardContent>
                         </Card>
-                        {toast.show && toast.type === 'success' && (
-                            <NotificationSuccsesToast
-                                message={toast.message}
-                                autoHideDuration={3000}
-                                onClose={() => setToast({ ...toast, show: false })}
-                            />
-                        )}
-
-                        {toast.show && toast.type === 'error' && (
-                            <NotificationErrorToast
-                                message={toast.message}
-                                autoHideDuration={3000}
-                                onClose={() => setToast({ ...toast, show: false })}
-                            />
-                        )}
+                        
                     </Container>
                 </Box>
             </AppBar>
