@@ -55,7 +55,7 @@ const BuyerCreateAuctionForm = () => {
                 status: 'validation_failed',
                 error: 'no_procurement_selected'
             });
-            alert("Please select a procurement request");
+            toast.warning("Please select a procurement request");
             return;
         }
 
@@ -75,7 +75,7 @@ const BuyerCreateAuctionForm = () => {
                 status: 'validation_failed',
                 error: 'no_min_increment'
             });
-            alert("Please enter a minimum increment amount");
+            toast.warning("Please enter a minimum increment amount");
             return;
         }
 
@@ -86,7 +86,7 @@ const BuyerCreateAuctionForm = () => {
                 status: 'validation_failed',
                 error: 'invalid_duration'
             });
-            alert("Duration must be at least 1 minute");
+            toast.warning("Duration must be at least 1 minute");
             return;
         }
 
@@ -130,7 +130,7 @@ const BuyerCreateAuctionForm = () => {
                     procurement_request_id: selectedProcurement,
                     error: response.data.message
                 });
-                alert("Failed to create auction: " + response.data.message);
+                toast.error("Failed to create auction: " + response.data.message);
             }
         } catch (error) {
             trackEvent('auction', {
@@ -140,7 +140,7 @@ const BuyerCreateAuctionForm = () => {
                 error: error.response?.data?.message || error.message
             });
             console.error("Error creating auction:", error);
-            alert("Failed to create auction: " + (error.response?.data?.message || error.message));
+            toast.error("Failed to create auction: " + (error.response?.data?.message || error.message));
         }
     };
 
