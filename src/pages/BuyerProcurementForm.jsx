@@ -26,7 +26,7 @@ import SecondaryButton from "../components/Button/SecondaryButton.jsx";
 import SaveIcon from "@mui/icons-material/Save";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
-
+import { trackEvent } from "../utils/plausible";
 // import { useTheme } from "@mui/system";
 
 const ProcurementForm = () => {
@@ -208,6 +208,11 @@ const ProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
+            trackEvent('procurement_request', {
+                action: 'create',
+                status: 'validation_failed',
+                error: validation.message
+            });
             alert(validation.message);
             return;
         }
@@ -226,7 +231,6 @@ const ProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
-            //evaluationCriteria: formData.evaluationCriteria,
             criteria: formData.evaluationCriteria.map(crit => ({
                 ...crit,
                 name: getCriteriaName(crit.name),
@@ -234,7 +238,6 @@ const ProcurementForm = () => {
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
           
-    
         console.log("Sending request data from submit:", requestData);
           
         try {
@@ -248,20 +251,39 @@ const ProcurementForm = () => {
             );
         
             if (response.status === 201) {
+                trackEvent('procurement_request', {
+                    action: 'create',
+                    status: 'success',
+                    category: requestData.category,
+                    items_count: requestData.items.length,
+                    requirements_count: requestData.requirements.length,
+                    criteria_count: requestData.criteria.length,
+                    has_bid_editing: !!requestData.bid_edit_deadline
+                });
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
-                navigate("/buyer-procurement-requests"); // Redirect to the requests page
+                navigate("/buyer-procurement-requests");
             } else {
+                trackEvent('procurement_request', {
+                    action: 'create',
+                    status: 'failed',
+                    error: response.data.message
+                });
                 alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            trackEvent('procurement_request', {
+                action: 'create',
+                status: 'error',
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 alert("Request adding failed: " + error.response.data.message);
             } else {
                 alert("Request adding failed: " + error.message);
             }
-        };
+        }
     };
 
     const handleSaveDraft = async (e) => {
@@ -269,12 +291,16 @@ const ProcurementForm = () => {
 
         const validation = validateFormData(formData, enableBidEditing, bidEditDeadline);
         if (!validation.valid) {
+            trackEvent('procurement_request', {
+                action: 'save_draft',
+                status: 'validation_failed',
+                error: validation.message
+            });
             alert(validation.message);
             return;
         }
 
         console.log("Submitted form as a draft:", formData);
-        //console.log("Selected category:", selectedCategory);
 
         const requestData = {
             title: formData.title,
@@ -287,7 +313,6 @@ const ProcurementForm = () => {
             location: formData.location,
             items: formData.items,
             requirements: formData.requirements,
-            //evaluationCriteria: formData.evaluationCriteria,
             criteria: formData.evaluationCriteria.map(crit => ({
                 ...crit,
                 name: getCriteriaName(crit.name),
@@ -295,7 +320,6 @@ const ProcurementForm = () => {
             bid_edit_deadline: new Date(bidEditDeadline) || null,
         };
           
-    
         console.log("Sending request data for draft:", requestData);
           
         try {
@@ -309,20 +333,39 @@ const ProcurementForm = () => {
             );
         
             if (response.status === 201) {
+                trackEvent('procurement_request', {
+                    action: 'save_draft',
+                    status: 'success',
+                    category: requestData.category,
+                    items_count: requestData.items.length,
+                    requirements_count: requestData.requirements.length,
+                    criteria_count: requestData.criteria.length,
+                    has_bid_editing: !!requestData.bid_edit_deadline
+                });
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
-                navigate("/buyer-procurement-requests"); // Redirect to the requests page
+                navigate("/buyer-procurement-requests");
             } else {
+                trackEvent('procurement_request', {
+                    action: 'save_draft',
+                    status: 'failed',
+                    error: response.data.message
+                });
                 alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            trackEvent('procurement_request', {
+                action: 'save_draft',
+                status: 'error',
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 alert("Request adding failed: " + error.response.data.message);
             } else {
                 alert("Request adding failed: " + error.message);
             }
-        };
+        }
     }
 
     return (

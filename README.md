@@ -7,7 +7,7 @@ ProcureHub is a modern web-based platform that streamlines the procurement proce
 ---
 
 ## Preview  
-https://procurehub.up.railway.app/
+https://procure-hub.up.railway.app/
 
 ---
 
@@ -42,6 +42,13 @@ https://procurehub.up.railway.app/
 - **Performance:** Low-latency WebSockets for real-time bidding, support for 1000+ concurrent auction participants  
 - **Accessibility:** WCAG compliance and multi-language support  
 - **Integration:** Compatible with third-party payment gateways and external ERP systems  
+
+
+---
+
+## Local installation and deployment  
+- [Video Tutorial for local installation and deployment](https://www.youtube.com/watch?v=87mz1i15hrM)
+
 
 ---
 

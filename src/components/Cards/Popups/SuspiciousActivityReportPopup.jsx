@@ -12,16 +12,18 @@ import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
 import { data } from "react-router-dom";
 import axios from "axios";
+import { trackSuspiciousActivity } from "../../../utils/plausible";
 
 const SuspiciousActivityReportPopup = ({
   open,
   onClose,
   procurementTitle,
   procurementRequestId,
+  onReportSubmitted,
 }) => {
   const [reportText, setReportText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   const handleClose = () => {
@@ -36,6 +38,7 @@ const SuspiciousActivityReportPopup = ({
   const handleSubmit = async () => {
     if (!reportText.trim()) {
       setError("Please enter a report.");
+      alert("Please enter a report.");
       return;
     }
 
@@ -60,11 +63,26 @@ const SuspiciousActivityReportPopup = ({
         }
       );
 
+      // Track suspicious activity report
+      trackSuspiciousActivity(
+        'procurement_request',
+        procurementRequestId,
+        {
+          title: procurementTitle,
+          report_text: reportText.trim()
+        }
+      );
+
       setSuccess(true);
+      alert("Report submitted successfully!");
+      if (onReportSubmitted) {
+        onReportSubmitted();
+      }
       handleClose();
     } catch (e) {
       console.error(e);
       setError("Something went wrong while submitting the report.");
+      alert("Something went wrong while submitting the report.");
     } finally {
       setLoading(false);
     }
@@ -87,6 +105,8 @@ const SuspiciousActivityReportPopup = ({
               placeholder="Describe the suspicious activity..."
               value={reportText}
               onChange={(e) => setReportText(e.target.value)}
+              error={!!error}
+              helperText={error}
             />
           </CardContent>
         </Card>

@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CustomTextField from "../components/Input/TextField";
 import CustomSelect from "../components/Input/DropdownSelect";
 import { isAuthenticated, isBuyer, isSeller } from '../utils/auth';
+import { trackEvent } from "../utils/plausible";
 import {
     AppBar,
     Box,
@@ -92,14 +93,34 @@ const BidForm = () => {
             );
         
             if (response.status === 200 || response.status === 201) {
+                trackEvent('bid', {
+                    action: 'create',
+                    status: 'success',
+                    procurement_request_id: requestId,
+                    price: formData.price,
+                    has_timeline: !!formData.timeline,
+                    has_proposal: !!formData.proposal_text
+                });
                
                 console.log("Server Response:", response.data);
                 const bidId = response.data.bid.id;//preuzimanje id-ja bida i prenosenje u bid preview
                 navigate(`/preview-bid/${bidId}`, { state: { formData } });
             } else {
+                trackEvent('bid', {
+                    action: 'create',
+                    status: 'failed',
+                    procurement_request_id: requestId,
+                    error: response.data.message
+                });
                 alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            trackEvent('bid', {
+                action: 'create',
+                status: 'error',
+                procurement_request_id: requestId,
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 alert("Request adding failed: " + error.response.data.message);
@@ -146,13 +167,33 @@ const BidForm = () => {
             );
             // console.log(response.status);
             if (response.status === 200 || response.status === 201) {
+                trackEvent('bid', {
+                    action: 'save_draft',
+                    status: 'success',
+                    procurement_request_id: requestId,
+                    price: formData.price,
+                    has_timeline: !!formData.timeline,
+                    has_proposal: !!formData.proposal_text
+                });
                 alert("Request adding Successful!");
                 console.log("Server Response:", response.data);
                 navigate("/seller-bids"); 
             } else {
+                trackEvent('bid', {
+                    action: 'save_draft',
+                    status: 'failed',
+                    procurement_request_id: requestId,
+                    error: response.data.message
+                });
                 alert("Request adding failed: " + response.data.message);
             }
         } catch (error) {
+            trackEvent('bid', {
+                action: 'save_draft',
+                status: 'error',
+                procurement_request_id: requestId,
+                error: error.response?.data?.message || error.message
+            });
             console.error("Error during creation of request:", error);
             if (error.response) {
                 alert("Request adding failed: " + error.response.data.message);

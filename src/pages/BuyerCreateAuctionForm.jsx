@@ -8,6 +8,7 @@ import Layout from "../components/Layout/Layout";
 import { AppBar, Box, Card, CardContent, Container, Typography, TextField } from "@mui/material";
 import TimerIcon from "@mui/icons-material/AvTimer";
 import SecondaryButton from "../components/Button/SecondaryButton.jsx";
+import { trackEvent } from "../utils/plausible";
 
 const BuyerCreateAuctionForm = () => {
     const navigate = useNavigate();
@@ -39,66 +40,102 @@ const BuyerCreateAuctionForm = () => {
 
     const totalDurationMinutes = parseInt(durationHours || "0") * 60 + parseInt(durationMinutes || "0");
 
-    const handleSubmit = () => {
-        const now = new Date();
-        const localStartDateTime = new Date(startingTime);
-
-        let valid = true;
-
-        // Reset errors
-        setStartingTimeError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
         if (!selectedProcurement) {
-            alert("Please select a procurement request.");
-            valid = false;
-        }
-
-        if (localStartDateTime <= now) {
-            setStartingTimeError("Starting time must be in the future.");
-            valid = false;
-        }
-
-        if (!valid) return;
-
-        // Ensure minIncrement is greater than or equal to the lowestBid if lowestBid exists
-        if (lowestBid && parseFloat(minIncrement) < parseFloat(lowestBid)) {
-            alert(`Minimum bid increment must be at least $${lowestBid}.`);
+            trackEvent('auction', {
+                action: 'create',
+                status: 'validation_failed',
+                error: 'no_procurement_selected'
+            });
+            alert("Please select a procurement request");
             return;
         }
 
-        if (parseInt(lastCallTimer || "0") > totalDurationMinutes / 2) {
-            alert("Last call timer cannot exceed half the auction duration.");
+        if (!startingTime) {
+            trackEvent('auction', {
+                action: 'create',
+                status: 'validation_failed',
+                error: 'no_starting_time'
+            });
+            setStartingTimeError("Please select a starting time");
             return;
         }
 
-        const startUtcISOString = new Date(localStartDateTime).toISOString();
+        if (!minIncrement) {
+            trackEvent('auction', {
+                action: 'create',
+                status: 'validation_failed',
+                error: 'no_min_increment'
+            });
+            alert("Please enter a minimum increment amount");
+            return;
+        }
 
-        // Formatting duration as HH:MM
-        const formattedDuration = `${String(durationHours).padStart(2, "0")}:${String(durationMinutes).padStart(2, "0")}`;
+        const totalDurationMinutes = parseInt(durationHours || "0") * 60 + parseInt(durationMinutes || "0");
+        if (totalDurationMinutes < 1) {
+            trackEvent('auction', {
+                action: 'create',
+                status: 'validation_failed',
+                error: 'invalid_duration'
+            });
+            alert("Duration must be at least 1 minute");
+            return;
+        }
 
-        const payload = {
-            procurement_id: selectedProcurement,  // The ID of the selected procurement request
-            starting_time: startUtcISOString,         // The starting time from input
-            duration: totalDurationMinutes,      // Total duration in minutes
-            min_bid_increment: parseFloat(minIncrement),  // Minimum bid increment
-            last_call_timer: parseInt(lastCallTimer || "0")  // Last call timer in minutes
+        const auctionData = {
+            procurement_id: Number(selectedProcurement),
+            starting_time: startingTime,
+            duration: totalDurationMinutes,
+            min_bid_increment: parseFloat(minIncrement),
+            last_call_timer: parseInt(lastCallTimer) || 0
         };
 
-        console.log(payload);
+        try {
+            console.log("Creating auction with data:", auctionData);
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/api/auctions`,
+                auctionData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
-        // Send the POST request - OVO NAM JOŠ OSTAJE DA POVEŽEMO
-        axios.post(`${import.meta.env.VITE_API_URL}/api/auctions`, payload, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(response => {
+            if (response.status === 201) {
+                trackEvent('auction', {
+                    action: 'create',
+                    status: 'success',
+                    procurement_request_id: selectedProcurement,
+                    duration_minutes: totalDurationMinutes,
+                    min_increment: parseFloat(minIncrement),
+                    has_last_call: !!lastCallTimer
+                });
                 console.log("Auction Created:", response.data);
                 alert("Auction successfully created!");
                 navigate("/buyer-auctions");
-            })
-            .catch(error => {
-                console.error("Error creating auction:", error);
-                // Handle error (e.g., show error message)
+            } else {
+                trackEvent('auction', {
+                    action: 'create',
+                    status: 'failed',
+                    procurement_request_id: selectedProcurement,
+                    error: response.data.message
+                });
+                alert("Failed to create auction: " + response.data.message);
+            }
+        } catch (error) {
+            trackEvent('auction', {
+                action: 'create',
+                status: 'error',
+                procurement_request_id: selectedProcurement,
+                error: error.response?.data?.message || error.message
             });
+            console.error("Error creating auction:", error);
+            alert("Failed to create auction: " + (error.response?.data?.message || error.message));
+        }
     };
 
     return (
@@ -218,7 +255,7 @@ const BuyerCreateAuctionForm = () => {
                                     <SecondaryButton onClick={() => navigate("/buyer-auctions")}>
                                         Cancel
                                     </SecondaryButton>
-                                    <PrimaryButton onClick={() => {handleSubmit()}}>
+                                    <PrimaryButton onClick={handleSubmit}>
                                         Create Auction
                                     </PrimaryButton>
                                 </Box>
