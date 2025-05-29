@@ -164,6 +164,7 @@ function BuyerBidEvaluation() {
         }
     };
 
+    // edit to open the modal and check awarding logic
     const handleAwardBid = async (bidId) => {
         try {
             setLoading(true);
@@ -204,7 +205,7 @@ function BuyerBidEvaluation() {
                 }
             );
 
-            navigate('/contract-dashboard');
+            navigate('/contract-dashboard'); // After the click Contract form will be opened
             setLoading(false);
         } catch (err) {
             console.error('Error awarding bid:', err);

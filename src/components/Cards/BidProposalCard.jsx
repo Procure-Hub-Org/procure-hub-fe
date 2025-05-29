@@ -202,7 +202,7 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
               disabled={isAwardDisabled && !isAwarded}
               className={isAwarded ? 'awarded-button' : ''}
             >
-              {isAwarded ? 'Awarded' : 'Award Bid'}
+              {isAwarded ? 'Awarded' : 'Award Bid and Generate Contract'}
             </SecondaryButton>
           )}
         </div>
