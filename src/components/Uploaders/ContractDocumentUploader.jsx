@@ -123,8 +123,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
           timeout: 30000,
         }
       );
-      setUploadedDoc(res.data);
-      console.log("File uploaded successfully:", res.data);
+      setUploadedDoc(res.data.contractDocument);
       setFile(null);
       setError("");
     } catch (err) {
