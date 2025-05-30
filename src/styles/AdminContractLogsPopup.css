@@ -1,0 +1,55 @@
+.contract-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.contract-logs-table th {
+  text-align: left;
+  padding: 12px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-weight: 600;
+  border-bottom: 2px solid #ccc;
+}
+
+.contract-logs-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 15px;
+  color: #444;
+}
+
+.contract-logs-table tr:hover {
+  background-color: #fafafa;
+}
+
+.contract-no-logs {
+  font-size: 16px;
+  color: #888;
+  padding: 16px;
+  text-align: center;
+}
+
+.contract-dialog-title {
+  font-size: 22px;
+  font-weight: bold;
+  padding: 20px 24px 10px;
+  color: #333;
+  background-color: #f9f9f9;
+}
+
+.contract-dialog-content {
+  padding: 20px 24px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contract-dialog-actions {
+  padding: 16px 24px;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #eee;
+}
