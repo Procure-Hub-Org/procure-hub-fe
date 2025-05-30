@@ -17,21 +17,25 @@ import {
 import axios from "axios";
 import PrimaryButton from "../Button/PrimaryButton";
 import SecondaryButton from "../Button/SecondaryButton";
-import PdfIcon from '@mui/icons-material/PictureAsPdf';
-import DocIcon from '@mui/icons-material/Description';
-import JpgIcon from '@mui/icons-material/Image';
+import PdfIcon from "@mui/icons-material/PictureAsPdf";
+import DocIcon from "@mui/icons-material/Description";
+import JpgIcon from "@mui/icons-material/Image";
 
 function getIconForFileType(fileName) {
-  const extension = fileName.split('.').pop().toLowerCase();
+    if (!fileName) {
+    return <FileIcon color="action" />;
+  }
+    console.log("filename", fileName);
+  const extension = fileName.split(".").pop().toLowerCase();
   switch (extension) {
-    case 'pdf':
+    case "pdf":
       return <PdfIcon color="action" />;
-    case 'doc':
-    case 'docx':
+    case "doc":
+    case "docx":
       return <DocIcon color="action" />;
-    case 'jpg':
-    case 'png':
-    case 'jpeg':
+    case "jpg":
+    case "png":
+    case "jpeg":
       return <JpgIcon color="action" />;
     default:
       return <FileIcon color="action" />;
@@ -39,30 +43,29 @@ function getIconForFileType(fileName) {
 }
 
 const ContractDocumentUploader = ({ contractId, disabled }) => {
-  const [files, setFiles] = useState([]);
-  const [uploadedDocs, setUploadedDocs] = useState([]);
+  const [file, setFile] = useState(null);
+  const [uploadedDoc, setUploadedDoc] = useState(null);
   const [error, setError] = useState("");
 
   const maxSize = 50 * 1024 * 1024;
   const allowedExtensions = [".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png"];
 
   useEffect(() => {
-    const fetchUploadedDocs = async () => {
+    const fetchUploadedDoc = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/contracts/${contractId}/documents`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setUploadedDocs(response.data);
-        console.log("Fetched uploaded documents:", response.data);
+        setUploadedDoc(response.data || null);
       } catch (err) {
-        console.error("Error fetching uploaded documents:", err);
-        setError("Failed to fetch uploaded documents.");
+        console.error("Error fetching uploaded document:", err);
+        setError("Failed to fetch uploaded document.");
       }
     };
 
-    fetchUploadedDocs();
+    fetchUploadedDoc();
   }, [contractId]);
 
   const validateFile = (file) => {
@@ -78,43 +81,33 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
 
   const handleFileChange = (e) => {
     if (disabled) return;
-    const selectedFiles = Array.from(e.target.files);
-    const errors = [];
-    const validFiles = selectedFiles.filter((file) => {
-      const error = validateFile(file);
-      if (error) {
-        errors.push(error);
-        return false;
-      }
-      return true;
-    });
-    setFiles((prev) => [...prev, ...validFiles]);
-    setError(errors.join(" "));
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+    const error = validateFile(selectedFile);
+    if (error) {
+      setError(error);
+    } else {
+      setFile(selectedFile);
+      setError("");
+    }
   };
 
   const handleDrop = (e) => {
     if (disabled) return;
     e.preventDefault();
-    const droppedFiles = Array.from(e.dataTransfer.files);
-    const errors = [];
-    const validFiles = droppedFiles.filter((file) => {
-      const error = validateFile(file);
-      if (error) {
-        errors.push(error);
-        return false;
-      }
-      return true;
-    });
-    setFiles((prev) => [...prev, ...validFiles]);
-    setError(errors.join(" "));
+    const droppedFile = e.dataTransfer.files[0];
+    if (!droppedFile) return;
+    const error = validateFile(droppedFile);
+    if (error) {
+      setError(error);
+    } else {
+      setFile(droppedFile);
+      setError("");
+    }
   };
 
-  const handleRemoveLocalFile = (indexToRemove) => {
-    setFiles((prev) => prev.filter((_, idx) => idx !== indexToRemove));
-  };
-
-  const handleUpload = async (file) => {
-    if (disabled) return;
+  const handleUpload = async () => {
+    if (disabled || !file) return;
     const formData = new FormData();
     formData.append("file", file);
     try {
@@ -130,26 +123,27 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
           timeout: 30000,
         }
       );
-      setUploadedDocs((prev) => [...prev, res.data]);
-      setFiles((prev) => prev.filter((f) => f !== file));
+      setUploadedDoc(res.data);
+      console.log("File uploaded successfully:", res.data);
+      setFile(null);
       setError("");
     } catch (err) {
       setError(err.response?.data?.error || "Unexpected error during upload.");
     }
   };
 
-  const handleDelete = async (docId) => {
-    if (disabled) return;
+  const handleDelete = async () => {
+    if (disabled || !uploadedDoc) return;
     try {
       const token = localStorage.getItem("token");
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/api/contracts/${contractId}/remove-document`,
         {
           headers: { Authorization: `Bearer ${token}` },
-          data: { documentId: docId },
+          data: { documentId: uploadedDoc.id },
         }
       );
-      setUploadedDocs((prev) => prev.filter((doc) => doc.id !== docId));
+      setUploadedDoc(null);
     } catch (err) {
       console.error("Error removing document:", err);
     }
@@ -170,7 +164,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
           onDrop={handleDrop}
         >
           <Typography variant="h6" gutterBottom>
-            Add supporting documents
+            Add a supporting document
           </Typography>
 
           <PrimaryButton
@@ -179,106 +173,95 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
             startIcon={<CloudUpload />}
             sx={{ mt: 2 }}
           >
-            Choose files
-            <input type="file" hidden multiple onChange={handleFileChange} />
+            Choose file
+            <input type="file" hidden onChange={handleFileChange} />
           </PrimaryButton>
 
-          <Box mt={3}>
-            {files.map((file, idx) => (
-              <Paper
-                key={idx}
-                sx={{
-                  p: 2,
-                  my: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  bgcolor: "#f9fafb",
-                }}
-              >
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <FileIcon color="primary" />
-                  <Box>
-                    <Typography fontWeight="bold">{file.name}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {file.type}
-                    </Typography>
-                  </Box>
-                </Stack>
-
-                <Stack direction="row" spacing={1}>
-                  <SecondaryButton
-                    variant="outlined"
-                    size="small"
-                    onClick={() => handleUpload(file)}
-                  >
-                    Upload
-                  </SecondaryButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleRemoveLocalFile(idx)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Stack>
-              </Paper>
-            ))}
-
-            <Collapse in={!!error}>
-              <Alert
-                severity="error"
-                onClose={() => setError("")}
-                sx={{ mt: 3, textAlign: "left" }}
-              >
-                {error}
-              </Alert>
-            </Collapse>
-          </Box>
-        </Paper>
-      )}
-
-      {uploadedDocs.length > 0 && (
-        <Box mt={disabled ? 0 : 3} px={disabled ? 0 : 0} sx={{ width: "100%" }}>
-          <Divider sx={{ my: 3 }} />
-          <Typography variant="subtitle1" gutterBottom>
-            Uploaded Documents
-          </Typography>
-
-          {uploadedDocs.map((doc) => (
+          {file && (
             <Paper
-              key={doc.id}
               sx={{
                 p: 2,
-                my: 1,
+                my: 2,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                bgcolor: "#f9fafb",
               }}
             >
               <Stack direction="row" spacing={2} alignItems="center">
-                {getIconForFileType(doc.original_name)}
+                <FileIcon color="primary" />
                 <Box>
-                  <Typography fontWeight="bold">
-                    <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
+                  <Typography fontWeight="bold">{file.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {file.type}
                   </Typography>
                 </Box>
               </Stack>
 
-              <IconButton
-                color="error"
-                onClick={() => handleDelete(doc.id)}
-                disabled={disabled}
-              >
-                <Delete />
-              </IconButton>
+              <Stack direction="row" spacing={1}>
+                <SecondaryButton variant="outlined" size="small" onClick={handleUpload}>
+                  Upload
+                </SecondaryButton>
+                <IconButton color="error" onClick={() => setFile(null)}>
+                  <Delete />
+                </IconButton>
+              </Stack>
             </Paper>
-          ))}
+          )}
+
+          <Collapse in={!!error}>
+            <Alert
+              severity="error"
+              onClose={() => setError("")}
+              sx={{ mt: 3, textAlign: "left" }}
+            >
+              {error}
+            </Alert>
+          </Collapse>
+        </Paper>
+      )}
+
+      {uploadedDoc && (
+        <Box mt={disabled ? 0 : 3} sx={{ width: "100%" }}>
+          <Divider sx={{ my: 3 }} />
+          <Typography variant="subtitle1" gutterBottom>
+            Uploaded Document
+          </Typography>
+
+          <Paper
+            sx={{
+              p: 2,
+              my: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Stack direction="row" spacing={2} alignItems="center">
+              {getIconForFileType(uploadedDoc.original_name)}
+              <Box>
+                <Typography fontWeight="bold">
+                  <a href={uploadedDoc.file_url} target="_blank" rel="noopener noreferrer">
+                    {uploadedDoc.original_name}
+                  </a>
+                </Typography>
+              </Box>
+            </Stack>
+
+            <IconButton
+              color="error"
+              onClick={handleDelete}
+              disabled={disabled}
+            >
+              <Delete />
+            </IconButton>
+          </Paper>
         </Box>
       )}
 
-      {disabled && uploadedDocs.length === 0 && (
+      {disabled && !uploadedDoc && (
         <Typography variant="body2" mt={3} color="textSecondary">
-          No documents have been uploaded.
+          No document has been uploaded.
         </Typography>
       )}
     </Box>
