@@ -51,11 +51,19 @@ const ContractFormModal = ({
     const dates = updatedPayments.map((p) => new Date(p.date));
     for (let i = 0; i < dates.length - 1; i++) {
       if (dates[i] && dates[i + 1] && dates[i] >= dates[i + 1]) {
-        newErrors.payments[i + 1] = "Date must be after the previous payment date.";
+        newErrors.payments[i + 1] =
+          "Date must be after the previous payment date.";
       }
     }
 
     setErrors(newErrors);
+  };
+  const isDateValid = (dateStr) => {
+    if (!dateStr) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const inputDate = new Date(dateStr);
+    return inputDate > today;
   };
 
   const handleChange = (e) => {
@@ -70,14 +78,17 @@ const ContractFormModal = ({
   };
 
   const handlePaymentChange = (index, field, value) => {
-    const updated = [...contractData.payments];
-    updated[index][field] = value;
-    setContractData((prev) => {
-      const updatedData = { ...prev, payments: updated };
-      validatePayments(updated, prev.price);
-      return updatedData;
-    });
-  };
+  if (field === "date") {
+    if (!isDateValid(value)) {
+      alert("Datum mora biti unesen i veći od današnjeg datuma.");
+      return; 
+    }
+  }
+
+  const updated = [...contractData.payments];
+  updated[index][field] = value;
+  setContractData((prev) => ({ ...prev, payments: updated }));
+};
 
   const addPayment = () => {
     setContractData((prev) => ({

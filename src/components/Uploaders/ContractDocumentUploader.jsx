@@ -61,7 +61,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
         setUploadedDoc(response.data || null);
       } catch (err) {
         console.error("Error fetching uploaded document:", err);
-        setError("Failed to fetch uploaded document.");
+        // setError("Failed to fetch uploaded document.");
       }
     };
 
