@@ -55,6 +55,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setUploadedDocs(response.data);
+        console.log("Fetched uploaded documents:", response.data);
       } catch (err) {
         console.error("Error fetching uploaded documents:", err);
         setError("Failed to fetch uploaded documents.");

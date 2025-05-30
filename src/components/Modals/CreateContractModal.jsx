@@ -13,30 +13,70 @@ import PrimaryButton from "../Button/PrimaryButton";
 import ContractDocumentUploader from "../Uploaders/ContractDocumentUploader";
 import axios from "axios";
 
-const ContractFormModal = ({ open, onClose, procurementRequest, bid, contract }) => {
-const [contractData, setContractData] = useState({
-  price: contract?.price || bid?.bidAuctionPrice || "",
-  timeline: contract?.timeline || bid?.deliveryTime || "",
-  policy: contract?.payment_instructions?.policy || "",
-  payments: contract?.payment_instructions?.payments || [{ date: "", amount: "" }],
-});
-
+const ContractFormModal = ({
+  open,
+  onClose,
+  procurementRequest,
+  bid,
+  contract,
+}) => {
+  const [contractData, setContractData] = useState({
+    price: contract?.price || bid?.bidAuctionPrice || "",
+    timeline: contract?.timeline || bid?.deliveryTime || "",
+    policy: contract?.payment_instructions?.policy || "",
+    payments: contract?.payment_instructions?.payments || [
+      { date: "", amount: "" },
+    ],
+  });
 
   const [contractId, setContractId] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [step, setStep] = useState(1);
   const isEdit = !!contract;
+  const [errors, setErrors] = useState({ payments: [], price: "" });
 
+  const validatePayments = (updatedPayments, updatedPrice) => {
+    const newErrors = { payments: [], price: "" };
+
+    const price = Number(updatedPrice || contractData.price || 0);
+    const total = updatedPayments.reduce(
+      (sum, p) => sum + Number(p.amount || 0),
+      0
+    );
+
+    if (total !== price) {
+      newErrors.price = `Total payment amount (${total}) must equal contract price (${price}).`;
+    }
+
+    const dates = updatedPayments.map((p) => new Date(p.date));
+    for (let i = 0; i < dates.length - 1; i++) {
+      if (dates[i] && dates[i + 1] && dates[i] >= dates[i + 1]) {
+        newErrors.payments[i + 1] = "Date must be after the previous payment date.";
+      }
+    }
+
+    setErrors(newErrors);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setContractData((prev) => ({ ...prev, [name]: value }));
+    setContractData((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === "price") {
+        validatePayments(prev.payments, value);
+      }
+      return updated;
+    });
   };
 
   const handlePaymentChange = (index, field, value) => {
     const updated = [...contractData.payments];
     updated[index][field] = value;
-    setContractData((prev) => ({ ...prev, payments: updated }));
+    setContractData((prev) => {
+      const updatedData = { ...prev, payments: updated };
+      validatePayments(updated, prev.price);
+      return updatedData;
+    });
   };
 
   const addPayment = () => {
@@ -51,45 +91,48 @@ const [contractData, setContractData] = useState({
     setContractData((prev) => ({ ...prev, payments: updated }));
   };
 
-const handleSave = async (status) => {
-  try {
-    const token = localStorage.getItem("token");
-    const url = contract
-      ? `${import.meta.env.VITE_API_URL}/api/contracts/${contract.id}`
-      : `${import.meta.env.VITE_API_URL}/api/new-contract`;
+  const handleSave = async (status) => {
+    try {
+      const token = localStorage.getItem("token");
+      const url = contract
+        ? `${import.meta.env.VITE_API_URL}/api/contracts/${contract.id}`
+        : `${import.meta.env.VITE_API_URL}/api/new-contract`;
 
-    const method = contract ? "put" : "post";
-
-    const response = await axios({
-      method: method,
-      url: url,
-      data: {
-        procurement_request_id: procurementRequest.id,
-        bid_id: bid.id,
-        price: contractData.price,
-        timeline: contractData.timeline,
-        payment_instructions: {
-          policy: contractData.policy,
-          payments: contractData.payments,
+      const method = contract ? "put" : "post";
+      const response = await axios({
+        method: method,
+        url: url,
+        data: {
+          procurement_request_id: Number(procurementRequest.id),
+          bid_id: Number(bid.id),
+          price: contractData.price,
+          timeline: contractData.timeline,
+          payment_instructions: {
+            policy: contractData.policy,
+            payments: contractData.payments,
+          },
+          status: status,
         },
-        status: status,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const newContractId = contract ? contract.id : response.data.contractId;
-    setContractId(newContractId);
-    setStep(2);
-
-    console.log(`${contract ? "Contract updated" : "Contract created"}:`, newContractId);
-  } catch (error) {
-    console.error("Error saving contract:", error.response?.data || error.message);
-    alert("Error saving contract. Please try again.");
-  }
-};
-
+      const newContractId = contract ? contract.id : response.data.contract.id;
+      setContractId(newContractId);
+      setStep(2);
+      console.log(
+        `${contract ? "Contract updated" : "Contract created"}:`,
+        newContractId
+      );
+    } catch (error) {
+      console.error(
+        "Error saving contract:",
+        error.response?.data || error.message
+      );
+      alert("Error saving contract. Please try again.");
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -145,7 +188,10 @@ const handleSave = async (status) => {
                   InputLabelProps={{ shrink: true }}
                   required
                   sx={{ mb: 1 }}
+                  error={Boolean(errors.payments[index])}
+                  helperText={errors.payments[index]}
                 />
+
                 <TextField
                   label="Payment Amount"
                   type="number"
@@ -155,7 +201,14 @@ const handleSave = async (status) => {
                   }
                   fullWidth
                   required
+                  error={Boolean(errors.price)}
+                  helperText={
+                    index === contractData.payments.length - 1
+                      ? errors.price
+                      : ""
+                  }
                 />
+
                 {contractData.payments.length > 1 && (
                   <SecondaryButton
                     onClick={() => removePayment(index)}
@@ -202,13 +255,17 @@ const handleSave = async (status) => {
           </>
         ) : step === 1 ? (
           <>
-            <PrimaryButton onClick={() => handleSave("draft")}>
+            <PrimaryButton
+              onClick={() => handleSave("draft")}
+              disabled={Boolean(errors.price || errors.payments.some((e) => e))}
+            >
               Save as Draft
             </PrimaryButton>
             <PrimaryButton
               onClick={() => handleSave("issued")}
               variant="contained"
               color="primary"
+              disabled={Boolean(errors.price || errors.payments.some((e) => e))}
             >
               Issue Contract
             </PrimaryButton>
