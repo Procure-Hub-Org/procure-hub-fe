@@ -18,15 +18,6 @@ import PdfIcon from '@mui/icons-material/PictureAsPdf';
 import DocIcon from '@mui/icons-material/Description';
 import JpgIcon from '@mui/icons-material/Image';
 
-// {bidProposals.map(bid => (
-//   <BidProposalCard
-//     key={bid.id}
-//     bid={bid}
-//     onEvaluate={() => handleEvaluateClick(bid.id)}
-//     onAward={() => handleAwardBid(bid.id)}
-//     isAwardDisabled={awardedBidId !== null && awardedBidId !== bid.id}
-//   />
-// ))}
 
 function getIconForFileType(fileName) {
   const extension = fileName.split('.').pop().toLowerCase();
@@ -177,12 +168,6 @@ const BidProposalCard = ({ bid, onEvaluate, onAward, isAwardDisabled }) => {
           <span className="label">Average Score:</span>
           <span className="score">{evaluation.averageScore}</span>
         </div>
-        {/*evaluation.comment && (
-          <div className="evaluation-comment">
-            <span className="label">Comment:</span>
-            <p>{evaluation.comment}</p>
-          </div>
-        )*/}
       </div>
     )}
 

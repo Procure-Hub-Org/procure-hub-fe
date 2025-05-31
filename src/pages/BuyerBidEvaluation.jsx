@@ -169,61 +169,18 @@ function BuyerBidEvaluation() {
         }
     };
 
-    // edit to open the modal and check awarding logic
-    // const handleAwardBid = async (bidId) => {
-    //     try {
-    //         setLoading(true);
-
-    //         const token = localStorage.getItem('token');
-
-    //         // Track bid award
-    //         trackBidAward(bidId, id, {
-    //             procurement_title: procurementRequest?.title,
-    //             bid_price: bidProposals.find(b => b.id === bidId)?.price,
-    //             seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
-    //         });
-
-    //         const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/new-contract`,
-    //             {
-    //                 procurement_request_id: Number(id),
-    //                 bid_id: bidId
-    //             },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                     'Content-Type': 'application/json'
-    //                 }
-    //             }
-    //         );
-                        
-    //         console.log('Contract created:', response.data);
-
-    //         // Track contract creation
-    //         trackContractCreation(
-    //             response.data.contract_id,
-    //             bidId,
-    //             id,
-    //             {
-    //                 procurement_title: procurementRequest?.title,
-    //                 contract_status: 'active',
-    //                 seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
-    //             }
-    //         );
-
-    //         navigate('/contract-dashboard'); // After the click Contract form will be opened
-    //         setLoading(false);
-    //     } catch (err) {
-    //         console.error('Error awarding bid:', err);
-    //         setError(err.response?.data?.message || 'Failed to award bid');
-    //         setLoading(false);
-    //     }
-    // };
     const handleAwardBid = (bidId) => {
         setSelectedBidId(bidId);
         const bid = bidProposals.find((b) => b.id === bidId);
         setSelectedBid(bid);
         setIsCreateContractModalOpen(true);
     };
+
+    const handleCloseCreateContractModal = () => {
+        setIsCreateContractModalOpen(false);
+        navigate('/contract-dashboard'); // Redirect to contract dashboard after closing
+    };
+
     useEffect(() => {
         async function fetchBidData() {
             if (!id) return;
@@ -385,7 +342,7 @@ function BuyerBidEvaluation() {
             {isCreateContractModalOpen && selectedBid && (
             <ContractFormModal
                 open={isCreateContractModalOpen}
-                onClose={() => setIsCreateContractModalOpen(false)}
+                onClose={() => handleCloseCreateContractModal()}
                 procurementRequest={procurementRequest}
                 bid={selectedBid}
                 contract={null}

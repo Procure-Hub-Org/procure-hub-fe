@@ -80,7 +80,7 @@ const ContractFormModal = ({
   const handlePaymentChange = (index, field, value) => {
   if (field === "date") {
     if (!isDateValid(value)) {
-      alert("Datum mora biti unesen i veći od današnjeg datuma.");
+      alert("Date must be enetered and must be in future.");
       return; 
     }
   }
@@ -104,6 +104,18 @@ const ContractFormModal = ({
 
   const handleSave = async (status) => {
     try {
+      // Validate payments
+      let paymentAmounts = 0;
+      for (const payment of contractData.payments) {
+        if (payment.amount) {
+          paymentAmounts += Number(payment.amount);
+        }
+      }
+      if (paymentAmounts != contractData.price) {
+        alert("Total payment amounts must equal contract price.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
       const url = contract
         ? `${import.meta.env.VITE_API_URL}/api/contracts/${contract.id}`
@@ -282,7 +294,8 @@ const ContractFormModal = ({
             </PrimaryButton>
           </>
         ) : (
-          <PrimaryButton onClick={onClose}>Close</PrimaryButton>
+          <PrimaryButton onClick={onClose}>Finish</PrimaryButton>
+          
         )}
       </DialogActions>
     </Dialog>

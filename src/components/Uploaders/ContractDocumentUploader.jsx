@@ -18,29 +18,6 @@ import axios from "axios";
 import PrimaryButton from "../Button/PrimaryButton";
 import SecondaryButton from "../Button/SecondaryButton";
 import PdfIcon from "@mui/icons-material/PictureAsPdf";
-import DocIcon from "@mui/icons-material/Description";
-import JpgIcon from "@mui/icons-material/Image";
-
-function getIconForFileType(fileName) {
-    if (!fileName) {
-    return <FileIcon color="action" />;
-  }
-    console.log("filename", fileName);
-  const extension = fileName.split(".").pop().toLowerCase();
-  switch (extension) {
-    case "pdf":
-      return <PdfIcon color="action" />;
-    case "doc":
-    case "docx":
-      return <DocIcon color="action" />;
-    case "jpg":
-    case "png":
-    case "jpeg":
-      return <JpgIcon color="action" />;
-    default:
-      return <FileIcon color="action" />;
-  }
-}
 
 const ContractDocumentUploader = ({ contractId, disabled }) => {
   const [file, setFile] = useState(null);
@@ -48,7 +25,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
   const [error, setError] = useState("");
 
   const maxSize = 50 * 1024 * 1024;
-  const allowedExtensions = [".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png"];
+  const allowedExtensions = [".pdf"];
 
   useEffect(() => {
     const fetchUploadedDoc = async () => {
@@ -237,7 +214,7 @@ const ContractDocumentUploader = ({ contractId, disabled }) => {
             }}
           >
             <Stack direction="row" spacing={2} alignItems="center">
-              {getIconForFileType(uploadedDoc.original_name)}
+              <PdfIcon color="action" />
               <Box>
                 <Typography fontWeight="bold">
                   <a href={uploadedDoc.file_url} target="_blank" rel="noopener noreferrer">
