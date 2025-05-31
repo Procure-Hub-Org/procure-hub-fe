@@ -6,7 +6,6 @@ import {
   DialogActions,
   Typography,
   Stack,
-  Button,
   Divider,
   CircularProgress,
   Paper,
@@ -18,12 +17,28 @@ import SecondaryButton from "../../Button/SecondaryButton";
 import axios from "axios";
 import { isAuthenticated, isBuyer, isSeller, isAdmin } from "../../../utils/auth";
 import EditContractForm from "../../Modals/CreateContractModal";
+import ViewRequestedChanges from "./ViewRequestedChanges.jsx";
+import RequestChangesPopup from './RequestChangesPopup.jsx';
+import BankInfoPopup from "./BankInfoPopup.jsx";
+import ContractLogsPopup from "../../../pages/AdminContractLogsPopup.jsx";
 
 const ContractInfoPopup = ({ open, onClose, contractId }) => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
   const [editContractModalOpen, setEditContractModalOpen] = useState(false);
+  const [viewChangesModalOpen, setViewChangesModalOpen] = useState(false);
+  const [requestChangesPopupOpen, setRequestChangesPopupOpen] = useState(false);
+  const [bankPopupOpen, setBankPopupOpen] = useState(false);
+  const [adminLogsPopupOpen, setAdminLogsPopupOpen] = useState(false);
+  const [logsContractId, setLogsContractId] = useState(null); // :)
+
+  const handleRequestChangesSubmit = async ({ contract_id, message }) => {
+    // You might send this to your backend or API
+    console.log('Requesting changes for', contract_id, message);
+    // Optionally show a toast/snackbar
+    // await api.requestChanges(contract_id, message);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -125,8 +140,8 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
       <DialogActions>
         {contract && userRole === "seller" && contract.status !== "signed" && (
           <>
-            <PrimaryButton onClick={() => alert("Seller accepted the contract.")}>Accept</PrimaryButton>
-            <PrimaryButton onClick={() => alert("Request changes.")}>Request Changes</PrimaryButton>
+            <PrimaryButton onClick={() => setBankPopupOpen(true)}>Accept</PrimaryButton>
+            <PrimaryButton onClick={() => setRequestChangesPopupOpen(true)}>Request Changes</PrimaryButton>
           </>
         )}
         {contract && userRole === "buyer" && contract.status !== "signed" && (
@@ -142,15 +157,39 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
           </>
         )}
         {(userRole === "buyer" || userRole === "seller") && (
-          <PrimaryButton onClick={() => alert("View requested changes.")}>View Requested Changes</PrimaryButton>
+            <PrimaryButton onClick={() => setViewChangesModalOpen(true)}>View Requested Changes</PrimaryButton>
         )}
         {userRole === "admin" && (
-          <PrimaryButton onClick={() => alert("View logs.")}>View Logs</PrimaryButton>
+          <PrimaryButton onClick={() => {
+            setLogsContractId(contractId);
+            setAdminLogsPopupOpen(true);
+          }}>View Logs</PrimaryButton>
         )}
         <SecondaryButton onClick={onClose} style={{ padding: '6px 14px' }}>
           Close
         </SecondaryButton>
       </DialogActions>
+      <ViewRequestedChanges
+          open={viewChangesModalOpen}
+          onClose={() => setViewChangesModalOpen(false)}
+          contractId={contractId}
+      />
+      <RequestChangesPopup
+          open={requestChangesPopupOpen}
+          onClose={() => setRequestChangesPopupOpen(false)}
+          onSubmit={handleRequestChangesSubmit}
+          contractId={contractId}
+      />
+      <BankInfoPopup
+          open={bankPopupOpen}
+          onClose={() => setBankPopupOpen(false)}
+          contractId={contractId}
+      />
+      <ContractLogsPopup
+          open={adminLogsPopupOpen}
+          onClose={() => setAdminLogsPopupOpen(false)}
+          contractId={logsContractId}
+      />
     </Dialog>
   );
 };
