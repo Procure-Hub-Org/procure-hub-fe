@@ -13,9 +13,6 @@ import {
   Box
 } from "@mui/material";
 import PdfIcon from '@mui/icons-material/PictureAsPdf';
-import DocIcon from '@mui/icons-material/Description';
-import JpgIcon from '@mui/icons-material/Image';
-import FileIcon from '@mui/icons-material/FilePresent';
 import PrimaryButton from "../../Button/PrimaryButton";
 import SecondaryButton from "../../Button/SecondaryButton";
 import axios from "axios";
@@ -25,23 +22,6 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
-
-  function getIconForFileType(fileName) {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-      case 'pdf':
-        return <PdfIcon color="action" />;
-      case 'doc':
-      case 'docx':
-        return <DocIcon color="action" />;
-      case 'jpg':
-      case 'png':
-      case 'jpeg':
-        return <JpgIcon color="action" />;
-      default:
-        return <FileIcon color="action" />;
-    }
-  }
 
   useEffect(() => {
     if (!open) return;
@@ -89,7 +69,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
               <Divider sx={{ mb: 1 }} />
               <Typography><strong>Title:</strong> {contract.procurement_request_title}</Typography>
               <Typography><strong>Category:</strong> {contract.procurement_category}</Typography>
-              <Typography><strong>Price:</strong> {contract.price}</Typography>
+              <Typography><strong>Price:</strong> {contract.price} $</Typography>
               <Typography><strong>Delivery Terms:</strong> {contract.delivery_terms}</Typography>
               <Typography><strong>Status:</strong> {renderStatus()}</Typography>
               <Typography><strong>Buyer:</strong> {contract.buyer_name} ({contract.buyer_email})</Typography>
@@ -103,11 +83,11 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
                 <Divider sx={{ mb: 1 }} />
                 <Paper sx={{ p: 2, my: 1, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <Stack direction="row" spacing={2} alignItems="center">
-                    {getIconForFileType(contract.contract_document_url)}
+                    <PdfIcon color="action" />
                     <Box>
                       <Typography fontWeight="bold">
                         <a href={contract.contract_document_url} target="_blank" rel="noopener noreferrer">
-                          View Document
+                          {contract.contract_document_name || "View Document"}
                         </a>
                       </Typography>
                     </Box>
