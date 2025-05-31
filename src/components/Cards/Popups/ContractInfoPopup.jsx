@@ -17,11 +17,13 @@ import PrimaryButton from "../../Button/PrimaryButton";
 import SecondaryButton from "../../Button/SecondaryButton";
 import axios from "axios";
 import { isAuthenticated, isBuyer, isSeller, isAdmin } from "../../../utils/auth";
+import EditContractForm from "../../Modals/CreateContractModal";
 
 const ContractInfoPopup = ({ open, onClose, contractId }) => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
+  const [editContractModalOpen, setEditContractModalOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -42,6 +44,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
         });
         // Uzimamo PRVI (i jedini) objekat iz niza
         setContract(response.data[0]);
+        console.log("Fetched contract data:", response.data[0]);
       } catch (error) {
         console.error("Error fetching contract data:", error);
         setContract(null);
@@ -127,7 +130,16 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
           </>
         )}
         {contract && userRole === "buyer" && contract.status !== "signed" && (
-          <PrimaryButton onClick={() => alert("Edit contract.")}>Edit</PrimaryButton>
+          <>
+            <PrimaryButton onClick={() => setEditContractModalOpen(true)}>Edit</PrimaryButton>
+            <EditContractForm
+              open={editContractModalOpen}
+              onClose={() => setEditContractModalOpen(false)}
+              procurementRequest = {contract?.procurementRequest}
+              bid = {contract?.bid}
+              contract={contract.contract}
+            />
+          </>
         )}
         {(userRole === "buyer" || userRole === "seller") && (
           <PrimaryButton onClick={() => alert("View requested changes.")}>View Requested Changes</PrimaryButton>

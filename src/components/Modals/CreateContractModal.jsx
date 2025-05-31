@@ -19,7 +19,7 @@ const ContractFormModal = ({
   procurementRequest,
   bid,
   contract,
-}) => {
+})=>{
   const [contractData, setContractData] = useState({
     price: contract?.price || bid?.bidAuctionPrice || "",
     timeline: contract?.timeline || bid?.deliveryTime || "",
@@ -28,6 +28,10 @@ const ContractFormModal = ({
       { date: "", amount: "" },
     ],
   });
+  console.log("Initial contract data:", contractData);
+  console.log("Procurement Request:", procurementRequest);
+  console.log("Bid Data:", bid);
+  console.log("Existing Contract:", contract);
 
   const [contractId, setContractId] = useState(null);
   const [disabled, setDisabled] = useState(false);
@@ -271,7 +275,7 @@ const ContractFormModal = ({
       <DialogActions>
         {isEdit ? (
           <>
-            <PrimaryButton onClick={() => handleSave("draft")}>
+            <PrimaryButton onClick={() => handleSave("edited")}>
               Save Changes
             </PrimaryButton>
             <PrimaryButton onClick={onClose}>Close</PrimaryButton>
