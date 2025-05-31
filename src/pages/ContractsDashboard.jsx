@@ -149,8 +149,9 @@ const ContractsDashboard = () => {
     const matchesBuyer = buyerName === '' || contract.buyer_name.toLowerCase().includes(buyerName.toLowerCase());
     const matchesSeller = sellerName === '' || contract.seller_name.toLowerCase().includes(sellerName.toLowerCase());
     const matchesStatus = statusFilter === '' || (contract.status && contract.status.toLowerCase() === statusFilter.toLowerCase());
-    const matchesDateFrom = dateFrom === '' || new Date(contract.created_at) >= new Date(dateFrom);
-    const matchesDateTo = dateTo === '' || new Date(contract.created_at) <= new Date(dateTo);
+    const matchesDateFrom = dateFrom === '' || new Date(contract.award_date) >= new Date(dateFrom);
+    const matchesDateTo = dateTo === '' || new Date(contract.award_date) <= new Date(dateTo);
+
 
     return matchesBuyer && matchesSeller && matchesStatus && matchesDateFrom && matchesDateTo;
   });
@@ -278,7 +279,7 @@ useEffect(() => {
 
                 {/* Date Range Filter */}
                 <div>
-                    <label style={{ marginBottom: '-8px', display: 'block' }}>Date Range</label>
+                    <label style={{ marginBottom: '-8px', display: 'block' }}>Award Date</label>
                     <CustomTextField
                         type="date"
                         value={dateFrom}
@@ -412,7 +413,7 @@ useEffect(() => {
                         
                       )}
                       <PrimaryButton
-                        onClick={() => handleOpenInfoPopup(1)}
+                        onClick={() => handleOpenInfoPopup(contract.contract_id)}
                       >
                         View Contract Info
                       </PrimaryButton>
