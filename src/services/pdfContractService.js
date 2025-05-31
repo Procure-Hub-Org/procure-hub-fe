@@ -54,9 +54,10 @@ export function generateContractAuditReportPDF(contractDetails, logs) {
   const tableRows = [];
 
   logs.forEach((log) => {
+    const userName = log.user ? `${log.user.first_name} ${log.user.last_name}` : "Unknown";
     const logData = [
       new Date(log.created_at).toLocaleString(),
-      log.user?.name || "Unknown",
+      userName || "Unknown",
       log.action,
     ];
     tableRows.push(logData);

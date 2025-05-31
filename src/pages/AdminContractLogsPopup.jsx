@@ -127,7 +127,7 @@ useEffect(() => {
             {logs.map((log, index) => (
               <tr key={index}>
                 <td>{new Date(log.created_at).toLocaleString()}</td>
-                <td>{log.user?.name || "Unknown"}</td>
+                <td>{log.user ? `${log.user.first_name} ${log.user.last_name}` : "Unknown"}</td>
                 <td>{log.action}</td>
               </tr>
             ))}
