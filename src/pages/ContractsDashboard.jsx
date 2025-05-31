@@ -12,6 +12,7 @@ import AdminReportPopup from "./AdminReportPopup";
 import ContractDisputeSubmit from "../components/Cards/Popups/ContractDisputesPopup";
 import "../styles/ContractsDashboard.css";
 import AddDisputePopup from "../components/Cards/Popups/AddDisputePopup";
+import ContractInfoPopup from "../components/Cards/Popups/ContractInfoPopup";
 
 const ContractsDashboard = () => {
   const [contracts, setContracts] = useState([]);
@@ -34,6 +35,17 @@ const ContractsDashboard = () => {
   const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [selectedContractName, setSelectedContractName] =useState(null);
 
+  const [infoPopupOpen, setInfoPopupOpen] = useState(false);
+
+  const handleOpenInfoPopup = (contractId) => {
+    setSelectedContractId(contractId);
+    setInfoPopupOpen(true);
+  };
+
+  const handleCloseInfoPopup = () => {
+    setInfoPopupOpen(false);
+    setSelectedContractId(null);
+  };
 
 
   const handleOpenDisputes = (contractId) => {
@@ -245,7 +257,13 @@ const ContractsDashboard = () => {
                         >
                           Add Dispute
                         </PrimaryButton>
+                        
                       )}
+                      <PrimaryButton
+                        onClick={() => handleOpenInfoPopup(1)}
+                      >
+                        View Contract Info
+                      </PrimaryButton>
                     </div>
                   </td>
                 </tr>
@@ -353,6 +371,11 @@ const ContractsDashboard = () => {
         <ContractDisputeSubmit
           open={isDisputesOpen}
           onClose={handleCloseDisputes}
+          contractId={selectedContractId}
+        />
+        <ContractInfoPopup
+          open={infoPopupOpen}
+          onClose={handleCloseInfoPopup}
           contractId={selectedContractId}
         />
       </div>
