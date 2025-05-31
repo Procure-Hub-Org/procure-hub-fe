@@ -174,16 +174,28 @@ const ContractsDashboard = () => {
   return (
     <Layout>
       <div className="dashboard-container">
-        <div className="button-container">
+        <div
+          className="button-container"
+          style={{
+            display: "flex",
+            justifyContent: "space-between", // rasporedi naslov i button-e na krajeve
+            alignItems: "center",             // vertikalno poravnaj
+          }}
+        >
           <div className="title">
             <h3>Contracts</h3>
           </div>
 
-          {isAdmin() && (
-            <PrimaryButton onClick={() => setShowReportPopup(true)}>
-              Generate Reports
+          <div style={{ display: "flex", gap: "12px", paddingRight: "20px"}}>
+            {isAdmin() && (
+              <PrimaryButton onClick={() => setShowReportPopup(true)}>
+                Generate Reports
+              </PrimaryButton>
+            )}
+            <PrimaryButton onClick={() => {}}>
+              View Notifications
             </PrimaryButton>
-          )}
+          </div>
         </div>
 
         <div className="panel">

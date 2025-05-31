@@ -10,15 +10,39 @@ import {
   Divider,
   CircularProgress,
   Paper,
+  Box
 } from "@mui/material";
+import PdfIcon from '@mui/icons-material/PictureAsPdf';
+import DocIcon from '@mui/icons-material/Description';
+import JpgIcon from '@mui/icons-material/Image';
+import FileIcon from '@mui/icons-material/FilePresent';
 import PrimaryButton from "../../Button/PrimaryButton";
 import { isAuthenticated, isBuyer, isSeller, isAdmin } from "../../../utils/auth";
 import OutlinedButton from "../../Button/OutlinedButton";
+import SecondaryButton from "../../Button/SecondaryButton";
 
 const ContractInfoPopup = ({ open, onClose, contractId }) => {
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
+
+  function getIconForFileType(fileName) {
+  const extension = fileName.split('.').pop().toLowerCase();
+  switch (extension) {
+    case 'pdf':
+      return <PdfIcon color="action" />;
+    case 'doc':
+    case 'docx':
+      return <DocIcon color="action" />;
+    case 'jpg':
+    case 'png':
+    case 'jpeg':
+      return <JpgIcon color="action" />;
+    default:
+      return <FileIcon color="action" />;
+  }
+}
+
 
   useEffect(() => {
     if (!open) return;  // Samo ako se otvara
@@ -47,7 +71,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
         awardingDate: "2025-06-01",
         price: "$10,000",
         deliveryConditions: "Delivery by 2025-06-15, FOB Shipping Point",
-        status: isSeller() || isAdmin() ? "Issued" : "Draft",
+        status: isSeller() || isAdmin() ? "signed" : "Draft",
         paymentInstructions: {
           policy: "Quarterly",
           details: [
@@ -80,6 +104,11 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
             message: "Change delivery date to 2025-06-20",
             createdAt: "2025-05-02",
           },
+        ],
+          documents: [
+          { id: 1, original_name: "contract.pdf", file_url: "https://example.com/contract.pdf" },
+          { id: 2, original_name: "terms.docx", file_url: "https://example.com/terms.docx" },
+          { id: 3, original_name: "image.jpg", file_url: "https://example.com/image.jpg" },
         ],
       };
       setContract(mock);
@@ -124,7 +153,42 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
               <Typography><strong>Delivery Conditions:</strong> {contract.deliveryConditions}</Typography>
               <Typography><strong>Status:</strong> {renderStatus()}</Typography>
             </Paper>
-
+            {/* Documents Section */}
+            {contract.documents && contract.documents.length > 0 ? (
+              <Paper elevation={2} sx={{ p: 2, backgroundColor: "#fafafa", mb: 3 }}>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  Documents
+                </Typography>
+                <Divider sx={{ mb: 1 }} />
+                <Box sx={{ width: "100%" }}>
+                  {contract.documents.map((doc) => (
+                    <Paper
+                      key={doc.id}
+                      sx={{
+                        p: 2,
+                        my: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        {getIconForFileType(doc.original_name)}
+                        <Box>
+                          <Typography fontWeight="bold">
+                            <a href={doc.file_url} target="_blank" rel="noopener noreferrer">
+                              {doc.original_name}
+                            </a>
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Paper>
+                  ))}
+                </Box>
+              </Paper>
+            ) : (
+              <Typography>No documents have been uploaded.</Typography>
+            )}
             {/* Payment Instructions */}
             <Paper elevation={2} sx={{ p: 2, backgroundColor: "#f0f0f0" }}>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
@@ -149,7 +213,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
         )}
       </DialogContent>
       <DialogActions>
-        {contract && userRole === "seller" && contract.status !== "Signed" && (
+        {contract && userRole === "seller" && contract.status !== "signed" && (
           <>
             <PrimaryButton onClick={handleAccept} >
               Accept
@@ -159,7 +223,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
             </PrimaryButton>
           </>
         )}
-        {contract && userRole === "buyer" && contract.status !== "Signed" && (
+        {contract && userRole === "buyer" && contract.status !== "signed" && (
           <PrimaryButton onClick={handleEditContract} >
             Edit
           </PrimaryButton>
@@ -174,9 +238,9 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
             View Logs
           </PrimaryButton>
         )}
-        <OutlinedButton onClick={onClose} variant="outlined" >
+        <SecondaryButton onClick={onClose} style={{ padding: '6px 14px' }}>
           Close
-        </OutlinedButton>
+        </SecondaryButton>
       </DialogActions>
     </Dialog>
   );
