@@ -23,6 +23,8 @@
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "jspdf": "^3.0.1",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.487.0",
     "plausible-tracker": "^0.3.9",
     "react": "^19.0.0",
