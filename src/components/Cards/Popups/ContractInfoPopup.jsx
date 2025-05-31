@@ -109,7 +109,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
                 contract.payment_instructions.map((payment, idx) => (
                   <Paper key={idx} elevation={1} sx={{ p: 1, mb: 1 }}>
                     <Typography><strong>Payment Date:</strong> {new Date(payment.date).toLocaleDateString()}</Typography>
-                    <Typography><strong>Amount:</strong> {payment.amount}</Typography>
+                    <Typography><strong>Amount:</strong> {payment.amount}$</Typography>
                     <Typography><strong>Policy:</strong> {payment.payment_policy}</Typography>
                   </Paper>
                 ))

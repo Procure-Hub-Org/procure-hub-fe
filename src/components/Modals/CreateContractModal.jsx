@@ -23,10 +23,12 @@ const ContractFormModal = ({
   const [contractData, setContractData] = useState({
     price: contract?.price || bid?.bidAuctionPrice || "",
     timeline: contract?.timeline || bid?.deliveryTime || "",
-    policy: contract?.payment_instructions?.policy || "",
-    payments: contract?.payment_instructions?.payments || [
-      { date: "", amount: "" },
-    ],
+    policy: contract?.paymentInstructions[0]?.payment_policy || "",
+    payments: contract?.paymentInstructions?.map(payment => ({
+            date: new Date(payment.date).toISOString().split("T")[0] || "",
+            amount: payment.amount || ""
+          })) || [{ date: "", amount: "" },
+  ],
   });
   console.log("Initial contract data:", contractData);
   console.log("Procurement Request:", procurementRequest);
@@ -152,6 +154,7 @@ const ContractFormModal = ({
         `${contract ? "Contract updated" : "Contract created"}:`,
         newContractId
       );
+      onClose();
     } catch (error) {
       console.error(
         "Error saving contract:",
@@ -275,9 +278,13 @@ const ContractFormModal = ({
       <DialogActions>
         {isEdit ? (
           <>
-            <PrimaryButton onClick={() => handleSave("edited")}>
+            <PrimaryButton onClick={() => handleSave(contract?.status === "draft" ? "draft" : "edited")}>
               Save Changes
             </PrimaryButton>
+            <PrimaryButton 
+              	onClick={() => handleSave("issued")}
+                disabled={contract?.status !== "draft"}
+              >Issue Contract</PrimaryButton>
             <PrimaryButton onClick={onClose}>Close</PrimaryButton>
           </>
         ) : step === 1 ? (
