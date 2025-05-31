@@ -13,6 +13,12 @@ import ContractDisputeSubmit from "../components/Cards/Popups/ContractDisputesPo
 import "../styles/ContractsDashboard.css";
 import AddDisputePopup from "../components/Cards/Popups/AddDisputePopup";
 import ContractInfoPopup from "../components/Cards/Popups/ContractInfoPopup";
+import CustomTextField from "../components/Input/TextField"
+import CustomSearchInput from "../components/Input/SearchInput";
+import CustomDropdownSelect from "../components/Input/DropdownSelect"
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+
+
 
 const ContractsDashboard = () => {
   const [contracts, setContracts] = useState([]);
@@ -34,6 +40,18 @@ const ContractsDashboard = () => {
   const [selectedContractId, setSelectedContractId] = useState(null);
   const [selectedRequestId, setSelectedRequestId] = useState(null);
   const [selectedContractName, setSelectedContractName] =useState(null);
+  const [allContracts, setAllContracts] = useState([]);
+
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [buyerName, setBuyerName] = useState('');
+  const [sellerName, setSellerName] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [dateError, setDateError] = useState('')
+  
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const [infoPopupOpen, setInfoPopupOpen] = useState(false);
 
@@ -124,32 +142,59 @@ const ContractsDashboard = () => {
     setOpenModalBid(false);
   };
 
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate("/login");
-      return;
-    }
+ const filterContracts = (allContracts) => {
+  console.log('filterContracts pozvan sa:', allContracts); // log svih ugovora prije filtriranja
 
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/contracts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        setContracts(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching contracts:", error);
-      });
+  const filtered = allContracts.filter(contract => {
+    const matchesBuyer = buyerName === '' || contract.buyer_name.toLowerCase().includes(buyerName.toLowerCase());
+    const matchesSeller = sellerName === '' || contract.seller_name.toLowerCase().includes(sellerName.toLowerCase());
+    const matchesStatus = statusFilter === '' || (contract.status && contract.status.toLowerCase() === statusFilter.toLowerCase());
+    const matchesDateFrom = dateFrom === '' || new Date(contract.created_at) >= new Date(dateFrom);
+    const matchesDateTo = dateTo === '' || new Date(contract.created_at) <= new Date(dateTo);
 
-    const filtered = isAdmin()
-      ? contracts
-      : contracts.filter(
-          (contract) =>
-            contract.buyer_id === userId || contract.seller_id === userId
-        );
+    return matchesBuyer && matchesSeller && matchesStatus && matchesDateFrom && matchesDateTo;
+  });
 
-    setContracts(filtered);
-  }, [token]);
+  console.log('filterContracts vraća:', filtered); // log filtriranih ugovora
+  return filtered;
+};
+
+
+useEffect(() => {
+  if (!isAuthenticated()) {
+    navigate("/login");
+    return;
+  }
+
+  axios
+    .get(`${import.meta.env.VITE_API_URL}/api/contracts`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      const fetchedContracts = response.data;
+      console.log('Podaci sa backend-a:', fetchedContracts); // log podataka sa backenda
+      
+      const filtered = isAdmin()
+        ? fetchedContracts
+        : fetchedContracts.filter(contract => contract.buyer_id === userId || contract.seller_id === userId);
+      
+      console.log('Podaci nakon primjene korisničkog filtera:', filtered); // log nakon filtra
+      
+      setAllContracts(filtered);  // Čuvamo sve
+      setContracts(filtered);     // Inicijalno sve
+    })
+    .catch((error) => {
+      console.error("Error fetching contracts:", error);
+    });
+}, [token]);
+
+
+useEffect(() => {
+  const filtered = filterContracts(allContracts);
+  setContracts(filtered);
+  setCurrentPage(1);  // Vrati na prvu stranicu ako se filteri promijene
+}, [buyerName, sellerName, statusFilter, dateFrom, dateTo, allContracts]);
+
 
   const indexOfLast = currentPage * contractsPerPage;
   const indexOfFirst = indexOfLast - contractsPerPage;
@@ -171,9 +216,104 @@ const ContractsDashboard = () => {
     }
   };
 
+  useEffect(() => {
+        if (dateFrom && dateTo && dateFrom > dateTo) {
+            setDateError('From date cannot be after To date');
+        } else {
+            setDateError('');
+        }
+    }, [dateFrom, dateTo]);
+
+
+
+
   return (
     <Layout>
-      <div className="dashboard-container">
+      <div className="dashboard-container contracts-dashboard " style={{ display: "flex" }}>
+        <div
+    className={`sidebar ${sidebarOpen ? "open" : "closed"}`}
+    style={{
+        backgroundColor: theme.palette.background.paper, // theme color
+    }}
+>
+    {sidebarOpen && (
+        <div>
+            <h4>Filters</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                {/* Buyer Name Filter */}
+                <div>
+                    <CustomSearchInput
+                        label="Buyer Name"
+                        value={buyerName}
+                        onChange={(e) => setBuyerName(e.target.value)}
+                        placeholder="Enter buyer name"
+                    />
+                </div>
+
+                {/* Seller Name Filter */}
+                <div>
+                    <CustomSearchInput
+                        label="Seller Name"
+                        value={sellerName}
+                        onChange={(e) => setSellerName(e.target.value)}
+                        placeholder="Enter seller name"
+                    />
+                </div>
+
+                {/* Status Filter */}
+                <div>
+                    <CustomDropdownSelect
+                        label="Status"
+                        options={[
+                            { label: 'All', value: '' },
+                            { label: 'Draft', value: 'draft' },
+                            { label: 'Issued', value: 'issued' },
+                            { label: 'Edited', value: 'edited' },
+                            { label: 'Signed', value: 'signed' },
+                        ]}
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    />
+                </div>
+
+                {/* Date Range Filter */}
+                <div>
+                    <label style={{ marginBottom: '-8px', display: 'block' }}>Date Range</label>
+                    <CustomTextField
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                        style={{ marginBottom: '-5px' }}
+                    />
+                    <CustomTextField
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                    />
+                    {dateError && (<div style={{ color: "red", fontSize: "0.875rem" }}>{dateError}</div>)}
+                </div>
+
+                {/* Clear Filters Button */}
+                <PrimaryButton
+                    onClick={() => {
+                        setBuyerName("");
+                        setSellerName("");
+                        setStatusFilter("");
+                        setDateFrom("");
+                        setDateTo("");
+                    }}
+                    style={{ marginTop: "5px" }}
+                >
+                    Clear Filters
+                </PrimaryButton>
+            </div>
+        </div>
+    )}
+</div>
+<button onClick={toggleSidebar} className="sidebar-toggle">
+    {sidebarOpen ? <ChevronLeft /> : <ChevronRight />}
+</button>
+<div className="panel-all" style={{ flex: 1, backgroundColor: theme.palette.background.default }}>
         <div
           className="button-container"
           style={{
@@ -390,6 +530,7 @@ const ContractsDashboard = () => {
           onClose={handleCloseInfoPopup}
           contractId={selectedContractId}
         />
+        </div>
       </div>
     </Layout>
   );
