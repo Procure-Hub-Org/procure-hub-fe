@@ -81,11 +81,6 @@ const ViewRequestedChanges = ({ open, onClose, contractId }) => {
                             {loading ? "Loading..." : "No requested changes found."}
                         </Typography>
                     )}
-                    {error && (
-                        <Typography color="error" variant="body2">
-                            {error}
-                        </Typography>
-                    )}
                 </Stack>
             </DialogContent>
             <DialogActions>

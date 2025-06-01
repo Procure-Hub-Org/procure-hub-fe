@@ -24,7 +24,8 @@ const RequestChangesPopup = ({ open, onClose, contractId }) => {
         setError(null);
 
         try {
-            await axios.post(`${import.meta.env.VITE_API_URL}/contract/${contractId}/request-change`, {
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/contract/${contractId}/request-change`, {
+                sellerId: JSON.parse(atob(token.split('.')[1])).id,
                 message: text,
             }, {
                 headers: {
@@ -70,11 +71,6 @@ const RequestChangesPopup = ({ open, onClose, contractId }) => {
                             value={text}
                             onChange={(e) => setText(e.target.value)}
                         />
-                        {error && (
-                            <Typography color="error" variant="body2">
-                                {error}
-                            </Typography>
-                        )}
                     </CardContent>
                 </Card>
             </DialogContent>

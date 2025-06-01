@@ -142,7 +142,22 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
         {contract && userRole === "seller" && contract.status !== "signed" && (
           <>
             <PrimaryButton onClick={() => setBankPopupOpen(true)}>Accept</PrimaryButton>
+
+            <BankInfoPopup
+                open={bankPopupOpen}
+                onClose={() => setBankPopupOpen(false)}
+                contractId={contractId}
+            />
+
+            
             <PrimaryButton onClick={() => setRequestChangesPopupOpen(true)}>Request Changes</PrimaryButton>
+
+            <RequestChangesPopup
+              open={requestChangesPopupOpen}
+              onClose={() => setRequestChangesPopupOpen(false)}
+              onSubmit={handleRequestChangesSubmit}
+              contractId={contractId}
+          />
           </>
         )}
         {contract && userRole === "buyer" && contract.status !== "signed" && (
@@ -158,7 +173,14 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
           </>
         )}
         {(userRole === "buyer" || userRole === "seller") && (
+          <>
             <PrimaryButton onClick={() => setViewChangesModalOpen(true)}>View Requested Changes</PrimaryButton>
+            <ViewRequestedChanges
+                open={viewChangesModalOpen}
+                onClose={() => setViewChangesModalOpen(false)}
+                contractId={contractId}
+            />
+          </>
         )}
         {userRole === "admin" && (
           <>
@@ -174,22 +196,6 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
           Close
         </SecondaryButton>
       </DialogActions>
-      <ViewRequestedChanges
-          open={viewChangesModalOpen}
-          onClose={() => setViewChangesModalOpen(false)}
-          contractId={contractId}
-      />
-      <RequestChangesPopup
-          open={requestChangesPopupOpen}
-          onClose={() => setRequestChangesPopupOpen(false)}
-          onSubmit={handleRequestChangesSubmit}
-          contractId={contractId}
-      />
-      <BankInfoPopup
-          open={bankPopupOpen}
-          onClose={() => setBankPopupOpen(false)}
-          contractId={contractId}
-      />
     </Dialog>
   );
 };
