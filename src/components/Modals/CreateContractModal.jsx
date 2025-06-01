@@ -154,7 +154,9 @@ const ContractFormModal = ({
         `${contract ? "Contract updated" : "Contract created"}:`,
         newContractId
       );
-      onClose();
+      if(isEdit){
+        onClose();
+      } 
     } catch (error) {
       console.error(
         "Error saving contract:",
