@@ -18,6 +18,12 @@ const BankInfoPopup = ({ open, onClose, contractId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const isValidIBAN = (iban) => {
+        const cleaned = iban.replace(/\s+/g, '').toUpperCase(); // ukloni razmake i pretvori u velika slova
+        const ibanRegex = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/; // osnovni IBAN format (2 slova + 2 broja + ostatak)
+        return ibanRegex.test(cleaned);
+    };
+
     const handleClose = () => {
         if (!loading) {
             setBankAccount("");
@@ -31,6 +37,12 @@ const BankInfoPopup = ({ open, onClose, contractId }) => {
         setError("");
 
         try {
+            const trimmedAccount = bankAccount.trim();
+            if (trimmedAccount && !isValidIBAN(trimmedAccount)) {
+                alert("Bank account number is not valid. Please enter a valid IBAN.");
+                return;
+            }
+
             const token = localStorage.getItem("token");
             const url = `${import.meta.env.VITE_API_URL}/api/contracts/${contractId}/accept`;
 
@@ -77,14 +89,11 @@ const BankInfoPopup = ({ open, onClose, contractId }) => {
                             minRows={2}
                             margin="normal"
                             value={bankAccount}
-                            onChange={(e) => setBankAccount(e.target.value)}
+                            /*{onChange={(e) => setBankAccount(e.target.value)}}*/
+                            onChange={(e) => setBankAccount(e.target.value.replace(/\s/g, ""))}
                             disabled={loading}
+                            helperText="Enter IBAN, e.g. BA391290079401028494"
                         />
-                        {error && (
-                            <Typography color="error" variant="body2" mt={1}>
-                                {error}
-                            </Typography>
-                        )}
                     </CardContent>
                 </Card>
             </DialogContent>
