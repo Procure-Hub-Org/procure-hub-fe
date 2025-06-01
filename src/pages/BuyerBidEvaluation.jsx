@@ -9,6 +9,7 @@ import { bidService } from '../services/bidService';
 import '../styles/BuyerBidEvaluation.css';
 import PrimaryButton from '../components/Button/PrimaryButton';
 import { trackBidAward, trackContractCreation } from '../utils/plausible';
+import ContractFormModal from '../components/Modals/CreateContractModal';
 
 function BuyerBidEvaluation() {
     const { id } = useParams();
@@ -48,11 +49,13 @@ function BuyerBidEvaluation() {
     const [procurementRequest, setProcurementRequest] = useState(null);
     const [bidProposals, setBidProposals] = useState([]);
     const [selectedBidId, setSelectedBidId] = useState(null);
+    const [selectedBid, setSelectedBid] = useState(null);
     const [isEvaluationModalOpen, setIsEvaluationModalOpen] = useState(false);
     const [sortOption, setSortOption] = useState('default');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [awardedBidId, setAwardedBidId] = useState(null);
+    const [isCreateContractModalOpen, setIsCreateContractModalOpen] = useState(false);
 
     const sortBids = (bids) => {
         if (!bids.length) return [];
@@ -91,6 +94,8 @@ function BuyerBidEvaluation() {
 
     const handleEvaluateClick = (bidId) => {
         setSelectedBidId(bidId);
+        const bid = bidProposals.find((b) => b.id === bidId);
+        setSelectedBid(bid);
         setIsEvaluationModalOpen(true);
     };
 
@@ -164,53 +169,16 @@ function BuyerBidEvaluation() {
         }
     };
 
-    const handleAwardBid = async (bidId) => {
-        try {
-            setLoading(true);
+    const handleAwardBid = (bidId) => {
+        setSelectedBidId(bidId);
+        const bid = bidProposals.find((b) => b.id === bidId);
+        setSelectedBid(bid);
+        setIsCreateContractModalOpen(true);
+    };
 
-            const token = localStorage.getItem('token');
-
-            // Track bid award
-            trackBidAward(bidId, id, {
-                procurement_title: procurementRequest?.title,
-                bid_price: bidProposals.find(b => b.id === bidId)?.price,
-                seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
-            });
-
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/new-contract`,
-                {
-                    procurement_request_id: Number(id),
-                    bid_id: bidId
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-                        
-            console.log('Contract created:', response.data);
-
-            // Track contract creation
-            trackContractCreation(
-                response.data.contract_id,
-                bidId,
-                id,
-                {
-                    procurement_title: procurementRequest?.title,
-                    contract_status: 'active',
-                    seller_company: bidProposals.find(b => b.id === bidId)?.sellerCompany
-                }
-            );
-
-            navigate('/contract-dashboard');
-            setLoading(false);
-        } catch (err) {
-            console.error('Error awarding bid:', err);
-            setError(err.response?.data?.message || 'Failed to award bid');
-            setLoading(false);
-        }
+    const handleCloseCreateContractModal = () => {
+        setIsCreateContractModalOpen(false);
+        navigate('/contract-dashboard'); // Redirect to contract dashboard after closing
     };
 
     useEffect(() => {
@@ -370,6 +338,17 @@ function BuyerBidEvaluation() {
                     onSubmit={handleEvaluationSubmit}
                 />
             )}
+
+            {isCreateContractModalOpen && selectedBid && (
+            <ContractFormModal
+                open={isCreateContractModalOpen}
+                onClose={() => handleCloseCreateContractModal()}
+                procurementRequest={procurementRequest}
+                bid={selectedBid}
+                contract={null}
+            />
+            )}
+
         </Layout>
     );
 }
