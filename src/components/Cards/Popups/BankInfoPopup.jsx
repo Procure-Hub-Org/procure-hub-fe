@@ -11,42 +11,44 @@ import {
 } from '@mui/material';
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
-import OutlinedButton from "../../Button/OutlinedButton.jsx";
+import axios from 'axios';
 
-const BankInfoPopup = ({ open, onClose, bankInfo }) => {
-    const [text, setText] = useState("");
+const BankInfoPopup = ({ open, onClose, contractId }) => {
+    const [bankAccount, setBankAccount] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleClose = () => {
         if (!loading) {
-            setText("");
+            setBankAccount("");
+            setError("");
             onClose();
         }
     };
 
-    const handleSubmit = async (includeBank) => {
+    const handleSubmit = async () => {
         setLoading(true);
+        setError("");
 
         try {
-            const payload = includeBank && text.trim()
-                ? { seller_bank_account: text.trim() }
-                : {};
+            const token = localStorage.getItem("token");
+            const url = `${import.meta.env.VITE_API_URL}/api/contracts/${contractId}/accept`;
 
-            // Prepare for BE route: /contracts/:id/accept
-            await axios.post(
-                `${import.meta.env.VITE_API_URL}/contracts/${bankInfo?.contractId}/accept`,
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
+            const data = bankAccount.trim()
+                ? { seller_bank_account: bankAccount.trim() }
+                : {}; // send empty object if no bank account provided
 
-            handleClose(); // success callback
+            await axios.post(url, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            handleClose();
         } catch (err) {
             console.error("Failed to accept contract:", err);
-            // optionally show an error toast/snackbar
+            setError("Failed to accept contract. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -55,28 +57,34 @@ const BankInfoPopup = ({ open, onClose, bankInfo }) => {
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
             <DialogTitle variant="h5" gutterBottom>
-                Add Bank Account Information
+                Accept Contract
             </DialogTitle>
             <DialogContent>
                 <Card elevation={0}>
                     <CardContent sx={{ pt: 1, mb: 0 }}>
                         <Typography>
                             You're about to accept this contract.
-                            Would you like to add your bank account information for payment processing?
+                            You can provide your bank account information below for payment processing, or leave it empty.
                         </Typography>
 
                         <Typography variant="subtitle1" mt={2}>
-                            <strong>Bank Account Number</strong>
+                            <strong>Bank Account Number (optional)</strong>
                         </Typography>
                         <TextField
-                            label="Please provide your bank account number"
+                            label="Bank Account Number"
                             fullWidth
                             multiline
                             minRows={2}
                             margin="normal"
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
+                            value={bankAccount}
+                            onChange={(e) => setBankAccount(e.target.value)}
+                            disabled={loading}
                         />
+                        {error && (
+                            <Typography color="error" variant="body2" mt={1}>
+                                {error}
+                            </Typography>
+                        )}
                     </CardContent>
                 </Card>
             </DialogContent>
@@ -89,21 +97,13 @@ const BankInfoPopup = ({ open, onClose, bankInfo }) => {
                 >
                     Cancel
                 </SecondaryButton>
-                <OutlinedButton
-                    onClick={() => handleSubmit(false)}
+                <PrimaryButton
+                    onClick={handleSubmit}
                     disabled={loading}
                     size="medium"
                     sx={{ minWidth: 100, textTransform: 'none' }}
                 >
-                    Skip And Accept Contract
-                </OutlinedButton>
-                <PrimaryButton
-                    onClick={() => handleSubmit(true)}
-                    disabled={loading || !text.trim()}
-                    size="medium"
-                    sx={{ minWidth: 100, textTransform: 'none' }}
-                >
-                    Add Bank Account
+                    Accept
                 </PrimaryButton>
             </DialogActions>
         </Dialog>
