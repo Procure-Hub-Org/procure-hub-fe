@@ -44,7 +44,7 @@ export function generateContractAuditReportPDF(contractDetails, logs) {
     `${contractDetails.seller_name} (${contractDetails.seller_company_name})`,
     currentY += lineHeight
   );
-  printKeyValue("Price", `${contractDetails.price} KM`, currentY += lineHeight);
+  printKeyValue("Price", `${contractDetails.price} $`, currentY += lineHeight);
   printKeyValue("Status", contractDetails.status, currentY += lineHeight);
   printKeyValue("Award Date", new Date(contractDetails.award_date).toLocaleString(), currentY += lineHeight);
   printKeyValue("Disputes", contractDetails.number_of_disputes, currentY += lineHeight);

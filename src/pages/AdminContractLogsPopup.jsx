@@ -20,92 +20,61 @@ const ContractLogsPopup = ({ open, onClose, contractId }) => {
   const [contractDetails, setContractDetails] = useState(null);
 
    //Fetch logs when popup opens
- useEffect(() => {
-  if (open && contractId) {
-    setLoading(true);
+  useEffect(() => {
+    if (open && contractId) {
+      const token = localStorage.getItem("token");
 
-    // Pokreni oba zahtjeva paralelno
-    Promise.all([
-      axios.get(`/contracts/${contractId}`),       // Detalji ugovora
-      axios.get(`/contracts/${contractId}/logs`)   // Logovi
-    ])
-    .then(([contractRes, logsRes]) => {
-      // Ako je vraćeni contract niz, uzmi prvi element
-      const contractData = Array.isArray(contractRes.data) ? contractRes.data[0] : contractRes.data;
-      setContractDetails(contractData);
-      setLogs(logsRes.data || []);
-    })
-    .catch((error) => {
-      console.error("Failed to fetch contract info or logs:", error);
+      const fetchData = async () => {
+        setLoading(true);
+
+        try {
+          const [contractRes, logsRes] = await Promise.all([
+            axios.get(`${import.meta.env.VITE_API_URL}/api/contracts/${contractId}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            }),
+            axios.get(`${import.meta.env.VITE_API_URL}/api/contracts/${contractId}/logs`, {
+              headers: { Authorization: `Bearer ${token}` }
+            }),
+          ]);
+
+          const contractData = Array.isArray(contractRes.data)
+            ? contractRes.data[0]
+            : contractRes.data;
+
+          setContractDetails(contractData);
+          setLogs(logsRes.data.logs || []);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+          setContractDetails(null);
+          setLogs([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    } else {
       setContractDetails(null);
       setLogs([]);
-    })
-    .finally(() => setLoading(false));
-  }
-}, [open, contractId]);
+    }
+  }, [open, contractId]);
 
-/*
-useEffect(() => {
-  if (open && contractId) {
-    setLoading(true);
-
-    / MOCK PODACI
-    const mockContract = {
-      procurement_request_title: "Laptop Procurement",
-      procurement_category: "IT Equipment",
-      buyer_name: "John Doe",
-      buyer_company_name: "TechCorp d.o.o.",
-      seller_name: "Harun Mioč",
-      seller_company_name: "SupplyX",
-      price: 18500,
-      status: "Approved",
-      award_date: "2025-05-30T13:45:00Z",
-      number_of_disputes: 2,
-    };
-
-    const mockLogs = [
-      {
-        created_at: "2025-05-30T14:00:00Z",
-        user: { name: "Jane Smith" },
-        action: "Contract created",
-      },
-      {
-        created_at: "2025-05-31T10:30:00Z",
-        user: { name: "Scarlet Johanson" },
-        action: "Buyer approved contract",
-      },
-      {
-        created_at: "2025-06-01T09:00:00Z",
-        user: { name: "Harun Mioč" },
-        action: "Seller confirmed contract",
-      },
-    ];
-
-    // Simuliraj API kašnjenje
-    setTimeout(() => {
-      setContractDetails(mockContract);
-      setLogs(mockLogs);
-      setLoading(false);
-    }, 500);
-  }
-}, [open, contractId]);
-*/
     const handlePrintReport = () => {
       generateContractAuditReportPDF(contractDetails, logs);
     };
 
  return (
   <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-    <DialogTitle className="contract-dialog-title">Contract Activity Logs</DialogTitle>
+    <DialogTitle fontWeight="bold">Contract Activity Logs</DialogTitle>
 
     <DialogContent className="contract-dialog-content">
       {contractDetails && (
-        <div className="contract-details mb-4">
+        <div className="contract-details mb-2 ">
           <p><strong>Request:</strong> {contractDetails.procurement_request_title}</p>
           <p><strong>Category:</strong> {contractDetails.procurement_category || "N/A"}</p>
           <p><strong>Buyer:</strong> {contractDetails.buyer_name} ({contractDetails.buyer_company_name})</p>
           <p><strong>Seller:</strong> {contractDetails.seller_name} ({contractDetails.seller_company_name})</p>
-          <p><strong>Price:</strong> {contractDetails.price} KM</p>
+          <p><strong>Price:</strong> {contractDetails.price} $</p>
           <p><strong>Status:</strong> {contractDetails.status}</p>
           <p><strong>Award Date:</strong> {new Date(contractDetails.award_date).toLocaleString()}</p>
           <p><strong>Disputes:</strong> {contractDetails.number_of_disputes}</p>
@@ -124,7 +93,7 @@ useEffect(() => {
             </tr>
           </thead>
           <tbody>
-            {logs.map((log, index) => (
+            {logs && logs.length > 0 && logs.map((log, index) => (
               <tr key={index}>
                 <td>{new Date(log.created_at).toLocaleString()}</td>
                 <td>{log.user ? `${log.user.first_name} ${log.user.last_name}` : "Unknown"}</td>
@@ -137,7 +106,7 @@ useEffect(() => {
     </DialogContent>
 
     <DialogActions className="contract-dialog-actions">
-      <PrimaryButton onClick={handlePrintReport}>Print Audit Report</PrimaryButton>
+      <PrimaryButton onClick={() => handlePrintReport()}>Print Audit Report</PrimaryButton>
       <Button onClick={onClose} variant="outlined" color="primary">
         Close
       </Button>

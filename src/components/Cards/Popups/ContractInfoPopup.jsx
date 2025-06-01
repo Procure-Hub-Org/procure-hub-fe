@@ -90,6 +90,7 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
               <Typography><strong>Price:</strong> {contract.price} $</Typography>
               <Typography><strong>Delivery Terms:</strong> {contract.delivery_terms}</Typography>
               <Typography><strong>Status:</strong> {renderStatus()}</Typography>
+              <Typography><strong>Award Date:</strong> {new Date(contract.award_date).toLocaleDateString()}</Typography>
               <Typography><strong>Buyer:</strong> {contract.buyer_name} ({contract.buyer_email})</Typography>
               <Typography><strong>Seller:</strong> {contract.seller_name} ({contract.seller_email})</Typography>
             </Paper>
@@ -160,10 +161,14 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
             <PrimaryButton onClick={() => setViewChangesModalOpen(true)}>View Requested Changes</PrimaryButton>
         )}
         {userRole === "admin" && (
-          <PrimaryButton onClick={() => {
-            setLogsContractId(contractId);
-            setAdminLogsPopupOpen(true);
-          }}>View Logs</PrimaryButton>
+          <>
+            <PrimaryButton onClick={() => {setAdminLogsPopupOpen(true)}}>View Logs</PrimaryButton>
+            <ContractLogsPopup
+              open={adminLogsPopupOpen}
+              onClose={() => setAdminLogsPopupOpen(false)}
+              contractId={contractId}
+            />
+          </>
         )}
         <SecondaryButton onClick={onClose} style={{ padding: '6px 14px' }}>
           Close
@@ -184,11 +189,6 @@ const ContractInfoPopup = ({ open, onClose, contractId }) => {
           open={bankPopupOpen}
           onClose={() => setBankPopupOpen(false)}
           contractId={contractId}
-      />
-      <ContractLogsPopup
-          open={adminLogsPopupOpen}
-          onClose={() => setAdminLogsPopupOpen(false)}
-          contractId={logsContractId}
       />
     </Dialog>
   );
