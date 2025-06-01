@@ -26,23 +26,24 @@ const ViewRequestedChanges = ({ open, onClose, contractId }) => {
 
                 try {
                     // MOCK: Replace this with real API call once BE is ready
-                    // const response = await axios.get(
-                    //     `${import.meta.env.VITE_API_URL}/api/requested-changes/${contractId}`,
-                    //     {
-                    //         headers: {
-                    //             Authorization: `Bearer ${token}`,
-                    //         },
-                    //     }
-                    // );
-                    // setRequestedChangesData(response.data);
+                     const response = await axios.get(
+                         `${import.meta.env.VITE_API_URL}/api/requested-changes/${contractId}`,
+                         {
+                             headers: {
+                                 Authorization: `Bearer ${token}`,
+                             },
+                         }
+                    );
+                    setRequestedChangesData(response.data);
 
                     // Mock data:
+                    /*
                     const mockData = [
                         { id: 1, text: "Please adjust the delivery schedule.", created_at: "2024-11-01T10:00:00Z" },
                         { id: 2, text: "We need to revise the pricing terms.", created_at: "2024-11-03T15:20:00Z" },
                     ];
                     setRequestedChangesData(mockData);
-
+                    */
                 } catch (err) {
                     console.error("Error fetching requested changes:", err);
                     setError(err.message || "Unexpected error");
@@ -70,7 +71,7 @@ const ViewRequestedChanges = ({ open, onClose, contractId }) => {
                                         {new Date(change.created_at).toLocaleString()}
                                     </Typography>
                                     <Typography variant="body1" mt={1}>
-                                        {change.text}
+                                        {change.message}
                                     </Typography>
                                 </CardContent>
                             </Card>

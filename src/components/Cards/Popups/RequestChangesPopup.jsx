@@ -11,25 +11,32 @@ import {
 } from '@mui/material';
 import SecondaryButton from "../../Button/SecondaryButton.jsx";
 import PrimaryButton from "../../Button/PrimaryButton.jsx";
-import {trackEvent} from "../../../utils/plausible.js";
+import axios from "axios";
 
-const RequestChangesPopup = ({ open, onClose, onSubmit, contractId }) => {
+const RequestChangesPopup = ({ open, onClose, contractId }) => {
     const [text, setText] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const token = localStorage.getItem("token");
 
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            await onSubmit({
-                contract_id: contractId,
+            await axios.post(`${import.meta.env.VITE_API_URL}/contract/${contractId}/request-change`, {
                 message: text,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             });
-            onClose();
+
+            onClose(); // close on success
         } catch (error) {
-            setError(error.message);
+            console.error("Change request error:", error);
+            setError(error?.response?.data?.message || "An error occurred.");
         } finally {
             setLoading(false);
         }
@@ -43,17 +50,16 @@ const RequestChangesPopup = ({ open, onClose, onSubmit, contractId }) => {
         }
     };
 
-    return(
+    return (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle variant="h5" gutterBottom>
                 Request Contract Changes
             </DialogTitle>
             <DialogContent>
                 <Card elevation={0}>
-                    <CardContent  sx={{ pt: 1, mb:0 }}>
+                    <CardContent sx={{ pt: 1, mb: 0 }}>
                         <Typography>
                             This will notify the buyer about your requested changes.
-                            They will review your request and take appropriate action.
                         </Typography>
                         <TextField
                             label="Changes Description"
@@ -77,14 +83,14 @@ const RequestChangesPopup = ({ open, onClose, onSubmit, contractId }) => {
                     onClick={handleClose}
                     disabled={loading}
                     size="medium"
-                    sx={{ minWidth: 100 , textTransform: 'none' }}>
+                    sx={{ minWidth: 100, textTransform: 'none' }}>
                     Cancel
                 </SecondaryButton>
                 <PrimaryButton
                     onClick={handleSubmit}
-                    disabled={loading || !text}
+                    disabled={loading || !text.trim()}
                     size="medium"
-                    sx={{ minWidth: 100 , textTransform: 'none' }}>
+                    sx={{ minWidth: 100, textTransform: 'none' }}>
                     Submit
                 </PrimaryButton>
             </DialogActions>
