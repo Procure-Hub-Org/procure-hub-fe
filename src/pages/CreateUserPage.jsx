@@ -184,7 +184,7 @@ const CreateUserPage = () => {
     ],
     company_name: [
       {
-        test: (value) => formData.role !== "admin" && !value,
+        test: (value) => formData.role !== "admin" && value,
         message: "Company name is required",
       },
       {
@@ -220,6 +220,13 @@ const CreateUserPage = () => {
           formData.role === "admin" || /^[A-Za-z0-9\s,.-]+$/.test(value),
         message:
           "Company address can only contain letters, numbers, spaces, and certain special characters",
+      },
+    ],
+    phone_number: [
+      { test: (value) => !!value, message: "Phone number is required" },
+      {
+        test: (value) => /^\+(\d{1,3})\s?(\d{1,15})(\s?\d{1,15})*$/.test(value),
+        message: "Please enter a valid phone number",
       },
     ],
   };
@@ -262,7 +269,7 @@ const CreateUserPage = () => {
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length > 0) return;
+    //if (Object.keys(newErrors).length > 0) return;
 
     const userData = {
       first_name: formData.first_name,
@@ -276,10 +283,10 @@ const CreateUserPage = () => {
       ...(formData.role !== "admin" && {
         company_address: formData.company_address,
       }),
-      buyer_type: selectedBuyerType
+      ...(formData.role !== "admin" && {buyer_type: selectedBuyerType})
     };
 
-    if (selectedBuyerType === "Other" && customBuyerType) {
+    if (selectedBuyerType === "Other" && customBuyerType && formData.role === "buyer") {
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL}/api/buyer-types`,
