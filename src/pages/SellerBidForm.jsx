@@ -119,7 +119,7 @@ const BidForm = () => {
                     procurement_request_id: requestId,
                     error: response.data.message
                 });
-                alert("Request adding failed: " + response.data.message);
+                toast.error("Request adding failed: " + response.data.message);
             }
         } catch (error) {
             trackEvent('bid', {
