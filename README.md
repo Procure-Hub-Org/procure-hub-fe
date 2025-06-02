@@ -43,6 +43,13 @@ https://procure-hub.up.railway.app/
 - **Accessibility:** WCAG compliance and multi-language support  
 - **Integration:** Compatible with third-party payment gateways and external ERP systems  
 
+
+---
+
+## Local installation and deployment  
+- [Video Tutorial for local installation and deployment](https://www.youtube.com/watch?v=87mz1i15hrM)
+
+
 ---
 
 ## Development Roadmap  

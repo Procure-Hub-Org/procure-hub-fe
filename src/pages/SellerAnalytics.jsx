@@ -7,6 +7,9 @@ import CustomLineChart from "../components/Cards/Analytics/LineChart";
 import { Grid, Typography, Box } from "@mui/material";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import HorizontalPercentageBarChart from "../components/Cards/Analytics/HorizontalPercentageBarChart";
+import { isAuthenticated, isBuyer, isSeller, isAdmin } from '../utils/auth';
+import { gap } from "@mui/system";
 
 const SellerAnalytics = () => {
   const [summary, setSummary] = useState({});
@@ -14,13 +17,25 @@ const SellerAnalytics = () => {
   const [participationCategories, setParticipationCategories] = useState([]);
   const [auctionPositions, setAuctionPositions] = useState({});
   const [priceReductions, setPriceReductions] = useState([]);
+  const [performanceAttributes, setPerformanceAttributes] = useState([]); 
+  const [probabilityOfWinning, setProbabilityOfWinning] = useState(0); // NOVO
 
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = urlParams.get("id");
+    //const userId = urlParams.get("id");
+
+    // user ID from local storage
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    let userId = decoded.id;
+
+    const AdminLoged_user = urlParams.get("id");
+    if (isAdmin() && AdminLoged_user) {
+      userId = AdminLoged_user; //if admin is viewing another user's analytics
+    }
+
     if (token || userId) {
       axios
         .get(
@@ -67,6 +82,26 @@ const SellerAnalytics = () => {
         })
         .catch((error) => {
           console.error("Error fetching buyer analytics:", error);
+        });
+
+        // performance attributes regression
+      axios
+        .get(`${import.meta.env.VITE_API_URL}/api/seller-regression?id=${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          //console.log('Response data:', response.data);
+
+          const probabilityAttr = response.data.find(attr => attr.name === 'Probability of winning next procurement');
+          setProbabilityOfWinning(probabilityAttr?.value);
+
+          const remainingAttributes = response.data.filter(attr => attr.name !== 'Probability of winning next procurement');
+          setPerformanceAttributes(remainingAttributes);
+        })
+        .catch((error) => {
+          console.error("Error fetching seller performance attributes:", error);
+          setPerformanceAttributes([]); // fallback
+          setProbabilityOfWinning(0); // fallback
         });
     }
   }, []);
@@ -154,7 +189,7 @@ const SellerAnalytics = () => {
           <Grid item xs={12} md={12}>
             <CustomLineChart
               data={priceReductions}
-              xKey="position"
+              xKey="position" 
               yKey="percentage"
               lineColor="#e15759"
               title="Price Reductions Over Time"
@@ -162,6 +197,25 @@ const SellerAnalytics = () => {
             />
           </Grid>
         </Grid>
+        {/* New section with the horizontal percentage bar chart */}
+        <Typography variant="h5" mt={4} mb={2} textAlign="center">
+              Performance Attributes Overview
+        </Typography>
+        <Box mt={2} width="60%">
+          <HorizontalPercentageBarChart
+            data={performanceAttributes}
+            height={400}
+            width="100%"
+            title="Attributes Percentage"
+            subtitle="Regression coefficients showing the impact of bidding factors on seller outcomes"
+          />
+          <Box mt={4} width="100%" display="flex" justifyContent="center" alignItems="center">
+              <StatCard
+                title="Probability Of Winning The Next Procurement Contract"
+                value={`${probabilityOfWinning}%`}
+              />
+            </Box>
+          </Box>
       </Box>
     </Layout>
   );
