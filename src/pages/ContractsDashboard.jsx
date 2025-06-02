@@ -17,7 +17,7 @@ import CustomTextField from "../components/Input/TextField"
 import CustomSearchInput from "../components/Input/SearchInput";
 import CustomDropdownSelect from "../components/Input/DropdownSelect"
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-
+import SidebarNotifications from "../components/SideBar/SideBarNotifications";
 
 
 const ContractsDashboard = () => {
@@ -42,7 +42,7 @@ const ContractsDashboard = () => {
   const [selectedContractName, setSelectedContractName] =useState(null);
   const [allContracts, setAllContracts] = useState([]);
 
-
+  const [sidebarNotificationsOpen, setSidebarNotificationsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [buyerName, setBuyerName] = useState('');
   const [sellerName, setSellerName] = useState('');
@@ -333,9 +333,16 @@ useEffect(() => {
                 Generate Reports
               </PrimaryButton>
             )}
-            <PrimaryButton onClick={() => {}}>
+            <PrimaryButton onClick={() => setSidebarNotificationsOpen(true)}>
               View Notifications
             </PrimaryButton>
+
+            <SidebarNotifications
+              open={sidebarNotificationsOpen}
+              onClose={() => setSidebarNotificationsOpen(false)}
+              onNotificationClick={handleOpenInfoPopup}
+            />
+            
           </div>
         </div>
 
