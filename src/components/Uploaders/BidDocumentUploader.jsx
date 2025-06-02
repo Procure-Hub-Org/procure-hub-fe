@@ -277,7 +277,7 @@ const BidDocumentUploader = ({ procurementBidId, disabled }) => {
                 {/*<FileIcon color="action" />*/}
                 {getIconForFileType(doc.original_name)}
                 <Box>
-                  {/*<Typography fontWeight="bold">{doc.original_name}</Typography>*/}
+                  <Typography fontWeight="bold">{doc.original_name}</Typography>
                   <Typography fontWeight="bold">
                       <a href={doc.file_url} target="_blank" rel="noopener noreferrer">{doc.original_name}</a>
                   </Typography>
