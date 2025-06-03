@@ -268,7 +268,7 @@ const ContractFormModal = ({
             }}
           >
             <Typography variant="body2" sx={{ mb: 2 }}>
-              Upload your contract documents (optional):
+              Upload your contract document (optional):
             </Typography>
             <ContractDocumentUploader
               contractId={contractId || contract?.id}
